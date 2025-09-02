@@ -1,0 +1,108 @@
+<aside class="sidebar-wrapper">
+    <div class="sidebar-header">
+        <div class="logo-name flex-grow-1">
+            <h5 class="mb-0">Quản Lý Thiết Bị</h5>
+        </div>
+        <div class="sidebar-close ">
+            <span class="material-symbols-outlined">close</span>
+        </div>
+    </div>
+    <div class="sidebar-nav" data-simplebar="true">
+        <!--navigation-->
+        <ul class="metismenu" id="menu">
+            <li class="menu-label">Giáo Viên</li>
+            <li>
+                <a href="">
+                    <div class="parent-icon">
+                        <span class="material-symbols-outlined">dashboard</span>
+                    </div>
+                    <div class="menu-title">Trang Chủ</div>
+                </a>
+            </li>
+            <li>
+                <a class="has-arrow" href="javascript:;">
+                    <div class="parent-icon">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                    </div>
+                    <div class="menu-title">Mượn Thiết Bị</div>
+                </a>
+                <ul class="mm-collapse">
+                    <li>
+                        <a href="/borrows/create">
+                            <span class="material-symbols-outlined">arrow_right</span>Tạo Phiếu Mượn
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/borrows">
+                            <span class="material-symbols-outlined">arrow_right</span>Phiếu Mượn
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="/borrows/labs">
+                    <div class="parent-icon">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                    </div>
+                    <div class="menu-title">Lịch Sử Dụng Phòng</div>
+                </a>
+            </li>
+            <li>
+                <a class="has-arrow" href="javascript:;">
+                    <div class="parent-icon">
+                        <span class="material-symbols-outlined">home</span>
+                    </div>
+                    <div class="menu-title">Trường Học</div>
+                </a>
+                <ul class="mm-collapse">
+                    <li>
+                        <a href="/devices">
+                            <span class="material-symbols-outlined">arrow_right</span>Thiết Bị
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/labs">
+                            <span class="material-symbols-outlined">arrow_right</span>Phòng Bộ Môn
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/posts?type=Document">
+                            <span class="material-symbols-outlined">arrow_right</span>Văn Bản Thiết Bị
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a target="_blank" href="https://huongdan.quanlythietbitruonghoc.com/">
+                    <div class="parent-icon">
+                        <span class="material-symbols-outlined">help</span>
+                    </div>
+                    <div class="menu-title">Hướng Dẫn</div>
+                </a>
+            </li>
+        </ul>
+        <!--end navigation-->
+    </div>
+    <div class="sidebar-bottom dropdown dropup-center dropup">
+        <div class="dropdown-toggle d-flex align-items-center px-3 gap-3 w-100 h-100" data-bs-toggle="dropdown">
+            <div class="user-info">
+                <h5 class="mb-0 user-name">Quản Trị Viên</h5>
+            </div>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" href="/users">
+                    <span class="material-symbols-outlined me-2"></span>
+                    <span>Tài khoản</span>
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="/auth/logout">
+                    <span class="material-symbols-outlined me-2"></span>
+                    <span>Thoát</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</aside>
