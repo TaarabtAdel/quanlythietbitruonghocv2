@@ -22,13 +22,18 @@ class AuthController extends Controller
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required'],
             'password' => ['required'],
         ]);
 
+        $login_type = filter_var($request->input('email'), FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+        $credentials = [
+            $login_type => $credentials['email'], 
+            'password' => $credentials['password']
+        ];
         if (auth()->attempt($credentials)) {
             $request->session()->regenerate();
-
             return redirect()->intended('/');
         }
 

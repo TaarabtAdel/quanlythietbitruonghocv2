@@ -2,9 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-class Document extends Model
+use Illuminate\Database\Eloquent\SoftDeletes;
+class Document extends AdminModel
 {
-    //
+    use HasFactory;
+    protected $table = "documents";
+    protected $fillable = [
+        'name','slug','image','description'
+    ];
+    public static function handleSearch($request,$query){
+        $query->orderBy('name','ASC');
+        return $query;
+    }
 }

@@ -76,14 +76,13 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [TeacherHomeController::class, 'index'])->name('teacher.home');
-});
-Route::middleware(['auth'])->prefix('teacher')->group(function () {
+    Route::get('/devices', [TeacherDeviceController::class, 'index'])->name('devices.index');
+    
     Route::resource('assets', TeacherAssetController::class);
     Route::resource('borrows', TeacherBorrowController::class);
     Route::resource('borrow-devices', TeacherBorrowDeviceController::class);
     Route::resource('borrow-purposes', TeacherBorrowPurposeController::class);
     Route::resource('departments', TeacherDepartmentController::class);
-    Route::resource('devices', TeacherDeviceController::class);
     Route::resource('device-types', TeacherDeviceTypeController::class);
     Route::resource('documents', TeacherDocumentController::class);
     Route::resource('groups', TeacherGroupController::class);
