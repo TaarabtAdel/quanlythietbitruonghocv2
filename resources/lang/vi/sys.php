@@ -39,4 +39,5 @@ return [
     'copy_item_error' => 'Tạo bản sao thất bại',
     'show' => 'Xem',
     'copy' => 'Tạo bản sao',
+    'Monday' => 'Thứ 2',
 ];
