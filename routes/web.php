@@ -42,6 +42,7 @@ use App\Http\Controllers\Teacher\RoleController as TeacherRoleController;
 use App\Http\Controllers\Teacher\RoomController as TeacherRoomController;
 use App\Http\Controllers\Teacher\UserController as TeacherUserController;
 use App\Http\Controllers\Teacher\HomeController as TeacherHomeController;
+use App\Http\Controllers\Teacher\BorrowLabController as TeacherBorrowLabController;
 
 // Routes for Admin Authentication
 Route::get('/admin/login', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login');
@@ -51,7 +52,7 @@ Route::post('/admin/logout', [App\Http\Controllers\Admin\AuthController::class, 
 // Routes for Teacher Authentication
 Route::get('/login', [App\Http\Controllers\Teacher\AuthController::class, 'login'])->name('login');
 Route::post('/teacher/login', [App\Http\Controllers\Teacher\AuthController::class, 'authenticate'])->name('auth.postLogin');
-Route::post('/teacher/logout', [App\Http\Controllers\Teacher\AuthController::class, 'logout'])->name('auth.postLogout');
+Route::get('/teacher/logout', [App\Http\Controllers\Teacher\AuthController::class, 'logout'])->name('auth.logout');
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::resource('assets', AssetController::class);
@@ -75,23 +76,11 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', [TeacherHomeController::class, 'index'])->name('teacher.home');
+    Route::get('/', [TeacherHomeController::class, 'index'])->name('home');
     Route::get('/devices', [TeacherDeviceController::class, 'index'])->name('devices.index');
-    
-    Route::resource('assets', TeacherAssetController::class);
+    Route::get('/borrows/labs', [TeacherBorrowLabController::class, 'index'])->name('borrows.labs');
     Route::resource('borrows', TeacherBorrowController::class);
-    Route::resource('borrow-devices', TeacherBorrowDeviceController::class);
-    Route::resource('borrow-purposes', TeacherBorrowPurposeController::class);
-    Route::resource('departments', TeacherDepartmentController::class);
-    Route::resource('device-types', TeacherDeviceTypeController::class);
     Route::resource('documents', TeacherDocumentController::class);
-    Route::resource('groups', TeacherGroupController::class);
     Route::resource('labs', TeacherLabController::class);
-    Route::resource('nests', TeacherNestController::class);
-    Route::resource('notifications', TeacherNotificationController::class);
-    Route::resource('options', TeacherOptionController::class);
-    Route::resource('roles', TeacherRoleController::class);
-    Route::resource('rooms', TeacherRoomController::class);
-    Route::resource('users', TeacherUserController::class);
 });
 

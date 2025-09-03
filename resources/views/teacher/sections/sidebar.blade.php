@@ -1,7 +1,8 @@
+<!--start sidebar-->
 <aside class="sidebar-wrapper">
     <div class="sidebar-header">
         <div class="logo-name flex-grow-1">
-            <h5 class="mb-0">Quản Lý Thiết Bị</h5>
+            <h5 class="mb-0">{{ config('app.name') }}</h5>
         </div>
         <div class="sidebar-close ">
             <span class="material-symbols-outlined">close</span>
@@ -12,7 +13,7 @@
         <ul class="metismenu" id="menu">
             <li class="menu-label">Giáo Viên</li>
             <li>
-                <a href="">
+                <a href="{{ route('home') }}">
                     <div class="parent-icon">
                         <span class="material-symbols-outlined">dashboard</span>
                     </div>
@@ -28,23 +29,31 @@
                 </a>
                 <ul class="mm-collapse">
                     <li>
-                        <a href="/borrows/create">
+                        <a href="{{ route('borrows.create') }}">
                             <span class="material-symbols-outlined">arrow_right</span>Tạo Phiếu Mượn
                         </a>
                     </li>
                     <li>
-                        <a href="/borrows">
+                        <a href="{{ route('borrows.index') }}">
                             <span class="material-symbols-outlined">arrow_right</span>Phiếu Mượn
                         </a>
                     </li>
                 </ul>
             </li>
             <li>
-                <a href="/borrows/labs">
+                <a href="{{ route('borrows.labs') }}">
                     <div class="parent-icon">
                         <span class="material-symbols-outlined">calendar_month</span>
                     </div>
                     <div class="menu-title">Lịch Sử Dụng Phòng</div>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('documents.index') }}">
+                    <div class="parent-icon">
+                        <span class="material-symbols-outlined">view_kanban</span>
+                    </div>
+                    <div class="menu-title">Văn Bản Thiết Bị</div>
                 </a>
             </li>
             <li>
@@ -56,19 +65,13 @@
                 </a>
                 <ul class="mm-collapse">
                     <li>
-                        <a href="/devices">
+                        <a href="{{ route('devices.index') }}">
                             <span class="material-symbols-outlined">arrow_right</span>Thiết Bị
                         </a>
                     </li>
                     <li>
-                        <a href="/labs">
+                        <a href="{{ route('labs.index') }}">
                             <span class="material-symbols-outlined">arrow_right</span>Phòng Bộ Môn
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="/posts?type=Document">
-                            <span class="material-symbols-outlined">arrow_right</span>Văn Bản Thiết Bị
                         </a>
                     </li>
                 </ul>
@@ -87,18 +90,18 @@
     <div class="sidebar-bottom dropdown dropup-center dropup">
         <div class="dropdown-toggle d-flex align-items-center px-3 gap-3 w-100 h-100" data-bs-toggle="dropdown">
             <div class="user-info">
-                <h5 class="mb-0 user-name">Quản Trị Viên</h5>
+                <h5 class="mb-0 user-name">{{ Auth::user()->name }}</h5>
             </div>
         </div>
         <ul class="dropdown-menu dropdown-menu-end">
             <li>
-                <a class="dropdown-item" href="/users">
+                <a class="dropdown-item" href="{{route('users.index')}}">
                     <span class="material-symbols-outlined me-2"></span>
                     <span>Tài khoản</span>
                 </a>
             </li>
             <li>
-                <a class="dropdown-item" href="/auth/logout">
+                <a class="dropdown-item" href="{{ route('auth.logout') }}">
                     <span class="material-symbols-outlined me-2"></span>
                     <span>Thoát</span>
                 </a>

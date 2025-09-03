@@ -17,7 +17,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/teacher/login');
+        return redirect()->route('login');
     }
     public function authenticate(Request $request)
     {

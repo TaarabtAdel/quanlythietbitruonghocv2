@@ -3,6 +3,11 @@
 
 @push('header')
 <link rel="stylesheet" href="/admin-assets/plugins/fullcalendar/css/main.min.css">
+<style>
+.fc-toolbar-title {
+    text-transform: uppercase;
+}
+</style>
 @endpush
 
 @section('content')
@@ -14,7 +19,7 @@
                     <div class="d-flex align-items-center">
                         <div class="">
                             <p class="mb-1">Tổng phiếu mượn</p>
-                            <h4 class="mb-0 text-primary">0</h4>
+                            <h4 class="mb-0 text-primary">{{ $total_borrow }}</h4>
                         </div>
                         <div class="ms-auto widget-icon bg-primary text-white">
                             <i class="bi bi-basket2-fill"></i>
@@ -33,15 +38,15 @@
                     <div class="d-flex align-items-center">
                         <div class="">
                             <p class="mb-1">Phiếu mượn đã duyệt</p>
-                            <h4 class="mb-0 text-success">0</h4>
+                            <h4 class="mb-0 text-success">{{ $total_borrow_active }}</h4>
                         </div>
                         <div class="ms-auto widget-icon bg-success text-white">
                             <i class="bi bi-currency-dollar"></i>
                         </div>
                     </div>
                     <div class="progress mt-3" style="height: 4.5px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 75%;"
-                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="75"
+                            aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
             </div>
@@ -52,15 +57,15 @@
                     <div class="d-flex align-items-center">
                         <div class="">
                             <p class="mb-1">Phiếu mượn chờ duyệt</p>
-                            <h4 class="mb-0 text-danger">0</h4>
+                            <h4 class="mb-0 text-danger">{{ $total_borrow_inactive }}</h4>
                         </div>
                         <div class="ms-auto widget-icon bg-danger text-white">
                             <i class="bi bi-graph-down-arrow"></i>
                         </div>
                     </div>
                     <div class="progress mt-3" style="height: 4.5px;">
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: 75%;"
-                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 75%;" aria-valuenow="75"
+                            aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
             </div>
@@ -69,6 +74,10 @@
     <div class="row">
         <div class="col-12 col-lg-12">
             <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Lịch biểu mượn thiết bị trong tháng này</h5>
+                    <p class="help-text mb-0">Chỉ hiển thị các phiếu <label class="label label-success">ĐÃ ĐƯỢC DUYỆT</label></p>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <div id='calendar'></div>
@@ -81,24 +90,24 @@
 @endsection
 <!-- Add script from @stack('styles') -->
 @push('footer')
-<script src="/admin-assets/plugins/fullcalendar/js/main.min.js"></script>
-<script src="/admin-assets/plugins/fullcalendar/locales/vi.js"></script>
-    <script>
-    var events = [];
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'vi',
-            headerToolbar: {
-                left: '',
-                center: 'title',
-                right: ''
-            },
-            initialView: 'dayGridMonth',
-            initialDate: '2025-09-02',
-            events: events
-        });
-        calendar.render();
-    });
-    </script>
+<script src="{{ asset('admin-assets/plugins/fullcalendar/js/main.min.js') }}"></script>
+<script src="{{ asset('admin-assets/plugins/fullcalendar/locales/vi.js') }}"></script>
+<script>
+        var events = <?= json_encode($events) ?>;
+		document.addEventListener('DOMContentLoaded', function () {
+			var calendarEl = document.getElementById('calendar');
+			var calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'vi',
+				headerToolbar: {
+					left: '',
+					center: 'title',
+					right: ''
+				},
+				initialView: 'dayGridMonth',
+				initialDate: '<?= date('Y-m-d');?>',
+				events: events
+			});
+			calendar.render();
+		});
+	</script>
 @endpush
