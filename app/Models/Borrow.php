@@ -299,4 +299,15 @@ class Borrow extends Model
         return $permissions;
     }
 
+    public static function get_borrow_purposes(){
+        $option = \App\Models\Option::where('option_name','app_verison')->first();
+        $currentVersion = $option->option_value ?? '1.0';
+        if($currentVersion >= '2.3'){
+            // Từ phiên bản 2.3 trở lên đã thay thế trong admin bảng borrow_purposes
+            $borrow_purposes = \App\Models\BorrowPurpose::all()->pluck('name','slug')->toArray();
+            return $borrow_purposes ?? self::PURPOSE;
+        }
+        return self::PURPOSE;
+    }
+
 }

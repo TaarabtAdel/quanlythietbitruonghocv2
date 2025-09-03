@@ -17,8 +17,8 @@
             @endforeach
         @endif
         <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-dark" onclick="window.history.back();">
-                Quay lại trang trước
+            <button type="button" class="btn btn-dark" onclick="window.history.back();">
+                Quay lại
             </button>
             <!-- <button type="button" class="btn btn-primary split-bg-primary dropdown-toggle dropdown-toggle-split"
                 data-bs-toggle="dropdown"> <span class="visually-hidden">Toggle Dropdown</span>

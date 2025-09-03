@@ -79,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', [TeacherHomeController::class, 'index'])->name('home');
     Route::get('/devices', [TeacherDeviceController::class, 'index'])->name('devices.index');
     Route::get('/borrows/labs', [TeacherBorrowLabController::class, 'index'])->name('borrows.labs');
+    Route::get('/borrows/copy/{id}', [TeacherBorrowLabController::class,'copy'])->name('borrows.copy');
     Route::resource('borrows', TeacherBorrowController::class);
     Route::resource('documents', TeacherDocumentController::class);
     Route::resource('labs', TeacherLabController::class);
