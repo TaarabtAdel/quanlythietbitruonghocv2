@@ -45,4 +45,22 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function hasPermission($name){
+        return true;
+    }
+    public function CanManagerSchool(){
+        return true;
+    }
+    public function CanManagerImport(){
+        return true;
+    }
+    public function CanManagerExport(){
+        return true;
+    }
+
+    public function nest()
+    {
+        return $this->belongsTo(Nest::class);
+    }
 }

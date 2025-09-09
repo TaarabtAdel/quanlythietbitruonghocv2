@@ -89,8 +89,8 @@ class BorrowController extends Controller
     public function show($id)
     {
         try {
-            $rooms = \App\Models\Room::getAll();
-            $item = $this->model::findItem($id);
+            $rooms = \App\Models\Room::all();
+            $item = $this->model::find($id);
             if( $item->user_id != Auth::id() ){
                 abort(403);
             }
@@ -113,8 +113,8 @@ class BorrowController extends Controller
     public function edit($id)
     {
         try {
-            $rooms = \App\Models\Room::getAll();
-            $item = $this->model::findItem($id);
+            $rooms = \App\Models\Room::all();
+            $item = $this->model::find($id);
             if( $item->user_id != Auth::id() ){
                 abort(403);
             }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-class WebsiteModel extends Model
+class MainModel extends Model
 {
     use HasFactory;
     // use UploadFileTrait;
@@ -35,7 +35,7 @@ class WebsiteModel extends Model
         if($request->name){
             $query->where('name','LIKE','%'.$request->name.'%');
         }
-        if($request->status){
+        if($request->status !== ''){
             $query->where('status',$request->status);
         }
         if($user_id){

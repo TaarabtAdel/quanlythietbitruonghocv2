@@ -10,12 +10,15 @@ use App\Models\Department;
 
 class DeviceController extends Controller
 {
+    protected $view_path    = 'device::';
+    protected $route_prefix = 'device.';
+    protected $model        = Device::class;
     public function index(Request $request)
     {
         $device_types = DeviceType::all();
         $departments = Department::all();
         $limit = $request->limit ? $request->limit : 20;
-        $query = Device::orderBy('name','ASC');
+        $query = $this->model::orderBy('name','ASC');
         if($request->name){
             $query->where('name','LIKE','%'.$request->name.'%');
         }
@@ -32,6 +35,9 @@ class DeviceController extends Controller
             'departments' => $departments,
             'request' => $request
         ];
-        return view('teacher.devices.index', $param );
+        if( $request->ajax() ){
+            return view('teacher.devices.index-ajax',$param);
+        }
+        return view('teacher.devices.index',$param);
     }
 }

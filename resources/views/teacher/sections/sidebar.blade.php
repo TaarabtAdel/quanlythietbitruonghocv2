@@ -95,6 +95,12 @@
         </div>
         <ul class="dropdown-menu dropdown-menu-end">
             <li>
+                <a class="dropdown-item" href="/admin">
+                    <span class="material-symbols-outlined me-2"></span>
+                    <span>Quản trị</span>
+                </a>
+            </li>
+            <li>
                 <a class="dropdown-item" href="{{route('users.index')}}">
                     <span class="material-symbols-outlined me-2"></span>
                     <span>Tài khoản</span>

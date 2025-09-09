@@ -32,6 +32,6 @@ class FormInputNests extends Component
             'autoSubmit'    => $this->autoSubmit,
             'items'         => $items,
         ];
-        return view('admintheme::components.form-input-select2',$params);
+        return view('components.form-input-select2',$params);
     }
 }

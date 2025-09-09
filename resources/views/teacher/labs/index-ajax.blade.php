@@ -73,5 +73,5 @@
             @endforeach
         </tbody>
     </table>
-    @include('admintheme::includes.globals.pagination')
+    @include('globals.pagination')
 </div>

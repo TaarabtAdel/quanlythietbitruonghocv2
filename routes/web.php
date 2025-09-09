@@ -21,6 +21,10 @@ use App\Http\Controllers\Admin\OptionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\HomeController;
+use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\Admin\SystemController;
 
 // Teacher Controllers
 use App\Http\Controllers\Teacher\AssetController as TeacherAssetController;
@@ -54,34 +58,52 @@ Route::get('/login', [App\Http\Controllers\Teacher\AuthController::class, 'login
 Route::post('/teacher/login', [App\Http\Controllers\Teacher\AuthController::class, 'authenticate'])->name('auth.postLogin');
 Route::get('/teacher/logout', [App\Http\Controllers\Teacher\AuthController::class, 'logout'])->name('auth.logout');
 
-Route::middleware(['auth'])->prefix('admin')->group(function () {
-    Route::resource('assets', AssetController::class);
+Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
+    // Trang chủ quản trị viên
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
+    Route::get('/borrows/devices', [BorrowDeviceController::class, 'index'])->name('borrows.devices');
+    Route::get('/borrows/labs', [DeviceController::class, 'index'])->name('borrows.labs');
     Route::resource('borrows', BorrowController::class);
-    Route::resource('borrow-devices', BorrowDeviceController::class);
+    
+    Route::get('/import', [ImportController::class, 'index'])->name('import.index');
+    Route::get('/export', [ExportController::class, 'index'])->name('export.index');
+
+    Route::resource('assets', AssetController::class);
+    // Route::resource('borrow-devices', BorrowDeviceController::class);
     Route::resource('borrow-purposes', BorrowPurposeController::class);
     Route::resource('departments', DepartmentController::class);
     Route::resource('devices', DeviceController::class);
     Route::resource('device-types', DeviceTypeController::class);
     Route::resource('documents', DocumentController::class);
     Route::resource('groups', GroupController::class);
-    Route::resource('groups-roles', GroupsRoleController::class);
+    // Route::resource('groups-roles', GroupsRoleController::class);
     Route::resource('labs', LabController::class);
-    Route::resource('migrations', MigrationController::class);
+    // Route::resource('migrations', MigrationController::class);
     Route::resource('nests', NestController::class);
-    Route::resource('notifications', NotificationController::class);
+    // Route::resource('notifications', NotificationController::class);
     Route::resource('options', OptionController::class);
-    Route::resource('roles', RoleController::class);
+    // Route::resource('roles', RoleController::class);
     Route::resource('rooms', RoomController::class);
     Route::resource('users', UserController::class);
+
+    Route::get('/system/update', [SystemController::class, 'index'])->name('system.update');
 });
 
 Route::middleware(['auth'])->group(function () {
+    // Trang chủ giáo viên
     Route::get('/', [TeacherHomeController::class, 'index'])->name('home');
+    // Danh sách thiết bị
     Route::get('/devices', [TeacherDeviceController::class, 'index'])->name('devices.index');
+    // Phòng mượn
     Route::get('/borrows/labs', [TeacherBorrowLabController::class, 'index'])->name('borrows.labs');
-    Route::get('/borrows/copy/{id}', [TeacherBorrowLabController::class,'copy'])->name('borrows.copy');
+    // Phiếu mượn
+    Route::get('/borrows/copy/{id}', [TeacherBorrowController::class,'copy'])->name('borrows.copy');
     Route::resource('borrows', TeacherBorrowController::class);
+    // Văn bản thiết bị
     Route::resource('documents', TeacherDocumentController::class);
+    // Danh sách phòng bộ môn
     Route::resource('labs', TeacherLabController::class);
+    Route::resource('users', TeacherUserController::class);
 });
 

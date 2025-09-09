@@ -41,7 +41,7 @@
     @include('teacher.sections.header')
     <!--end header-->
     <!--start sidebar-->
-    @include('teacher.sections.sidebar')
+    @include('admin.sections.sidebar')
     <!--end sidebar-->
 
     <main class="page-content">

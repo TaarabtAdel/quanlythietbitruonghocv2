@@ -19,6 +19,7 @@ return [
     'close' => 'Đóng',
     'active' => 'Bật',
     'inactive' => 'Tắt',
+    'approve' => 'Duyệt',
     'draf' => 'Bản nháp',
     'save' => 'Lưu',
     'submit' => 'Gửi',
@@ -40,4 +41,5 @@ return [
     'show' => 'Xem',
     'copy' => 'Tạo bản sao',
     'Monday' => 'Thứ 2',
+    'confirm_canceled' => 'Xác nhận hủy',
 ];
