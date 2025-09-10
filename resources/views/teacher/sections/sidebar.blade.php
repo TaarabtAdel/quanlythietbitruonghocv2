@@ -101,7 +101,7 @@
                 </a>
             </li>
             <li>
-                <a class="dropdown-item" href="{{route('users.index')}}">
+                <a class="dropdown-item" href="{{route('users.profile')}}">
                     <span class="material-symbols-outlined me-2"></span>
                     <span>Tài khoản</span>
                 </a>

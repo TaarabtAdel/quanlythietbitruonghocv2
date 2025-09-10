@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@section('title','Xuất: ' . __(request()->type) )
 @section('content')
     @include('globals.breadcrumb', [
         'page_title' => 'Xuất: ' . __(request()->type),
