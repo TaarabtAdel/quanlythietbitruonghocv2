@@ -74,6 +74,16 @@
                             <span class="material-symbols-outlined">arrow_right</span>Phòng Bộ Môn
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('rooms.index') }}">
+                            <span class="material-symbols-outlined">arrow_right</span>Lớp Học
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('users.index') }}">
+                            <span class="material-symbols-outlined">arrow_right</span>Giáo Viên
+                        </a>
+                    </li>
                 </ul>
             </li>
             <li>

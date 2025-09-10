@@ -112,6 +112,14 @@ Route::middleware(['auth'])->group(function () {
     // 7. Danh sách thiết bị
     Route::get('/devices', [TeacherDeviceController::class, 'index'])->name('devices.index');
 
+    // 8. Mục đích mượn
+    Route::get('borrow-purposes', [TeacherBorrowPurposeController::class, 'index'])->name('borrow-purposes.index');
+
+    // 9. Lớp học
+    Route::get('rooms', [TeacherRoomController::class, 'index'])->name('rooms.index');
+    // 10. Giáo viên
+    Route::get('users', [TeacherUserController::class, 'index'])->name('users.index');
+
     // Tài khoản
     Route::get('profile', [TeacherUserController::class, 'profile'])->name('users.profile');
     Route::get('profileEdit', [TeacherUserController::class, 'profileEdit'])->name('users.profileEdit');

@@ -5,10 +5,28 @@ namespace App\Http\Controllers\Teacher;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Model\User;
+use App\Models\User;
 
 class UserController extends Controller
 {
+    protected $view_path    = 'teacher.users';
+    protected $route_prefix = 'users.';
+    protected $model        = User::class;
+    public function index(Request $request)
+    {
+        $query = $this->model::whereNull('deleted_at')->orderBy('name','asc');
+        if($request->name){
+            $query->where('name','LIKE','%'.$request->name.'%');
+        }
+        $items = $query->paginate(20);
+        $param = [
+            'items' => $items,
+            'route_prefix' => $this->route_prefix,
+        ];
+        return view($this->view_path.'.index', $param );
+    }
+
+    // Profile
     public function profile(){
         $item = Auth::user();
         $param = [

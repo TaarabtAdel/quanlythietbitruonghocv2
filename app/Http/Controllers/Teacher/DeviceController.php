@@ -10,8 +10,8 @@ use App\Models\Department;
 
 class DeviceController extends Controller
 {
-    protected $view_path    = 'device::';
-    protected $route_prefix = 'device.';
+    protected $view_path    = 'teacher.devices';
+    protected $route_prefix = 'teacher.devices.';
     protected $model        = Device::class;
     public function index(Request $request)
     {
@@ -36,8 +36,8 @@ class DeviceController extends Controller
             'request' => $request
         ];
         if( $request->ajax() ){
-            return view('teacher.devices.index-ajax',$param);
+            return view($this->view_path.'.index-ajax',$param);
         }
-        return view('teacher.devices.index',$param);
+        return view($this->view_path.'.index',$param);
     }
 }
