@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\SystemController;
+use App\Http\Controllers\Admin\BorrowLabController;
 
 // Teacher Controllers
 use App\Http\Controllers\Teacher\AssetController as TeacherAssetController;
@@ -61,16 +62,17 @@ Route::get('/teacher/logout', [App\Http\Controllers\Teacher\AuthController::clas
 Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     // Trang chủ quản trị viên
     Route::get('/', [HomeController::class, 'index'])->name('home');
-
-    Route::get('/borrows/devices', [BorrowDeviceController::class, 'index'])->name('borrows.devices');
-    Route::get('/borrows/labs', [DeviceController::class, 'index'])->name('borrows.labs');
+    // Phiếu mượn
     Route::resource('borrows', BorrowController::class);
+    // Thiết bị mượn
+    Route::get('/borrows-devices', [BorrowDeviceController::class, 'index'])->name('borrows.devices');
+    // Phòng mượn
+    Route::get('/borrows-labs', [BorrowLabController::class, 'index'])->name('borrows.labs');
     
     Route::get('/import', [ImportController::class, 'index'])->name('import.index');
     Route::get('/export', [ExportController::class, 'index'])->name('export.index');
 
     Route::resource('assets', AssetController::class);
-    // Route::resource('borrow-devices', BorrowDeviceController::class);
     Route::resource('borrow-purposes', BorrowPurposeController::class);
     Route::resource('departments', DepartmentController::class);
     Route::resource('devices', DeviceController::class);

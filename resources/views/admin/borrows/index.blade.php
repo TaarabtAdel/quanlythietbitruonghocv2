@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@section('title','Danh sách phiếu mượn')
 @section('content')
     @include('globals.breadcrumb', [
         'page_title' => 'Danh sách phiếu',

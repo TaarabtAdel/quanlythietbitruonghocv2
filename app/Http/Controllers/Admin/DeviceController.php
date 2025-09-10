@@ -12,7 +12,8 @@ class DeviceController extends Controller
      */
     public function index()
     {
-        //
+        $items = Device::paginate(20);
+        return view('admin.devices.index', compact('items'));
     }
 
     /**

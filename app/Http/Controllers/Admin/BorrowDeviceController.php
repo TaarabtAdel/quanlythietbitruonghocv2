@@ -3,63 +3,41 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Models\BorrowDevice;
+use App\Models\Borrow;
+use Carbon\Carbon;
 
 class BorrowDeviceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $view_path    = 'admin.borrow_devices.';
+    protected $route_prefix = 'admin.borrows.';
+    protected $model        = BorrowDevice::class;
+    public function index(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        if(auth()->user()->hasPermission('BorrowDevice_viewAny')){
+            if( !$request->week ){
+                $currentWeek    = Carbon::now()->format('Y-\WW');
+                $startDateEndDate = Borrow::getStartEndDateFromWeek($currentWeek);
+                $request->merge([
+                    'week' => $currentWeek
+                ]);
+            }else{
+                $startDateEndDate = Borrow::getStartEndDateFromWeek($request->week);
+            }
+            $items = $this->model::getItems($request);
+            $params = [
+                'route_prefix'  => $this->route_prefix,
+                'model'         => $this->model,
+                'items'         => $items
+            ];
+            $params = array_merge($params,$startDateEndDate);
+            return view($this->view_path.'index', $params);
+        }else{
+            abort(403);
+        }
+        
     }
 }

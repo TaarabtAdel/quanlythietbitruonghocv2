@@ -34,7 +34,7 @@
                 </div>
             </div>
         </div>
-        @if ( request()->routeIs('adminborrow.edit') )
+        @if ( request()->routeIs('admin.borrows.edit') )
         <div class="row mt-1">
             <div class="col-lg-6">
                 <div class="form-group input-borrow_purpose">

@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@section('title','Xem phiếu mượn #'. $item->id)
 @section('content')
 @include('globals.breadcrumb',[
     'page_title' => 'Xem phiếu #'.$item->id,
@@ -18,6 +19,7 @@
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-end gap-2">
                     <a href="{{ route($route_prefix.'index') }}" class="btn btn-sm btn-dark">Quay lại</a>
+                    <a href="{{ route($route_prefix.'edit',$item->id) }}" class="btn btn-sm btn-primary">Sửa</a>
                     @if (Auth::check() && Auth::user()->hasPermission('Borrow_approve'))
                         @if ($item->status == $model::INACTIVE)
                         <a onclick=" return confirm('{{ __('Bạn có chắc chắn duyệt phiếu này !') }}') "

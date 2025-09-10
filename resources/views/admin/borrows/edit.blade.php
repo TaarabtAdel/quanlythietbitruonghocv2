@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@section('title','Cập nhật phiếu mượn #'. $item->id)
 @section('content')
 @include('globals.breadcrumb',[
     'page_title' => 'Chi tiết mã phiếu #'.$item->id,
@@ -6,7 +7,7 @@
 
 <div class="row">
     <div class="col-12 col-lg-12">
-        <form id="borrow-form" action="{{ route($route_prefix.'update',$item->id) }}" method="post">
+        <form id="borrow-form" action="{{ route('borrows.update',$item->id) }}" method="post">
             <input type="hidden" name="task" id="task">
             <input type="hidden" name="tiet" id="tiet">
             <input type="hidden" name="item_id" id="item_id" value="{{ $item->id }}">

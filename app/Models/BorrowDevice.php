@@ -36,6 +36,56 @@ class BorrowDevice extends Model
         return $this->belongsTo(Lab::class, 'lab_id');
     }
 
+    // Custom methods
+    public static function getItems($request = null,$table = ''){
+        $limit = $request->limit ?? 100;
+        $query = self::query(true);
+        $query->whereHas('borrow', function ($query){
+            $query->where('status','>=',0);
+        });
+        if( $request->lab_id){
+            $query->where('lab_id', $request->lab_id );
+        }
+        if( $request->session){
+            $query->where('session', $request->session == 'AM' ? 'Sáng' : 'Chiều' );
+        }
+        if( $request->user_id){
+            $query->whereHas('borrow', function ($query) use ($request) {
+                $query->where('user_id', $request->user_id );
+            });
+        }
+        if($request->nest_id){
+            $query->whereHas('borrow.user', function ($query) use ($request) {
+                $query->where('nest_id', $request->nest_id );
+            });
+        }
+
+        if( $request->borrow_date){
+            $query->whereHas('borrow', function ($query) use ($request) {
+                $query->whereDate('borrow_date', $request->borrow_date );
+            });
+        }
+        if ($request->school_years) {
+            $startDateEndDate = Borrow::getStartEndDateFromYear($request->school_years);
+            $query->whereHas('borrow', function ($query) use ($startDateEndDate) {
+                $query->whereBetween('borrow_date', $startDateEndDate);
+            });
+        }
+        if( $request->week ){
+            $startDateEndDate = Borrow::getStartEndDateFromWeek($request->week);
+            $query->whereHas('borrow', function ($query) use ($startDateEndDate) {
+                $query->whereBetween('borrow_date', $startDateEndDate);
+            });
+        }
+
+        $query->orderBy('borrow_date', 'asc')
+        ->orderByRaw("CASE WHEN session = 'Sáng' THEN 1 WHEN session = 'Chiều' THEN 2 END")
+        ->orderBy('lecture_number', 'asc');
+        $items = $query->get();
+        $items = self::groupBorrowDevices($items);
+        return $items;
+    }
+
     // Gom nhóm các thiết bị
     public static function groupBorrowDevices($items){
 
