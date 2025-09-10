@@ -70,7 +70,10 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/borrows-labs', [BorrowLabController::class, 'index'])->name('borrows.labs');
     
     Route::get('/import', [ImportController::class, 'index'])->name('import.index');
+    Route::post('/import/store', [ImportController::class, 'store'])->name('import.store');
+
     Route::get('/export', [ExportController::class, 'index'])->name('export.index');
+    Route::post('/export/store', [ExportController::class, 'index'])->name('export.store');
 
     Route::resource('assets', AssetController::class);
     Route::resource('borrow-purposes', BorrowPurposeController::class);
@@ -79,13 +82,9 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('device-types', DeviceTypeController::class);
     Route::resource('documents', DocumentController::class);
     Route::resource('groups', GroupController::class);
-    // Route::resource('groups-roles', GroupsRoleController::class);
     Route::resource('labs', LabController::class);
-    // Route::resource('migrations', MigrationController::class);
     Route::resource('nests', NestController::class);
-    // Route::resource('notifications', NotificationController::class);
     Route::resource('options', OptionController::class);
-    // Route::resource('roles', RoleController::class);
     Route::resource('rooms', RoomController::class);
     Route::resource('users', UserController::class);
 

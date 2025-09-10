@@ -12,11 +12,12 @@ class FormInputSchoolYears extends Component
     protected $name;
     protected $autoSubmit;
 
-    public function __construct($name = 'school_year', $selectedId = '', $autoSubmit = '')
+    public function __construct($name = 'school_year', $selectedId = '', $autoSubmit = '',$id = '')
     {
         $this->name = $name;
         $this->selected_id = $selectedId;
         $this->autoSubmit = $autoSubmit;
+        $this->id = $id;
     }
 
     public function render(): View|string
@@ -42,6 +43,7 @@ class FormInputSchoolYears extends Component
             'selected_id'   => $this->selected_id,
             'name'          => $this->name,
             'autoSubmit'    => $this->autoSubmit,
+            'id'            => $this->id,
             'items'         => $items,
         ];
 

@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
-    protected $view_path    = 'adminimport::';
-    protected $route_prefix = 'adminimport.';
+    protected $view_path    = 'admin.import.';
+    protected $route_prefix = 'admin.import.';
     public function index(Request $request)
     {
         $type = $request->type ?? '';
@@ -20,10 +20,10 @@ class ImportController extends Controller
             'route_prefix'  => $this->route_prefix,
             'templateFile'  => $type_slug.'.xlsx',
         ];
-        if($type){
-            return view($this->view_path.'types.'.$type_slug, $params);
-        }
-        return view($this->view_path.'index');
+        // if($type){
+        //     return view($this->view_path.'types.'.$type_slug, $params);
+        // }
+        return view($this->view_path.'index', $params);
     }
     /**
      * Store a newly created resource in storage.
