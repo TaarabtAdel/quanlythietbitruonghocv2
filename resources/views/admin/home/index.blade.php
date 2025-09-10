@@ -79,11 +79,13 @@
 
 @push('footer')
 <script src="{{ asset('admin-assets/plugins/fullcalendar/js/main.min.js') }}"></script>
+<script src="{{ asset('admin-assets/plugins/fullcalendar/locales/vi.js') }}"></script>
 <script>
         var events = <?= json_encode($events) ?>;
 		document.addEventListener('DOMContentLoaded', function () {
 			var calendarEl = document.getElementById('calendar');
 			var calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'vi',
 				headerToolbar: {
 					left: '',
 					center: 'title',
