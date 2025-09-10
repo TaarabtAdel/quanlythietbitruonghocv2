@@ -25,11 +25,12 @@
         </div>
         <div class="col">
             <label class="form-label fw-bold">Nhóm</label>
-            <x-form-input-groups status="{{ request()->group_id }}" autoSubmit="1" />
+            <x-form-input-groups status="{{ request()->group_id }}" autoSubmit="1" selected_id="{{ request()->group_id }}"/>
         </div>
         <div class="col">
             <label class="form-label fw-bold">Tổ</label>
-            <x-form-input-nests status="{{ request()->nest_id }}" autoSubmit="1" />
+            <x-form-input-nests status="{{ request()->nest_id }}" autoSubmit="1" selected_id="{{ request()->nest_id }}"/>
+            
         </div>
         <div class="col col-lg-2">
             <label class="form-label fw-bold">Trạng thái</label>

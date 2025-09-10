@@ -27,6 +27,12 @@ class UserController extends Controller
         if ($request->status > -1) {
             $request->status == 1 ? $query->whereNull('deleted_at') : $query->whereNotNull('deleted_at');
         }
+        if($request->nest_id){
+            $query->where('nest_id',$request->nest_id);
+        }
+        if($request->group_id){
+            $query->where('group_id',$request->group_id);
+        }
 
         $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
 

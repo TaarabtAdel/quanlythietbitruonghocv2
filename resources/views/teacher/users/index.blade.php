@@ -13,6 +13,10 @@
             <input class="form-control" name="name" type="text" placeholder="Nhập tên sau đó nhấn enter để tìm"
                 value="{{ request()->name }}">
         </div>
+        <div class="col">
+            <label class="form-label fw-bold">Tổ</label>
+            <x-form-input-nests status="{{ request()->nest_id }}" autoSubmit="1" selected_id="{{ request()->nest_id }}" />
+        </div>
     </div>
 </form>
 

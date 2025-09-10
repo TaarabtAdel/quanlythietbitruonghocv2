@@ -18,6 +18,13 @@ class UserController extends Controller
         if($request->name){
             $query->where('name','LIKE','%'.$request->name.'%');
         }
+        if($request->nest_id){
+            $query->where('nest_id',$request->nest_id);
+        }
+        if($request->group_id){
+            $query->where('group_id',$request->group_id);
+        }
+
         $items = $query->paginate(20);
         $param = [
             'items' => $items,
