@@ -17,7 +17,7 @@ class AssetController extends Controller
      */
     public function index(Request $request)
     {
-        $query = $this->model::query();
+        $query = $this->model::orderBy('created_at','DESC');
 
         if ($request->filled('department_id')) {
             $query->where('department_id', $request->department_id);
@@ -36,7 +36,7 @@ class AssetController extends Controller
             $request->status == 1 ? $query->whereNull('deleted_at') : $query->whereNotNull('deleted_at');
         }
 
-        $items = $query->paginate(20)->appends($request->all());
+        $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
 
         $params = [
             'route_prefix'  => $this->route_prefix,
@@ -57,8 +57,9 @@ class AssetController extends Controller
             'route_prefix'  => $this->route_prefix,
             'model'         => $this->model,
             'view_path'     => $this->view_path,
+            'item'          => new $this->model
         ];
-        return view($this->view_path.'.create', $params);
+        return view($this->view_path.'.edit', $params);
     }
 
     /**
@@ -72,11 +73,14 @@ class AssetController extends Controller
             'device_type_id'  => 'required|integer',
         ]);
 
-        $item = $this->model::create($validated);
+        $data = array_merge($request->except(['_token', '_method']), $validated);
+        $data['deleted_at'] = $request->status == 1 ? NULL : now();
+        unset($data['status']);
+        $item = $this->model::create($data);
 
         return redirect()
             ->route($this->route_prefix.'index')
-            ->with('success', 'Thiết bị đã được thêm thành công.');
+            ->with('success', 'Tài sản đã được thêm thành công.');
     }
 
     /**
@@ -126,12 +130,14 @@ class AssetController extends Controller
             'device_type_id'  => 'required|integer',
         ]);
 
-        $validated['deleted_at'] = $request->status == 1 ? NULL : now();
-        $item->update($validated);
+        $data = array_merge($request->except(['_token', '_method']), $validated);
+        $data['deleted_at'] = $request->status == 1 ? NULL : now();
+        unset($data['status']);
+        $item->update($data);
 
         return redirect()
             ->back()
-            ->with('success', 'Thiết bị đã được cập nhật.');
+            ->with('success', 'Tài sản đã được cập nhật.');
     }
 
     /**
@@ -148,6 +154,6 @@ class AssetController extends Controller
         }
         return redirect()
             ->route($this->route_prefix.'index', ['page' => $request->page])
-            ->with('success', 'Thiết bị đã được xóa.');
+            ->with('success', 'Tài sản đã được xóa.');
     }
 }

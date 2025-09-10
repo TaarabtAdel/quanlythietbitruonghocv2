@@ -28,6 +28,7 @@ class BorrowLab extends Model
         "quantity",
         "lab_id",
         "tiet",
+        "deleted_at",
     ];
     
     // Ovrrides

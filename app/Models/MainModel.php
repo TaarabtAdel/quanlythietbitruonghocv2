@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Traits\UploadFileTrait;
 
 class MainModel extends Model
 {
     use HasFactory;
-    // use UploadFileTrait;
+    use UploadFileTrait;
     const ACTIVE    = 1;
     const INACTIVE  = 0;
     const DRAFT     = -1;

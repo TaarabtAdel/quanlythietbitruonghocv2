@@ -12,7 +12,7 @@ class BorrowPurpose extends AdminModel
     use HasFactory;
     protected $table = "borrow_purposes";
     protected $fillable = [
-        'name','slug'
+        'name','slug','deleted_at'
     ];
     public static function handleSearch($request,$query){
         $query->orderBy('name','ASC');

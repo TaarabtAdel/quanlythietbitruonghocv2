@@ -25,7 +25,7 @@ class FormInputGroups extends Component
      */
     public function render(): View|string
     {
-        $items = \App\Models\Group::getAll();
+        $items = \App\Models\Group::all();
         $params = [
             'selected_id'   => $this->selected_id,
             'name'          => $this->name,

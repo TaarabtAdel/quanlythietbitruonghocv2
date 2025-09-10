@@ -8,13 +8,36 @@ use App\Models\DeviceType;
 
 class DeviceTypeController extends Controller
 {
+    protected $view_path    = 'admin.device_types';
+    protected $route_prefix = 'admin.device-types.';
+    protected $model        = DeviceType::class;
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = DeviceType::paginate(20);
-        return view('admin.device_types.index', compact('items'));
+        $query = $this->model::orderBy('created_at','DESC');
+
+        if ($request->filled('name')) {
+            $name = trim($request->name);
+            $query->where('name', 'like', "%{$name}%");
+        }
+
+        if ($request->status > -1) {
+            $request->status == 1 ? $query->whereNull('deleted_at') : $query->whereNotNull('deleted_at');
+        }
+
+        $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
+
+        $params = [
+            'route_prefix'  => $this->route_prefix,
+            'model'         => $this->model,
+            'view_path'     => $this->view_path,
+            'items'         => $items,
+        ];
+
+        return view($this->view_path.'.index', $params);
     }
 
     /**
@@ -22,7 +45,13 @@ class DeviceTypeController extends Controller
      */
     public function create()
     {
-        return view('admin.device_types.create');
+        $params = [
+            'route_prefix'  => $this->route_prefix,
+            'model'         => $this->model,
+            'view_path'     => $this->view_path,
+            'item'          => new $this->model
+        ];
+        return view($this->view_path.'.edit', $params);
     }
 
     /**
@@ -30,15 +59,18 @@ class DeviceTypeController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+        $validated = $request->validate([
+            'name'            => 'required|string|max:255',
         ]);
 
-        DeviceType::create($request->all());
+        $data = array_merge($request->except(['_token', '_method']), $validated);
+        $data['deleted_at'] = $request->status == 1 ? NULL : now();
+        unset($data['status']);
+        $item = $this->model::create($data);
 
-        return redirect()->route('device-types.index')
-                         ->with('success', 'Device Type created successfully.');
+        return redirect()
+            ->route($this->route_prefix.'index')
+            ->with('success', 'Loại thiết bị đã được thêm thành công.');
     }
 
     /**
@@ -46,8 +78,16 @@ class DeviceTypeController extends Controller
      */
     public function show(string $id)
     {
-        $item = DeviceType::find($id);
-        return view('admin.device_types.show', compact('item'));
+        $item = $this->model::findOrFail($id);
+
+        $params = [
+            'route_prefix'  => $this->route_prefix,
+            'model'         => $this->model,
+            'view_path'     => $this->view_path,
+            'item'          => $item,
+        ];
+
+        return view($this->view_path.'.show', $params);
     }
 
     /**
@@ -55,8 +95,16 @@ class DeviceTypeController extends Controller
      */
     public function edit(string $id)
     {
-        $item = DeviceType::find($id);
-        return view('admin.device_types.edit', compact('item'));
+        $item = $this->model::findOrFail($id);
+        $item->status = $item->deleted_at ? 0 : 1;
+
+        $params = [
+            'route_prefix'  => $this->route_prefix,
+            'model'         => $this->model,
+            'view_path'     => $this->view_path,
+            'item'          => $item,
+        ];
+        return view($this->view_path.'.edit', $params);
     }
 
     /**
@@ -64,27 +112,36 @@ class DeviceTypeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+        $item = $this->model::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'            => 'required|string|max:255',
         ]);
 
-        $item = DeviceType::find($id);
-        $item->update($request->all());
+        $data = array_merge($request->except(['_token', '_method']), $validated);
+        $data['deleted_at'] = $request->status == 1 ? NULL : now();
+        unset($data['status']);
+        $item->update($data);
 
-        return redirect()->route('device-types.index')
-                         ->with('success', 'Device Type updated successfully.');
+        return redirect()
+            ->back()
+            ->with('success', 'Loại thiết bị đã được cập nhật.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        $item = DeviceType::find($id);
-        $item->delete();
-
-        return redirect()->route('device-types.index')
-                         ->with('success', 'Device Type deleted successfully.');
+        $item = $this->model::findOrFail($id);
+        if($item->deleted_at){
+            $item->delete();
+        }else{
+            $item->deleted_at = now();
+            $item->save();
+        }
+        return redirect()
+            ->route($this->route_prefix.'index', ['page' => $request->page])
+            ->with('success', 'Loại thiết bị đã được xóa.');
     }
 }

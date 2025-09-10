@@ -10,7 +10,7 @@ class Document extends AdminModel
     use HasFactory;
     protected $table = "documents";
     protected $fillable = [
-        'name','slug','image','description'
+        'name','slug','image','description','deleted_at'
     ];
     public static function handleSearch($request,$query){
         $query->orderBy('name','ASC');

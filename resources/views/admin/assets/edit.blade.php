@@ -1,8 +1,8 @@
 @extends('admin.layouts.master')
-@section('title','Cập nhật thiết bị #'. $item->id)
+@section('title','Cập nhật tài sản #'. $item->id)
 @section('content')
 @include('globals.breadcrumb',[
-    'page_title' => 'Cập nhật thiết bị #'.$item->id,
+    'page_title' => 'Cập nhật tài sản #'.$item->id,
 ])
 
 <form action="{{ route($route_prefix.'update',$item->id) }}" method="post" enctype="multipart/form-data">

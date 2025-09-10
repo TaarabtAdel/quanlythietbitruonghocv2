@@ -123,7 +123,7 @@
                         @if (Auth::check() && Auth::user()->hasPermission('Document_viewAny'))
                         <li>
                             <a href="{{ route('admin.documents.index', ['type' => 'Document']) }}">
-                                <span class="material-symbols-outlined">arrow_right</span>Tài Liệu
+                                <span class="material-symbols-outlined">arrow_right</span>Văn Bản Thiết Bị
                             </a>
                         </li>
                         @endif

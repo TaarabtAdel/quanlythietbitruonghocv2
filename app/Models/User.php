@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    const ACTIVE    = 1;
+    const INACTIVE  = 0;
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -21,6 +23,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'address',
+        'phone',
+        'gender',
+        'image',
+        'group_id',
+        'nest_id',
+        'birthday',
+        'deleted_at',
     ];
 
     /**
@@ -62,5 +72,16 @@ class User extends Authenticatable
     public function nest()
     {
         return $this->belongsTo(Nest::class);
+    }
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+    public function getStatusFmAttribute(){
+        if ($this->deleted_at) {
+            return '<span class="lable-table bg-danger-subtle text-danger rounded border border-danger-subtle font-text2 fw-bold">'.__('sys.inactive').'</span>';
+        }else{
+            return '<span class="lable-table bg-success-subtle text-success rounded border border-success-subtle font-text2 fw-bold">'.__('sys.active').'</span>';
+        }
     }
 }

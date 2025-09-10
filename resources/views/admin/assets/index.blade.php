@@ -54,7 +54,7 @@
                             <th>Số lượng</th>
                             <th>Loại thiết bị</th>
                             <th>Bộ môn</th>
-                            <th></th>
+                            <th>Trạng thái</th>
                             <th></th>
                         </tr>
                     </thead>
