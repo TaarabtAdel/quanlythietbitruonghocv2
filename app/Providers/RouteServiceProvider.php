@@ -41,7 +41,7 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
 			Route::middleware('web')
-				->domain('{subdomain}.' . config('app.url'))
+				// ->domain('{subdomain}.' . config('app.url'))
 				->namespace($this->namespace)
 				->group(function () {
 					$databaseName = $this->getDatabaseName();
