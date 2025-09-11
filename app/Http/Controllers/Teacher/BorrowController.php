@@ -59,6 +59,7 @@ class BorrowController extends Controller
         
         $params = [
             'route_prefix'  => $this->route_prefix,
+            'view_path'     => $this->view_path,
             'model'         => $this->model,
             'items'         => $items
         ];
@@ -96,6 +97,7 @@ class BorrowController extends Controller
             }
             $params = [
                 'route_prefix'  => $this->route_prefix,
+                'view_path'     => $this->view_path,
                 'model'         => $this->model,
                 'item'          => $item,
                 'rooms'         => $rooms,

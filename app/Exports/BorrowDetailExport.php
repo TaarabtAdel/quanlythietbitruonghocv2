@@ -59,38 +59,55 @@ class BorrowDetailExport {
         $company_parent = \App\Models\Option::get_option('general','company_parent');
         $company_name   = \App\Models\Option::get_option('general','company_name');
         $company_address   = \App\Models\Option::get_option('general','company_address');
-        $title = mb_strtoupper($company_parent.' '.$company_name,'UTF-8'); 
         $newValue = $company_address.', ngày ' . $currentDay . ' tháng ' . $currentMonth . ' năm ' . $currentYear;
         
-
         // Lấy sheet hiện tại
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setCellValue('A1', $title ?? '');
-        $sheet->setCellValue('C7', $user->name ?? '');
-        $sheet->setCellValue('C8', $user->nest->name ?? '');
-        // $sheet->setCellValue('D25', $user->name ?? '');
-        // $sheet->setCellValue('C21', $newValue ?? '');
-        $sheet->setCellValue('C5', date('d/m/Y',strtotime($borrow->borrow_date)));
+
+
+        // Tên sở
+        $sheet->setCellValue('A1', $company_parent ?? '');
+        // Tên trường 
+        $sheet->setCellValue('A2', $company_name ?? '');
+
+        // Họ và tên
+        $sheet->setCellValue('B6', $user->name ?? '');
+        // Ngày dạy
+        $sheet->setCellValue('B7', date('d/m/Y',strtotime($borrow->borrow_date)));
+        // Tổ
+        $sheet->setCellValue('B8', $user->nest->name ?? '');
+
+        //Mã phiếu:
+        $sheet->setCellValue('G6', $id);
+        //Ngày tạo:
+        $sheet->setCellValue('G7', date('d/m/Y',strtotime($borrow->created_at)));
+
+        // Lấy style mẫu từ hàng 11 (A11)
+        $styleMau = $sheet->getStyle('A11');
 
         // Duyệt qua danh sách mượn thiết bị
-        $index = 10; // Bắt đầu từ hàng 10
-        $stt = 1; // Khởi tạo biến STT
+        $index = 11; // Bắt đầu từ hàng 11
+        $stt   = 1;  // Khởi tạo biến STT
         foreach ($borrow->the_devices as $device) {
-            $sheet->setCellValueExplicit('A' . $index, $stt, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $sheet->getStyle('A' . $index)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_GENERAL);
+            $sheet->setCellValue('A' . $index, $stt);
             $sheet->setCellValue('B' . $index, $device->device->name ?? '');
             $sheet->setCellValue('C' . $index, $device->lesson_name);
-            $sheet->setCellValue('D' . $index, Carbon::parse($borrow->borrow_date)->format('d/m/Y'));
+            $sheet->setCellValue('D' . $index, \Carbon\Carbon::parse($borrow->borrow_date)->format('d/m/Y'));
             $sheet->setCellValue('E' . $index, $device->lecture_name);
             $sheet->setCellValue('F' . $index, $device->quantity);
-            $sheet->setCellValue('H' . $index, $device->room->name ?? '');
             $sheet->setCellValue('G' . $index, $device->lecture_number);
+            $sheet->setCellValue('H' . $index, $device->room->name ?? '');
+            // Copy style từ A11 cho cả dòng mới
+            for ($col = 'A'; $col <= 'H'; $col++) {
+                $sheet->duplicateStyle($styleMau, $col . $index);
+            }
             $index++;
             $stt++;
         }
 
+
         $spreadsheet->setActiveSheetIndex(0);
-        $newFilePath = public_path('system/tmp/'.strtolower($type).$borrow->id.'.xlsx');
+        $newFilePath = public_path('system/tmp/'.strtolower($type).'-'.$borrow->id.'-'.date('d-m-Y-H-i-s').'.xlsx');
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save($newFilePath);

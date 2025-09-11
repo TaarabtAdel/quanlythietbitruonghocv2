@@ -1,6 +1,6 @@
-@extends('admintheme::layouts.master')
+@extends('teacher.layouts.master')
 @section('content')
-@include('admintheme::includes.globals.breadcrumb',[
+@include('globals.breadcrumb',[
 'page_title' => 'Xem phiếu #'.$item->id,
 ])
 
@@ -9,7 +9,7 @@
         <form id="borrow-form" action="" method="post">
             @csrf
             @method('PUT')
-            @include('borrow::includes.form-show')
+            @include($view_path.'.includes.form-show')
         </form>
         <div class="card">
             <div class="card-body">
