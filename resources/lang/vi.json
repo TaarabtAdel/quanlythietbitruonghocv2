@@ -109,7 +109,7 @@
     "BorrowLab" : "Sổ mượn phòng bộ môn",
     "BorrowDetail" : "Phiếu báo mượn",
     "Lab" : "Phòng bộ môn",
-    "BorrowDevice" : "Báo cáo mượn thiết bị - phòng bộ môn",
+    "BorrowDevice" : "Báo cáo mượn theo mục đích sử dụng",
     "Asset" : "Tài sản",
     "Asset_viewAny": "Xem Danh Sách",
     "Asset_view": "Xem Chi Tiết",

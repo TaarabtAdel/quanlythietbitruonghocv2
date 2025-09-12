@@ -9,7 +9,7 @@
 <div class="card mt-4">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-9">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="card-title mb-0">{{ $item->name }}</h4>
                     <a href="/{{ $item->image }}" class="btn btn-primary" download>
@@ -62,7 +62,7 @@
                 
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title mb-3">Thông tin tài liệu</h5>

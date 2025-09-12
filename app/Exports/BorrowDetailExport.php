@@ -63,8 +63,6 @@ class BorrowDetailExport {
         
         // Lấy sheet hiện tại
         $sheet = $spreadsheet->getActiveSheet();
-
-
         // Tên sở
         $sheet->setCellValue('A1', $company_parent ?? '');
         // Tên trường 
@@ -76,7 +74,6 @@ class BorrowDetailExport {
         $sheet->setCellValue('B7', date('d/m/Y',strtotime($borrow->borrow_date)));
         // Tổ
         $sheet->setCellValue('B8', $user->nest->name ?? '');
-
         //Mã phiếu:
         $sheet->setCellValue('G6', $id);
         //Ngày tạo:
@@ -95,7 +92,7 @@ class BorrowDetailExport {
             $sheet->setCellValue('D' . $index, \Carbon\Carbon::parse($borrow->borrow_date)->format('d/m/Y'));
             $sheet->setCellValue('E' . $index, $device->lecture_name);
             $sheet->setCellValue('F' . $index, $device->quantity);
-            $sheet->setCellValue('G' . $index, $device->lecture_number);
+            $sheet->setCellValue('G' . $index, $device->session == 'Chiều' ? 'C:'.$device->lecture_number : 'S:'.$device->lecture_number);
             $sheet->setCellValue('H' . $index, $device->room->name ?? '');
             // Copy style từ A11 cho cả dòng mới
             for ($col = 'A'; $col <= 'H'; $col++) {

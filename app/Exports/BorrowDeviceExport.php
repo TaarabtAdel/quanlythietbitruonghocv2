@@ -48,6 +48,7 @@ class BorrowDeviceExport {
 
             $items = $query->join('borrows', 'users.id', '=', 'borrows.user_id')
             ->whereBetween('borrows.borrow_date', [$startDate, $endDate])
+            ->whereIn('borrows.status', [0, 1])
             ->distinct()
             ->select('users.*')
             ->get();
@@ -74,17 +75,30 @@ class BorrowDeviceExport {
             $company_name   = \App\Models\Option::get_option('general','company_name');
             $title = mb_strtoupper($company_parent.' '.$company_name,'UTF-8');      
               
+            // Lấy sheet hiện tại
             $sheet = $spreadsheet->getActiveSheet();
-            $sheet->setCellValue('A1',$title);
-            $sheet->setCellValue('D6',$startDate_fm);
-            $sheet->setCellValue('F6',$endDate_fm);
+            $styleMau = $sheet->getStyle('A10');
+
+            // Lấy đơn vị tạo
+            $company_parent = \App\Models\Option::get_option('general','company_parent');
+            $company_name   = \App\Models\Option::get_option('general','company_name');
+            $company_address   = \App\Models\Option::get_option('general','company_address');
+            // Tên sở
+            $sheet->setCellValue('A1', $company_parent ?? '');
+            // Tên trường 
+            $sheet->setCellValue('A2', $company_name ?? '');
+            //Ngày xuất:
+            $sheet->setCellValue('I6', date('d/m/Y'));
+            // Từ ngày - Đến ngày
+            $sheet->setCellValue('D6', $startDate_fm);
+            $sheet->setCellValue('F6', $endDate_fm);
+            // Năm học
             $sheet->setCellValue('E7',$year);
 
-            $index = 10;
-            $stt = 1;
+            // Duyệt qua danh sách mượn thiết bị
+            $index = 10; // Bắt đầu từ hàng 10
+            $stt = 1; // Khởi tạo biến STT
 
-            $phongDeviceIds = Device::where('name', 'like', 'Phòng%')->pluck('id')->toArray();
-            $phongDeviceIds[] = 0;
             foreach ($items as $item) {
                 $user = $item;
                 if ($exportBy == 'tiet') {
@@ -102,21 +116,6 @@ class BorrowDeviceExport {
                     foreach ($purposes as $purpose => $borrow) {
                         $purposeCounts[$purpose] = array_sum($borrow);
                     }
-                    // $borrows = DB::table('borrows')
-                    // ->join('borrow_devices', 'borrows.id', '=', 'borrow_devices.borrow_id')
-                    // ->whereIn('borrows.status', [0,1])
-                    // ->where('borrows.user_id', $user->id)
-                    // ->whereBetween('borrows.borrow_date', [$startDate, $endDate])
-                    // ->get()->toArray();
-                    // dd($borrows);
-                    // $purposeCounts = DB::table('borrows')
-                    //     ->join('borrow_devices', 'borrows.id', '=', 'borrow_devices.borrow_id')
-                    //     ->select('borrows.borrow_purpose', DB::raw('COUNT(DISTINCT borrow_devices.tiet) as total'))
-                    //     ->whereIn('borrows.status', [0,1])
-                    //     ->where('borrows.user_id', $user->id)
-                    //     ->whereBetween('borrows.borrow_date', [$startDate, $endDate])
-                    //     ->groupBy('borrows.borrow_purpose')
-                    //     ->pluck('total', 'borrow_purpose');
                 } else {
                     $purposeCounts = DB::table('borrows')
                         ->select('borrow_purpose', DB::raw('count(*) as total'))
@@ -127,33 +126,36 @@ class BorrowDeviceExport {
                         ->pluck('total', 'borrow_purpose');
                 }
 
-                $purposeList = \Modules\AdminBorrow\app\Models\Borrow::get_borrow_purposes();
+                $purposeList = \App\Models\Borrow::get_borrow_purposes();
                 $statistics = [];
-                
                 foreach ($purposeList as $key => $label) {
                     $statistics[$key] = 0;
                 }
-
                 foreach ($purposeCounts as $purpose => $count) {
-                    $statistics[$purpose] = $count;
+                    $statistics[$purpose] = $count ? $count : 0;
                 }
-
-                $sheet->setCellValueExplicit('A' . $index, $stt, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->getStyle('A' . $index)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_GENERAL);
+                $sheet->setCellValue('A' . $index, $stt);
                 $sheet->setCellValue('B' . $index, $item->name ?? '');
                 $sheet->setCellValue('C' . $index, $item->nest->name ?? '');
-                
                 $col = 'D';
+
+                $colIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($col);
+                $rowIndex = 9;
+
                 foreach ($purposeList as $key => $label) {
-                    $sheet->setCellValue($col . '9', $label);
-                    $sheet->setCellValue($col . $index, $statistics[$key]);
-                    
-                    $sheet->duplicateStyle(
-                        $sheet->getStyle('D1:D' . $sheet->getHighestRow()),
-                        $col . '1:' . $col . $sheet->getHighestRow()
-                    );
-                    
+                    // Thiết lập tên các cột
+                    $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex);
+                    $sheet->setCellValue($column . $rowIndex, $label);
+
+                    // Đưa dữ liệu vào
+                    $sheet->setCellValue($col . $index, $statistics[$key] ? $statistics[$key] : 0);
+
+                    // Copy style từ A11 cho cả dòng mới
+                    for ($colStyle = 'A'; $colStyle <= 'I'; $colStyle++) { 
+                        $sheet->duplicateStyle($styleMau, $colStyle . $index); 
+                    } 
                     $col++;
+                    $colIndex++;
                 }
 
                 $index++;
@@ -161,8 +163,7 @@ class BorrowDeviceExport {
             }
             
             $spreadsheet->setActiveSheetIndex(0);
-            $fileName = 'bao-cao-muon-thiet-bi-phong-bo-mon-' . date('Y-m-d') . '.xlsx';
-            $newFilePath = public_path('system/tmp/' . $fileName);
+            $newFilePath = public_path('system/tmp/'.strtolower($type).'-'.date('d-m-Y-H-i-s').'.xlsx');
 
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
             $writer->save($newFilePath);

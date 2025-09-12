@@ -40,7 +40,13 @@ class BorrowDevicesNestExport
     {
         $type = request()->type;
         // Xử lý tìm kiếm 
-        $query = \App\Models\BorrowDevice::query();
+       $query = \App\Models\BorrowDevice::orderBy('borrow_date', 'asc')
+        ->orderByRaw("CASE WHEN session = 'Sáng' THEN 1 WHEN session = 'Chiều' THEN 2 END")
+        ->orderBy('lecture_number', 'asc')
+        ->whereHas('borrow', function ($q) {
+            $q->whereIn('status', [0, 1]); // cố định status 0,1
+        });
+        
         if(request()->nest_id){
             $query->whereHas('borrow.user', function ($query) {
                 $query->where('nest_id', request()->nest_id );
@@ -62,28 +68,40 @@ class BorrowDevicesNestExport
 
         // Lấy sheet hiện tại
         $sheet = $spreadsheet->getActiveSheet();
+        $styleMau = $sheet->getStyle('A11');
+
+        // Lấy đơn vị tạo
+        $company_parent = \App\Models\Option::get_option('general','company_parent');
+        $company_name   = \App\Models\Option::get_option('general','company_name');
+        $company_address   = \App\Models\Option::get_option('general','company_address');
+        // Tên sở
+        $sheet->setCellValue('A1', $company_parent ?? '');
+        // Tên trường 
+        $sheet->setCellValue('A2', $company_name ?? '');
+        //Ngày xuất:
+        $sheet->setCellValue('I7', date('d/m/Y'));
+
         // Tổ
         $borrowerName = '';
         $nest = request()->nest_id ? \App\Models\Nest::find( request()->nest_id ) : '';
         $borrowerName = $nest->name ?? '';
         $nestID = $nest->id ?? 0;
-        $sheet->setCellValue('B2', $borrowerName);
+        $sheet->setCellValue('I6', $borrowerName);
 
         // Ngày dạy từ
         $dateStart = date('d/m/Y',strtotime($startDate));
-        $sheet->setCellValue('F4', $dateStart);
+        $sheet->setCellValue('F6', $dateStart);
 
         // Ngày đến
         $dateEnd = date('d/m/Y',strtotime($endDate));
-        $sheet->setCellValue('I4', $dateEnd);
+        $sheet->setCellValue('F7', $dateEnd);
 
-        $index = 8;
+        $index = 11;
         $stt = 1; // Khởi tạo biến STT bên ngoài vòng lặp
         foreach ($borrowDevices as $key => $item) {
             // Xử lý xuống dòng trong execl
             $item['device_name'] = str_replace('<br>', "\n",$item['device_name']);
-            $sheet->setCellValueExplicit('A' . $index, $key + 1, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $sheet->getStyle('A' . $index)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_GENERAL);
+            $sheet->setCellValue('A' . $index, $stt);
             $sheet->setCellValue('B' . $index, $item['borrow_date']);
             $sheet->setCellValue('C' . $index, $item['borrow_date']);
             $sheet->setCellValue('D' . $index, $key + 1);
@@ -93,19 +111,22 @@ class BorrowDevicesNestExport
             $sheet->setCellValue('H' . $index, $item['lecture_name']);
             $sheet->setCellValue('I' . $index, $item['lesson_name']);
             $sheet->setCellValue('J' . $index, $item['room_name']);
-            $sheet->setCellValue('K' . $index, $item['session'] == 'Chiều' ? $item['lecture_number']+5 : $item['lecture_number'] );
-            $sheet->getColumnDimension('M')->setWidth(50); 
+            $sheet->setCellValue('K' . $index, $item['session'] == 'Chiều' ? 'C:'.$item['lecture_number'] : 'S:'.$item['lecture_number'] );
             $sheet->setCellValue('L' . $index, $item['borrow_note']);
             $sheet->setCellValue('M' . $index, $item['user_name']);
             
+            // Copy style từ A11 cho cả dòng mới
+            for ($col = 'A'; $col <= 'M'; $col++) {
+                $sheet->duplicateStyle($styleMau, $col . $index);
+            }
+
             $index++;
             $stt++;
         }
       
 
         $spreadsheet->setActiveSheetIndex(0);
-        $fileName = 'so-muon-thiet-bi-theo-to-'.date("Y-m-d").'.xlsx';
-        $newFilePath = public_path('system/tmp/'.$fileName);
+        $newFilePath = public_path('system/tmp/'.strtolower($type).'-'.date('d-m-Y-H-i-s').'.xlsx');
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save($newFilePath);

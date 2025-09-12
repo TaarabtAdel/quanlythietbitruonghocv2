@@ -27,10 +27,10 @@
         </div>
     </div>
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content bg-transparent border-0">
-            <div class="modal-body p-0">
-                <img src="{{ asset('system/export/preview/'.$type_slug.'.png') }}" alt="Preview" class="img-fluid w-100 rounded">
+            <div class="modal-body p-0" style="text-align:center;">
+                <img src="{{ asset('system/export/preview/'.$type_slug.'.png') }}" alt="Preview" style="width:auto;max-width:100%;" class="img-fluid rounded">
             </div>
             </div>
         </div>

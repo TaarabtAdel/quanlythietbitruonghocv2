@@ -258,8 +258,8 @@
                     @if (Auth::check() && Auth::user()->hasPermission('Export_BorrowDevice'))
                     <li>
                         <a href="{{ route('admin.export.index', ['type' => 'BorrowDevice']) }}"
-                            title="Báo cáo mượn thiết bị - phòng bộ môn">
-                            <span class="material-symbols-outlined">arrow_right</span>BC mượn TB-PBM
+                            title="Báo cáo mượn theo mục đích mượn">
+                            <span class="material-symbols-outlined">arrow_right</span>BC Mượn theo MĐSD
                         </a>
                     </li>
                     @endif

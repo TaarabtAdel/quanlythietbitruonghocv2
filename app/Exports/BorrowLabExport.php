@@ -19,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Font;
 
 use App\Models\BorrowDevice;
 use App\Models\Lab;
-use Modules\Borrow\app\Models\Borrow;
+use App\Models\Borrow;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +62,7 @@ class BorrowLabExport {
             $spreadsheet = $this->exportSingleSheet($lab_id,$request,$spreadsheet,$sheetIndex);
         }
 
-        $newFilePath = public_path('system/tmp/'.strtolower($type).'.xlsx');
+        $newFilePath = public_path('system/tmp/'.strtolower($type).'-'.date('d-m-Y-H-i-s').'.xlsx');
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save($newFilePath);
         return $newFilePath;
@@ -72,6 +72,14 @@ class BorrowLabExport {
         // Lấy sheet hiện tại
         $spreadsheet->setActiveSheetIndex($sheetIndex);
         $sheet = $spreadsheet->getActiveSheet();
+         // Lấy đơn vị tạo
+        $company_parent = \App\Models\Option::get_option('general','company_parent');
+        $company_name   = \App\Models\Option::get_option('general','company_name');
+        $company_address   = \App\Models\Option::get_option('general','company_address');
+        // Tên sở
+        $sheet->setCellValue('A1', $company_parent ?? '');
+        // Tên trường 
+        $sheet->setCellValue('A2', $company_name ?? '');
 
         // Đặt tiêu đề cho sheet
         $lab_name = Lab::find($lab_id)->name ?? '';
@@ -86,11 +94,14 @@ class BorrowLabExport {
         $startDayEndDate = Borrow::getStartEndDateFromWeek($request->week);
         $startDay   = $startDayEndDate['startDate']->format('d/m/Y') ?? '';
         $endDay     = $startDayEndDate['endDate']->format('d/m/Y') ?? '';
-        $sheet->setCellValue('A2','LỊCH BÁO MƯỢN '.mb_strtoupper($lab_name, 'UTF-8'));
-        $borrow_time = "$startDay đến $endDay";
-        $sheet->setCellValue('B4',$borrow_time);
+        $sheet->setCellValue('A4','LỊCH BÁO MƯỢN '.mb_strtoupper($lab_name, 'UTF-8'));
+        $sheet->setCellValue('C6',$startDay);
+        $sheet->setCellValue('C7',$endDay);
+        $sheet->setCellValue('E6',mb_strtoupper($lab_name, 'UTF-8'));
+        //Ngày xuất:
+        $sheet->setCellValue('E7', date('d/m/Y'));
 
-        $index = 9; // Bắt đầu từ hàng 9
+        $index = 11; // Bắt đầu từ hàng 9
         $tiet = 1;
         foreach ($borrowLabs as $borrowDate => $borrowLab) {
             $tietSang   = 'C'.$index;
