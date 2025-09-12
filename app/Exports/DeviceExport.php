@@ -51,29 +51,43 @@ class DeviceExport {
 
         // Lấy sheet hiện tại
         $sheet = $spreadsheet->getActiveSheet();
+        $styleMau = $sheet->getStyle('A10');
+
+        // Lấy đơn vị tạo
+        $company_parent = \App\Models\Option::get_option('general','company_parent');
+        $company_name   = \App\Models\Option::get_option('general','company_name');
+        $company_address   = \App\Models\Option::get_option('general','company_address');
+        // Tên sở
+        $sheet->setCellValue('A1', $company_parent ?? '');
+        // Tên trường 
+        $sheet->setCellValue('A2', $company_name ?? '');
+        //Ngày xuất:
+        $sheet->setCellValue('I6', date('d/m/Y'));
 
         // Duyệt qua danh sách mượn thiết bị
-        $index = 2; // Bắt đầu từ hàng 10
+        $index = 10; // Bắt đầu từ hàng 10
         $stt = 1; // Khởi tạo biến STT
         foreach ($devices as $device) {
-                $sheet->setCellValueExplicit('A' . $index, $stt, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                $sheet->getStyle('A' . $index)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_GENERAL);
+                $sheet->setCellValue('A' . $index, $stt);
                 $sheet->setCellValue('B' . $index, $device->name);
-                $sheet->setCellValue('C' . $index, $device->country_name);
-                $sheet->setCellValue('D' . $index, $device->year);
-                $sheet->setCellValue('E' . $index, $device->quantity);
-                $sheet->setCellValue('F' . $index, $device->unit);
-                $sheet->setCellValue('G' . $index, $device->price);
-                $sheet->setCellValue('H' . $index, $device->note);
-                $sheet->setCellValue('I' . $index, $device->devicetype->name ?? '');
-                $sheet->setCellValue('J' . $index, $device->department->name  ?? '');
-                $sheet->setCellValue('K' . $index, "Thiết Bị");
+                // $sheet->setCellValue('C' . $index, $device->country_name);
+                $sheet->setCellValue('C' . $index, $device->year);
+                $sheet->setCellValue('D' . $index, $device->quantity);
+                $sheet->setCellValue('E' . $index, $device->unit);
+                $sheet->setCellValue('F' . $index, $device->price);
+                $sheet->setCellValue('G' . $index, $device->note);
+                $sheet->setCellValue('H' . $index, $device->devicetype->name ?? '');
+                $sheet->setCellValue('I' . $index, $device->department->name  ?? '');
+                // Copy style từ A11 cho cả dòng mới
+                for ($col = 'A'; $col <= 'I'; $col++) {
+                    $sheet->duplicateStyle($styleMau, $col . $index);
+                }
                 $index++;
                 $stt++;
         }
 
         $spreadsheet->setActiveSheetIndex(0);
-        $newFilePath = public_path('system/tmp/'.strtolower($type).'.xlsx');
+        $newFilePath = public_path('system/tmp/'.strtolower($type).'-'.date('d-m-Y-H-i-s').'.xlsx');
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         $writer->save($newFilePath);

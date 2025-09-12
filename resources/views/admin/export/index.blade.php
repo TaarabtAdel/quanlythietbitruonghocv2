@@ -13,6 +13,7 @@
                 <div class="mb-4">
                     <h5 class="mb-4">Bạn đang chuẩn bị xuất dữ liệu cho: {{ __(request()->type) }}</h5>
                     <p class="mb-0">- Dữ liệu xuất sẽ được lưu vào file excel</p>
+                    <p class="mb-0">- Nhấn vào <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">đây</a> để xem mẫu kết quả.</p>
                     <p class="mt-0">- Nhấn vào <strong>Tiến Hành</strong> để xuất </p>
                 </div>
                 @include($view_path.'types.'.$type_slug)
@@ -23,6 +24,15 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0">
+                <img src="{{ asset('system/export/preview/'.$type_slug.'.png') }}" alt="Preview" class="img-fluid w-100 rounded">
+            </div>
+            </div>
         </div>
     </div>
     <script>
@@ -41,4 +51,5 @@
         });
 
     </script>
+
 @endsection
