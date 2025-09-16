@@ -38,7 +38,7 @@
 <body>
     
     <!--start header-->
-    @include('teacher.sections.header')
+    @include('admin.sections.header')
     <!--end header-->
     <!--start sidebar-->
     @include('admin.sections.sidebar')

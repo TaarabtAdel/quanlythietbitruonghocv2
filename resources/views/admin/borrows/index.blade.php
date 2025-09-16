@@ -83,7 +83,7 @@
                                         <td>{{ $item->borrow_date_fm }}</td>
                                         <td>{!! $item->device_names !!}</td>
                                         <td>{!! $item->lab_names !!}</td>
-                                        <td>{{ App\Models\Borrow::get_borrow_purposes()[$item->borrow_purpose] }}</td>
+                                        <td>{{ isset($borrow_purposes[$item->borrow_purpose]) ? $borrow_purposes[$item->borrow_purpose] : '' }}</td>
                                         <td>{!! $item->status_fm !!}</td>
                                         @if (Auth::check() && ( ( Auth::user()->hasPermission( 'Borrow_delete' )) || ( Auth::user()->hasPermission( 'Borrow_update' ))  || ( Auth::user()->hasPermission( 'Borrow_view' ) )))
                                         <td>

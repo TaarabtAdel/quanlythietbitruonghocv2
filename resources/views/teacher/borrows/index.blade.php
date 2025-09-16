@@ -10,7 +10,13 @@
 
 <!-- Item actions -->
 <form action="{{ route($route_prefix.'index') }}" method="get">
-    <p class="mb-2">Lưu ý: Chỉ tìm kiếm một trong hai trường Tuần và Năm</p>
+    <p class="mb-2 text-danger">Lưu ý: Chỉ tìm kiếm một trong ba trường Ngày dạy | Tuần | Năm</p>
+     @if( isset($startDate) )
+    <p class="mb-2 text-success">Dữ liệu đang hiển thị từ <span class="fw-bold">{{ @$startDate->format('d/m/Y') }}</span> đến <span class="fw-bold">{{ @$endDate->format('d/m/Y') }}</span> </p>
+    @endif
+    @if( isset(request()->borrow_date) )
+    <p class="mb-2 text-success">Dữ liệu đang hiển thị vào ngày <span class="fw-bold">{{ date('d/m/Y',strtotime(request()->borrow_date)) }}</span> </p>
+    @endif
     <div class="row">
         <!-- <div class="col-lg-3 col-md-6 col-sm-12">
             <label class="form-label fw-bold">Buổi</label>
@@ -20,6 +26,10 @@
                 <option @selected(request()->session == 'PM') value="PM">Chiều</option>
             </select>
         </div> -->
+        <div class="col col-12 col-md-2">
+            <label class="form-label fw-bold">Ngày dạy</label>
+            <input type="date" name="borrow_date" class="form-control" value="{{ request()->borrow_date }}" onchange="this.form.submit()">
+        </div>
         <div class="col-lg-3 col-md-6 col-sm-12">
             <label class="form-label fw-bold">Ngày dạy : Tuần</label>
             <input type="week" min="2022-W01" max="{{ date('Y') }}-W99" name="week" class="form-control"

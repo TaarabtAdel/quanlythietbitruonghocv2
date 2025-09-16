@@ -361,6 +361,12 @@
         </div>
         <ul class="dropdown-menu dropdown-menu-end">
             <li>
+                <a class="dropdown-item" href="/">
+                    <span class="material-symbols-outlined me-2"></span>
+                    <span>Thoát Quản trị</span>
+                </a>
+            </li>
+            <li>
                 <a class="dropdown-item" href="{{route('users.profile')}}">
                     <span class="material-symbols-outlined me-2"></span>
                     <span>Tài khoản</span>

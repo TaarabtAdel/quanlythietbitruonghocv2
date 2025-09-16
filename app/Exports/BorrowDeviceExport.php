@@ -175,7 +175,7 @@ class BorrowDeviceExport {
             return $newFilePath;
 
         } catch (\Exception $e) {
-            \Log::error('Excel export error: ' . $e->getMessage());
+            // \Log::error('Excel export error: ' . $e->getMessage());
             throw $e;
         }
     }

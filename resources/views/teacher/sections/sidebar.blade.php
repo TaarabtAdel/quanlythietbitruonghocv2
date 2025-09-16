@@ -107,7 +107,7 @@
             <li>
                 <a class="dropdown-item" href="/admin">
                     <span class="material-symbols-outlined me-2"></span>
-                    <span>Quản trị</span>
+                    <span>Vào Quản trị</span>
                 </a>
             </li>
             <li>

@@ -57,9 +57,9 @@
                     </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
-                    <a class="dropdown-item" href="/admin">
+                    <a class="dropdown-item" href="/">
                         <span class="material-symbols-outlined me-2"></span>
-                        <span>Vào Quản trị</span>
+                        <span>Thoát Quản trị</span>
                     </a>
                     <a class="dropdown-item" href="/profile">
                         <span class="material-symbols-outlined me-2"></span>

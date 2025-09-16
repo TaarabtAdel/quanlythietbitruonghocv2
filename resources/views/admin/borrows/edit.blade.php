@@ -147,7 +147,7 @@
                         <td><input name="devices[${tiet_id}][device_id]" type="hidden" value="${device_id}"></td>
                         <td>${device_name}</td>
                         <td width="100px">
-                            <input name="devices[${tiet_id}][quantity]" type="number" min="1" value="1" class="form-control">
+                            <input data-device-id="${device_id}" data-tiet-id="${tiet_id}" name="devices[${tiet_id}][quantity]" type="number" min="1" value="1" class="form-control change-qty-device">
                         </td>
                         <td>${device_type_name}</td>
                         <td>${department_name}</td>

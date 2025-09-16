@@ -27,9 +27,12 @@ class BorrowController extends Controller
         if($request->name){
             $query->where('name','LIKE','%'.$request->name.'%');
         }
-        if($request->status){
+        if($request->status > -1){
             $query->where('status',$request->status);
         }
+        if( $request->borrow_date){
+                $query->whereDate('borrow_date',$request->borrow_date);
+            }
 
         if ($request && $request->school_years) {
             $yearRange = explode('-', $request->school_years);

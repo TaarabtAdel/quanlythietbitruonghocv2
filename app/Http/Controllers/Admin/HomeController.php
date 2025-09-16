@@ -7,11 +7,16 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Notification;
 use App\Models\Borrow;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
+        if($user->group_id != 1){
+            abort(403);
+        }
         $currentMonth    = Carbon::now()->format('m');
         $currentYear    = Carbon::now()->format('Y');
         

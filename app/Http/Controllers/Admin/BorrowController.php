@@ -68,12 +68,15 @@ class BorrowController extends Controller
             }
             $query->orderBy('id','DESC');
             $items = $query->paginate(20);
+
+            $borrow_purposes = \App\Models\Borrow::get_borrow_purposes();
             
 
             $params = [
                 'route_prefix'  => $this->route_prefix,
                 'model'         => $this->model,
-                'items'         => $items
+                'items'         => $items,
+                'borrow_purposes' => $borrow_purposes,
             ];
             $params = array_merge($params,$startDateEndDate);
 
