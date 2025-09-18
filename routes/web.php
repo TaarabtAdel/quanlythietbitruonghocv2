@@ -69,6 +69,7 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
 
     Route::get('/export', [ExportController::class, 'index'])->name('export.index');
     Route::post('/export/store', [ExportController::class, 'store'])->name('export.store');
+    Route::match(['get', 'post'], 'export/store', [ExportController::class, 'store'])->name('export.store');
 
     // Cấu hình
     Route::get('/options', [OptionController::class, 'index'])->name('options.index');

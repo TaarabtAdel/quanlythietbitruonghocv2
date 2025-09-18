@@ -20,11 +20,12 @@ use PhpOffice\PhpSpreadsheet\Style\Font;
 use App\Models\Borrow;
 use App\Models\User;
 use App\Models\Device;
+use App\Models\Lab;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class BorrowDeviceExport {
+class BorrowLabsExport {
     protected $templateFile = '';
     public function rules(): array
     {
@@ -46,13 +47,6 @@ class BorrowDeviceExport {
             $startDate = request()->start_date;
             $endDate = request()->end_date;
             $nest_id = request()->nest_id;
-
-            // $items = $query->join('borrows', 'users.id', '=', 'borrows.user_id')
-            // ->whereBetween('borrows.borrow_date', [$startDate, $endDate])
-            // ->whereIn('borrows.status', [0, 1])
-            // ->distinct()
-            // ->select('users.*')
-            // ->get();
 
             $items = $query
             ->when($nest_id, function ($q) use ($nest_id) {
@@ -78,10 +72,6 @@ class BorrowDeviceExport {
             $date = Carbon::createFromFormat('d/m/Y', $endDate_fm);
             $year = $request->year;
             
-            $company_parent = \App\Models\Option::get_option('general','company_parent');
-            $company_name   = \App\Models\Option::get_option('general','company_name');
-            $title = mb_strtoupper($company_parent.' '.$company_name,'UTF-8');      
-              
             // Lấy sheet hiện tại
             $sheet = $spreadsheet->getActiveSheet();
             $styleMau = $sheet->getStyle('A10');
@@ -108,39 +98,30 @@ class BorrowDeviceExport {
 
             foreach ($items as $item) {
                 $user = $item;
-                if ($exportBy == 'tiet') {
-                    $borrows = Borrow::with('the_devices')
+                $labs = Lab::orderBy('name','ASC')->whereNull('deleted_at')->get();
+                $labUsage = $labs->mapWithKeys(fn($lab) => [$lab->id => 0])->toArray();
+                $borrows = Borrow::with('the_devices')
                     ->where('user_id',$user->id)
                     ->whereBetween('borrows.borrow_date', [$startDate, $endDate])
                     ->whereIn('borrows.status', [0,1])
                     ->get();
 
-                    $purposes = [];
-                    foreach ($borrows as $borrow) {
-                        $purposes[$borrow->borrow_purpose][$borrow->id] = $borrow->the_devices->groupBy('tiet')->count();
-                    }
-                    $purposeCounts = [];
-                    foreach ($purposes as $purpose => $borrow) {
-                        $purposeCounts[$purpose] = array_sum($borrow);
-                    }
-                } else {
-                    $purposeCounts = DB::table('borrows')
-                        ->select('borrow_purpose', DB::raw('count(*) as total'))
-                        ->whereIn('status', [0,1])
-                        ->where('user_id', $user->id)
-                        ->whereBetween('borrow_date', [$startDate, $endDate])
-                        ->groupBy('borrow_purpose')
-                        ->pluck('total', 'borrow_purpose');
-                }
 
-                $purposeList = \App\Models\Borrow::get_borrow_purposes();
-                $statistics = [];
-                foreach ($purposeList as $key => $label) {
-                    $statistics[$key] = 0;
-                }
-                foreach ($purposeCounts as $purpose => $count) {
-                    $statistics[$purpose] = $count ? $count : 0;
-                }
+                    foreach ($labs as $lab) {
+                        foreach ($borrows as $borrow) {
+                            if ($borrow->the_devices->count()) {
+                                // nhóm theo tiết
+                                $grouped = $borrow->the_devices->groupBy('tiet');
+                                foreach ($grouped as $tiet => $devices) {
+                                    if ($devices->where('lab_id', $lab->id)->isNotEmpty()) {
+                                        $labUsage[$lab->id]++; // cộng dồn luôn
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+          
                 $sheet->setCellValue('A' . $index, $stt);
                 $sheet->setCellValue('B' . $index, $item->name ?? '');
                 $sheet->setCellValue('C' . $index, $item->nest->name ?? '');
@@ -149,16 +130,16 @@ class BorrowDeviceExport {
                 $colIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($col);
                 $rowIndex = 9;
 
-                foreach ($purposeList as $key => $label) {
+                foreach ($labs as $key => $lab) {
                     // Thiết lập tên các cột
                     $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex);
-                    $sheet->setCellValue($column . $rowIndex, $label);
+                    $sheet->setCellValue($column . $rowIndex, $lab->name);
 
                     // Đưa dữ liệu vào
-                    $sheet->setCellValue($col . $index, $statistics[$key] ? $statistics[$key] : 0);
+                    $sheet->setCellValue($col . $index, $labUsage[$lab->id] ? $labUsage[$lab->id] : 0);
 
                     // Copy style từ A11 cho cả dòng mới
-                    for ($colStyle = 'A'; $colStyle <= 'I'; $colStyle++) { 
+                    for ($colStyle = 'A'; $colStyle <= 'M'; $colStyle++) { 
                         $sheet->duplicateStyle($styleMau, $colStyle . $index); 
                     } 
                     $col++;

@@ -82,7 +82,7 @@ class BorrowController extends Controller
             ]);
             return redirect()->route($this->route_prefix.'edit',$saved->id)->with('success', __('sys.store_item_success'));
         } catch (QueryException $e) {
-            Log::error('Error in store method: ' . $e->getMessage());
+            //Log::error('Error in store method: ' . $e->getMessage());
             return redirect()->back()->with('error', __('sys.store_item_error'));
         }
     }
@@ -106,8 +106,8 @@ class BorrowController extends Controller
                 'rooms'         => $rooms,
             ];
             return view($this->view_path.'show', $params);
-        } catch (ModelNotFoundException $e) {
-            Log::error('Item not found: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            //Log::error('Item not found: ' . $e->getMessage());
             return redirect()->route($route_prefix.'index')->with('error', __('sys.item_not_found'));
         }
     }
@@ -134,8 +134,8 @@ class BorrowController extends Controller
                 'rooms'         => $rooms
             ];
             return view($this->view_path.'edit', $params);
-        } catch (ModelNotFoundException $e) {
-            Log::error('Item not found: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            //Log::error('Item not found: ' . $e->getMessage());
             return redirect()->back()->with('error', __('sys.item_not_found'));
         }
     }
@@ -161,8 +161,8 @@ class BorrowController extends Controller
                 }
             }
             return redirect()->route($this->route_prefix.'index')->with('success', __('sys.update_item_success'));
-        } catch (ModelNotFoundException $e) {
-            Log::error('Item not found: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            //Log::error('Item not found: ' . $e->getMessage());
             if( $request->ajax() ){
                 return response()->json([
                     'success' => false,
@@ -171,7 +171,7 @@ class BorrowController extends Controller
             }
             // return redirect()->back()->with('error', __('sys.item_not_found'));
         } catch (QueryException $e) {
-            Log::error('Error in update method: ' . $e->getMessage());
+            //Log::error('Error in update method: ' . $e->getMessage());
             if( $request->ajax() ){
                 return response()->json([
                     'success' => false,
@@ -189,11 +189,11 @@ class BorrowController extends Controller
         try {
             $this->model::deleteItem($id);
             return redirect()->route($this->route_prefix.'index')->with('success', __('sys.destroy_item_success'));
-        } catch (ModelNotFoundException $e) {
-            Log::error('Item not found: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            //Log::error('Item not found: ' . $e->getMessage());
             return redirect()->back()->with('error', __('sys.item_not_found'));
         } catch (QueryException $e) {
-            Log::error('Error in destroy method: ' . $e->getMessage());
+            //Log::error('Error in destroy method: ' . $e->getMessage());
             return redirect()->back()->with('error', __('sys.destroy_item_error'));
         }
     }
@@ -205,11 +205,11 @@ class BorrowController extends Controller
         try {
             $this->model::copyItem($id);
             return redirect()->route($this->route_prefix.'index')->with('success', __('sys.copy_item_success'));
-        } catch (ModelNotFoundException $e) {
-            Log::error('Item not found: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            //Log::error('Item not found: ' . $e->getMessage());
             return redirect()->back()->with('error', __('sys.item_not_found'));
         } catch (QueryException $e) {
-            Log::error('Error in copy method: ' . $e->getMessage());
+            //Log::error('Error in copy method: ' . $e->getMessage());
             return redirect()->back()->with('error', __('sys.copy_item_error'));
         }
     }

@@ -38,8 +38,16 @@ class DeviceExport {
     public function handle($request = null){
         // $id = request()->id;
         $type = request()->type;
+        $device_type_id = request()->device_type_id;
+        $department_id = request()->department_id;
         
-        $query = Device::query();
+        $query = Device::orderBy('name','ASC')->whereNull('deleted_at');
+        if($device_type_id){
+            $query->where('device_type_id',$device_type_id);
+        }
+        if($department_id){
+            $query->where('department_id',$department_id);
+        }
         
         $devices = $query->get();
         // Đường dẫn đến mẫu Excel đã có sẵn

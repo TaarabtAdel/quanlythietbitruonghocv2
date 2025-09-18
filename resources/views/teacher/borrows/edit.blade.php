@@ -21,7 +21,9 @@
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-end gap-2 flex-column flex-lg-row">
                     <a href="{{ route($route_prefix.'index') }}" class="btn btn-sm btn-dark col-12 col-lg-auto">Quay lại</a>
-                    
+                    <a class="btn btn-sm btn-primary" href="{{ route($route_prefix.'show',$item->id) }}">
+                        {{ __('sys.show') }} phiếu
+                    </a>
                     @if($item->can_delete)
                     <form action="{{ route($route_prefix.'destroy',$item->id) }}" method="post" class="col-12 col-lg-auto">
                         @csrf

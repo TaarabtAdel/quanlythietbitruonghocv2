@@ -42,8 +42,8 @@
                 var selectedYear = jQuery(this).val();
                 if (selectedYear) {
                     var years = selectedYear.split('-');
-                    var startDate = years[0] + '-09-05';
-                    var endDate = years[1] + '-09-05';
+                    var startDate = years[0] + '-08-01';
+                    var endDate = years[1] + '-07-01';
                     jQuery('input[name="start_date"]').val(startDate);
                     jQuery('input[name="end_date"]').val(endDate);
                 }

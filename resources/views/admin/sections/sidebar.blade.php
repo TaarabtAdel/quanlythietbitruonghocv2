@@ -251,7 +251,7 @@
                     @if (Auth::check() && Auth::user()->hasPermission('Export_BorrowLab'))
                     <li>
                         <a href="{{ route('admin.export.index', ['type' => 'BorrowLab']) }}">
-                            <span class="material-symbols-outlined">arrow_right</span>Sổ Mượn Phòng Bộ Môn
+                            <span class="material-symbols-outlined">arrow_right</span>Sổ Mượn P. Bộ Môn
                         </a>
                     </li>
                     @endif
@@ -263,6 +263,12 @@
                         </a>
                     </li>
                     @endif
+                    <li>
+                        <a href="{{ route('admin.export.index', ['type' => 'BorrowLabs']) }}"
+                            title="Báo cáo mượn theo phòng bộ môn">
+                            <span class="material-symbols-outlined">arrow_right</span>BC Mượn theo PBM
+                        </a>
+                    </li>
                     @if (Auth::check() && Auth::user()->hasPermission('Export_BorrowDetail'))
                     <li>
                         <a href="{{ route('admin.export.index', ['type' => 'BorrowDetail']) }}">

@@ -4,7 +4,7 @@
 @include('globals.breadcrumb',[
     'page_title' => 'Xem phiếu #'.$item->id,
     'actions' => [
-        'ExportBorrowDetail' => route('admin.export.index',['type'=>'BorrowDetail','id'=>$item->id])
+        'ExportBorrowDetail' => route('admin.export.store',['type'=>'BorrowDetail','id'=>$item->id])
     ]
 ])
 

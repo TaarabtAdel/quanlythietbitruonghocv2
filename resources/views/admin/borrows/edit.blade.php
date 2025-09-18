@@ -3,6 +3,9 @@
 @section('content')
 @include('globals.breadcrumb',[
     'page_title' => 'Chi tiết mã phiếu #'.$item->id,
+    'actions' => [
+        'ExportBorrowDetail' => route('admin.export.store',['type'=>'BorrowDetail','id'=>$item->id])
+    ]
 ])
 
 <div class="row">

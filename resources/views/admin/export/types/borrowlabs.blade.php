@@ -19,7 +19,8 @@
     <p class="mb-0">Không chọn có nghĩa là xuất cho tất cả các tổ</p>
     <!-- <x-form-input-error field="nest_id" /> -->
 </div>
-<div class="form-group mb-4">
+
+<div class="form-group mb-4 d-none">
     <label class="form-label fw-bold">Xuất theo : <span class="text-danger">(*)</span></label>
     <select name="export_by" class="form-control" id="export_by">
         <option value="tiet">Tiết</option>
