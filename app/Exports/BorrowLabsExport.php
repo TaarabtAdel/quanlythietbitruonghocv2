@@ -42,7 +42,8 @@ class BorrowLabsExport {
         try {
             $type = request()->type;
             $exportBy = request()->export_by;
-            $query = User::query(true)->with(['nest']);
+            $query = User::query(true)->with(['nest'])->orderByRaw("SUBSTRING_INDEX(name, ' ', -1) ASC")
+            ->orderBy('name', 'ASC');
             
             $startDate = request()->start_date;
             $endDate = request()->end_date;
