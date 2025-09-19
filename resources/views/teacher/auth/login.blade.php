@@ -69,6 +69,7 @@
                                     <div class="d-grid">
                                         <button type="submit" class="btn btn-primary">Đăng Nhập</button>
                                     </div>
+                                    <p class="text-center mt-3 mb-0"><a title="Giới thiệu phần mềm quản lý thiết bị trường học" href="https://quanlythietbitruonghoc.com">Giới thiệu phần mềm</a></p>
                                 </div>
                             </form>
                         </div>
