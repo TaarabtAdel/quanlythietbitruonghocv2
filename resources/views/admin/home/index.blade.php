@@ -1,6 +1,11 @@
 @extends('admin.layouts.master')
 @push('header')
 <link rel="stylesheet" href="{{ asset('admin-assets/plugins/fullcalendar/css/main.min.css') }}">
+<style>
+    .fc-toolbar-title {
+        text-transform: uppercase;
+    }
+</style>
 @endpush
 
 @section('content')

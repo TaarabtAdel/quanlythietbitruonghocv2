@@ -35,7 +35,7 @@ class BorrowController extends Controller
             }
 
             $query = Borrow::query(true);
-            $query->whereNull('deleted_at');
+            // $query->whereNull('deleted_at');
             if( $request->status === NULL ){
                 $query->whereIn('status',[
                     Borrow::ACTIVE,

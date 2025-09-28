@@ -65,7 +65,7 @@
                         <span class="material-symbols-outlined me-2"></span>
                         <span>Tài Khoản</span>
                     </a>
-                    <a class="dropdown-item" href="/auth/logout">
+                    <a class="dropdown-item" href="/teacher/logout">
                         <span class="material-symbols-outlined me-2"></span>
                         <span>Thoát</span>
                     </a>

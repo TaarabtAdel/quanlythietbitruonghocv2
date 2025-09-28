@@ -11,7 +11,7 @@ class BorrowDevice extends Model
 {
     use HasFactory;
     protected $table ='borrow_devices';
-    use HasFactory;
+    use SoftDeletes;
     protected $fillable = ['id', 'borrow_id', 'device_id','room_id','quantity','borrow_date','return_date','lecture_name','lesson_name','session','image_last','image_first','status','lecture_number','lab_id','tiet','deleted_at'];
     public function borrow()
     {
@@ -106,13 +106,13 @@ class BorrowDevice extends Model
                     $lab_name = $device_item->lab->name ?? '';
                 }
                 if(@$device_item->device->name){
-                    $device_names[$key] = '- '.@$device_item->device->name . ' ('. $device_item->quantity .')';
+                    $device_names[$key] = @$device_item->device->name . ' ('. $device_item->quantity .')';
                 }
                 if (empty($departmentName)) {
                     $departmentName = @$device_item->device->department->name;
                 }
             }
-            $device_names = implode(' <br> ', $device_names);
+            $device_names = implode('<br>', $device_names);
             $items[] = [
                 'borrow_date' => $item[0]->borrow ? date('d/m/Y',strtotime($item[0]->borrow->borrow_date)) : '',
                 'return_date' => $item[0]->return_date ? date('d/m/Y',strtotime($item[0]->return_date)) : '',
