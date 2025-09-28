@@ -29,10 +29,7 @@ class BorrowPurpose extends AdminModel
     public function update(array $attributes = [], array $options = []){
         $id = $this->id;
         $old_slug = $this->slug;
-        $data = [
-            'name' => $attributes['name'],
-            'slug' => $this->slug,
-        ];
+        $data = array_merge($this->toArray(), $attributes);
         $new_slug = Str::slug($data['name'],'_');
         $data['slug'] = $new_slug;
 
