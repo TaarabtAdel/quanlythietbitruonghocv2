@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ImportController extends Controller
 {
@@ -28,7 +30,7 @@ class ImportController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $type = $request->type ?? '';
         $modelClass = '\App\Imports\\' . $type.'Import';
@@ -53,7 +55,23 @@ class ImportController extends Controller
             }
         }
         try {
-            Excel::import($import, request()->file('file'));
+            $file = $request->file('file');
+
+            // lưu vào public/tmp
+            $tmpPath = public_path('tmp');
+            if (!file_exists($tmpPath)) {
+                mkdir($tmpPath, 0777, true);
+            }
+            $filename = time().'_'.$file->getClientOriginalName();
+            $path = $file->move($tmpPath, $filename);
+
+            // import từ path mới
+            Excel::import($import, $path->getPathname());
+
+            // xong thì xóa file tạm
+            unlink($path->getPathname());
+
+            // Excel::import($import, $request->file('file'));
             return redirect()->back()->with('success', 'Nhập dữ liệu thành công');
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Nhập dữ liệu thất bại');
