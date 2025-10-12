@@ -5,6 +5,7 @@ namespace App\Models;
 // use App\Models\AdminModel as Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Device;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,7 @@ class BorrowLab extends Model
 {
     use HasFactory;
     protected $table = 'borrow_devices';
+    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      */
@@ -35,6 +37,7 @@ class BorrowLab extends Model
     public static function getItems($request = null,$table = ''){
         $limit = $request->limit ?? 100;
         $query = self::query(true);
+        $query->whereNull('deleted_at');
         $query->whereHas('borrow', function ($query){
             $query->where('status','>=',0);
         });
@@ -77,9 +80,6 @@ class BorrowLab extends Model
         ->orderByRaw("CASE WHEN session = 'Sáng' THEN 1 WHEN session = 'Chiều' THEN 2 END ASC")
         ->orderBy('tiet', 'asc');
 
-        $query->whereHas('borrow.user', function ($query) use ($request) {
-                $query->where('id', 95 );
-            });
         $items = $query->get();
 
         $nitems = [];
@@ -88,7 +88,7 @@ class BorrowLab extends Model
             // $nitems[$BorrowDevice->borrow->borrow_date.'-BR'.$BorrowDevice->borrow_id.'-R'.$BorrowDevice->room_id.'-B'.$BorrowDevice->session.'-TKB'.$BorrowDevice->lecture_number.'-P'.$BorrowDevice->lab_id] = $BorrowDevice;
             $session = $BorrowDevice->session == 'Sáng' ? 'AM' : 'PM';
             $borrow_date = $BorrowDevice->borrow->borrow_date;
-            $nitems[$borrow_date.'-'.$session.'-'.$BorrowDevice->lecture_number.'-'.$BorrowDevice->room_id.'-'.$BorrowDevice->borrow_id.'-'.$BorrowDevice->lab_id] = $BorrowDevice;
+            $nitems['D'.$borrow_date.'-BUOI'.$session.'-TIET_DAY'.$BorrowDevice->tiet.'-TIET_TKB'.$BorrowDevice->lecture_number.'-LOP'.$BorrowDevice->room_id.'-PHIEU'.$BorrowDevice->borrow_id.'-LAB'.$BorrowDevice->lab_id] = $BorrowDevice;
         }
         $nitems = collect($nitems)->sortKeys();
         return $nitems;
