@@ -88,7 +88,7 @@ class BorrowLab extends Model
             // $nitems[$BorrowDevice->borrow->borrow_date.'-BR'.$BorrowDevice->borrow_id.'-R'.$BorrowDevice->room_id.'-B'.$BorrowDevice->session.'-TKB'.$BorrowDevice->lecture_number.'-P'.$BorrowDevice->lab_id] = $BorrowDevice;
             $session = $BorrowDevice->session == 'Sáng' ? 'AM' : 'PM';
             $borrow_date = $BorrowDevice->borrow->borrow_date;
-            $nitems['D'.$borrow_date.'-BUOI'.$session.'-TIET_DAY'.$BorrowDevice->tiet.'-TIET_TKB'.$BorrowDevice->lecture_number.'-LOP'.$BorrowDevice->room_id.'-PHIEU'.$BorrowDevice->borrow_id.'-LAB'.$BorrowDevice->lab_id] = $BorrowDevice;
+            $nitems['D'.$borrow_date.'-BUOI'.$session.'-TIET_DAY'.$BorrowDevice->lecture_number.'-LOP'.$BorrowDevice->tiet.'-TIET_TKB'.$BorrowDevice->room_id.'-PHIEU'.$BorrowDevice->borrow_id.'-LAB'.$BorrowDevice->lab_id] = $BorrowDevice;
         }
         $nitems = collect($nitems)->sortKeys();
         return $nitems;
