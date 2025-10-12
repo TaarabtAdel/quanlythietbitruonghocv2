@@ -18,7 +18,7 @@
             <div class="col-lg-3">
                 <div class="form-group input-borrow_date">
                     <label class="form-label" for="borrow_date">Ngày Dạy</label>
-                    <input name="borrow_date" min="{{ date('Y-m-d') }}" type="date" class="form-control"
+                    <input name="borrow_date" min-bk="{{ date('Y-m-d') }}" type="date" class="form-control"
                         placeholder="Nhập ngày dạy" value="{{ $item->borrow_date }}">
                     <span class="input-error text-danger"></span>
                 </div>

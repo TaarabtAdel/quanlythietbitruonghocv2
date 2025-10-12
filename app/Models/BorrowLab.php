@@ -83,10 +83,12 @@ class BorrowLab extends Model
         $nitems = [];
         foreach( $items as $BorrowDevice ){
             if(!$BorrowDevice->lab_id) continue;
-            $nitems[$BorrowDevice->borrow_date.'-'.$BorrowDevice->room_id.'-'.Str::slug($BorrowDevice->lesson_name).'-'.$BorrowDevice->session.'-'.$BorrowDevice->lecture_number] = $BorrowDevice;
+            // $nitems[$BorrowDevice->borrow->borrow_date.'-BR'.$BorrowDevice->borrow_id.'-R'.$BorrowDevice->room_id.'-B'.$BorrowDevice->session.'-TKB'.$BorrowDevice->lecture_number.'-P'.$BorrowDevice->lab_id] = $BorrowDevice;
+            $session = $BorrowDevice->session == 'Sáng' ? 'AM' : 'PM';
+            $borrow_date = $BorrowDevice->borrow->borrow_date;
+            $nitems[$borrow_date.'-'.$session.'-'.$BorrowDevice->lecture_number.'-'.$BorrowDevice->room_id.'-'.$BorrowDevice->borrow_id.'-'.$BorrowDevice->lab_id] = $BorrowDevice;
         }
-
-
+        $nitems = collect($nitems)->sortKeys();
         return $nitems;
     }
     public function room()

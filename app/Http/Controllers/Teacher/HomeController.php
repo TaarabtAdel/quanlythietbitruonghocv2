@@ -53,25 +53,34 @@ class HomeController extends Controller
         return view('teacher.home.index',$params);
     }
     private function getDataForCalendar($request = null){
-        $currentMonth    = Carbon::now()->format('m');
-        $currentYear    = Carbon::now()->format('Y');
+        
+        $currentMonth = Carbon::now()->month;
+        $currentYear  = Carbon::now()->year;
         $user_id = Auth::id();
-
-        $borrows = Borrow::query(true)
-        ->where('user_id',$user_id)
-        ->whereMonth('borrow_date',$currentMonth)
-        ->whereYear('borrow_date',$currentYear)
-        ->where('status',Borrow::ACTIVE)->get();
-
+        
+        // Lấy ngày đầu và cuối tháng
+        $startOfMonth = Carbon::create($currentYear, $currentMonth, 1);
+        $endOfMonth   = $startOfMonth->copy()->endOfMonth();
+    
+        // Thêm 7 ngày trước và sau
+        $startDate = $startOfMonth->copy()->subDays(7);
+        $endDate   = $endOfMonth->copy()->addDays(7);
+    
+        $borrows = Borrow::query()
+            ->where('user_id',$user_id)
+            ->whereBetween('borrow_date', [$startDate, $endDate])
+            ->where('status', Borrow::ACTIVE)
+            ->get();
+    
         $events = [];
-        foreach($borrows as $borrow){
+        foreach ($borrows as $borrow) {
             $events[] = [
                 'title' => '#'.$borrow->id,
-                'start' => $borrow->borrow_date
+                'start' => $borrow->borrow_date,
             ];
         }
+    
         return $events;
-        
     }
 
 

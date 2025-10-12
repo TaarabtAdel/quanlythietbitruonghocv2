@@ -66,7 +66,7 @@
                     @foreach( $items as $key => $item )
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td> {{ $item->borrow_date ? date('d/m/Y',strtotime($item->borrow_date)) : '' }}</td>
+                        <td> {{ $item->borrow->borrow_date ? date('d/m/Y',strtotime($item->borrow->borrow_date )) : '' }}</td>
                         <td><span
                                 class="fw-bold text-{{ $item->session == 'Sáng' ? 'info' : 'warning' }}">{{ $item->session }}</span>
                         </td>
