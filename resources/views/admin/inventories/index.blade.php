@@ -1,10 +1,10 @@
 @extends('admin.layouts.master')
 
-@section('title','Danh sách văn bản')
+@section('title','Danh sách kiểm kê')
 @section('content')
 @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_create'))
     @include('globals.breadcrumb',[
-        'page_title' => 'Danh sách văn bản',
+        'page_title' => 'Danh sách kiểm kê',
         'actions' => [
             'add_new' => route($route_prefix.'create',['type'=>request()->type]),
             //'export' => route($route_prefix.'export'),
@@ -12,7 +12,7 @@
     ])
 @else
     @include('globals.breadcrumb',[
-        'page_title' => 'Danh sách văn bản',
+        'page_title' => 'Danh sách kiểm kê',
     ])
 @endif
 
@@ -22,7 +22,7 @@
     <input type="hidden" name="type" value="{{ request()->type }}">
     <div class="row">
         <div class="col">
-            <label class="form-label fw-bold">Tên văn bản</label>
+            <label class="form-label fw-bold">Tên kiểm kê</label>
             <input class="form-control" name="name" type="text" placeholder="Nhập tên sau đó nhấn enter để tìm"
                 value="{{ request()->name }}">
         </div>

@@ -30,32 +30,32 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
-        $this->routes(function () {
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
+        // $this->routes(function () {
+        //     Route::middleware('api')
+        //         ->prefix('api')
+        //         ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
-        });
+        //     Route::middleware('web')
+        //         ->group(base_path('routes/web.php'));
+        // });
 
-        $this->routes(function () {
-			Route::middleware('web')
-				// ->domain('{subdomain}.' . config('app.url'))
-				->namespace($this->namespace)
-				->group(function () {
-					$databaseName = $this->getDatabaseName();
-					config(['database.connections.mysql.database' => $databaseName]);
-					\DB::reconnect('mysql');
+        // $this->routes(function () {
+		// 	Route::middleware('web')
+		// 		// ->domain('{subdomain}.' . config('app.url'))
+		// 		->namespace($this->namespace)
+		// 		->group(function () {
+		// 			$databaseName = $this->getDatabaseName();
+		// 			config(['database.connections.mysql.database' => $databaseName]);
+		// 			\DB::reconnect('mysql');
 						
-					$databaseExists = $this->checkDatabaseExist($databaseName);
-					if (!$databaseExists) {
-						abort(403);
-					}else{
-						require base_path('routes/web.php');
-					}
-				});
-		});
+		// 			$databaseExists = $this->checkDatabaseExist($databaseName);
+		// 			if (!$databaseExists) {
+		// 				abort(403);
+		// 			}else{
+		// 				require base_path('routes/web.php');
+		// 			}
+		// 		});
+		// });
     }
 
     public function getDatabaseName(){
