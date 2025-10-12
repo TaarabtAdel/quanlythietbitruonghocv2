@@ -32,6 +32,14 @@ class BorrowPurpose extends AdminModel
         $data = array_merge($this->toArray(), $attributes);
         $new_slug = Str::slug($data['name'],'_');
         $data['slug'] = $new_slug;
+        
+        // Fix datetime format
+        if (isset($data['created_at'])) {
+            $data['created_at'] = \Carbon\Carbon::parse($data['created_at'])->format('Y-m-d H:i:s');
+        }
+        if (isset($data['updated_at'])) {
+            $data['updated_at'] = \Carbon\Carbon::parse($data['updated_at'])->format('Y-m-d H:i:s');
+        }
 
         if($old_slug != $new_slug){
             // Nếu slug cũ và mới khác nhau, cập nhật trong bảng `borrows`

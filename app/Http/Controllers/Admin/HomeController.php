@@ -48,24 +48,33 @@ class HomeController extends Controller
         ];
         return view('admin.home.index',$params);
     }
-    private function getDataForCalendar($request = null){
-        $currentMonth    = Carbon::now()->format('m');
-        $currentYear    = Carbon::now()->format('Y');
-
-        $borrows = Borrow::query(true)
-        ->whereMonth('borrow_date',$currentMonth)
-        ->whereYear('borrow_date',$currentYear)
-        ->where('status',Borrow::ACTIVE)->get();
-
+    private function getDataForCalendar($request = null)
+    {
+        $currentMonth = Carbon::now()->month;
+        $currentYear  = Carbon::now()->year;
+    
+        // Lấy ngày đầu và cuối tháng
+        $startOfMonth = Carbon::create($currentYear, $currentMonth, 1);
+        $endOfMonth   = $startOfMonth->copy()->endOfMonth();
+    
+        // Thêm 7 ngày trước và sau
+        $startDate = $startOfMonth->copy()->subDays(7);
+        $endDate   = $endOfMonth->copy()->addDays(7);
+    
+        $borrows = Borrow::query()
+            ->whereBetween('borrow_date', [$startDate, $endDate])
+            ->where('status', Borrow::ACTIVE)
+            ->get();
+    
         $events = [];
-        foreach($borrows as $borrow){
+        foreach ($borrows as $borrow) {
             $events[] = [
-                'title' => '#'.$borrow->id.' - '.$borrow->user->name,
-                'start' => $borrow->borrow_date
+                'title' => '#' . $borrow->id . ' - ' . $borrow->user->name,
+                'start' => $borrow->borrow_date,
             ];
         }
+    
         return $events;
-        
     }
     public function is_read(Request $request)
     {

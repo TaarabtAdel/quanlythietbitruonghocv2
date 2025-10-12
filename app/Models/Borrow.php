@@ -87,26 +87,6 @@ class Borrow extends MainModel
             'endDate'   => $endDate,
         ];
     }
-
-
-    // public static function getStartEndDateFromYear($school_years){
-    //     $yearRange = explode('-', $school_years);
-    //     $startDate = $endDate = '';
-    //     if (count($yearRange) == 2) {
-    //         $startYear = trim($yearRange[0]);
-    //         $endYear = trim($yearRange[1]);
-    //         // Tính toán ngày bắt đầu và ngày kết thúc dựa vào năm học
-    //         $startDate  = $startYear . '-08-01'; // Năm học bắt đầu từ tháng 8
-    //         $endDate    = $endYear . '-07-01'; // Năm học kết thúc vào tháng 7 năm sau
-
-
-    //     }
-    //     return [
-    //         'startDate' => $startDate,
-    //         'endDate' => $endDate
-    //     ];
-    // }
-
     // Teacher methods
 
     // Ovrrides
@@ -292,7 +272,11 @@ class Borrow extends MainModel
 
             // Hook xử lý sự kiện sau khi phiếu mượn tạo thành công
             if($request->task == 'save-form'){
-                \App\Events\BorrowCreated::dispatch($item);
+                $auto_approved = Option::get_option('borrow_device','auto_approved',0);
+                if($auto_approved){
+                    $item->status = self::ACTIVE;
+                    $item->save();
+                }
             }
         }
         
@@ -587,7 +571,7 @@ class Borrow extends MainModel
         $currentVersion = $option->option_value ?? '1.0';
         if($currentVersion >= '2.3'){
             // Từ phiên bản 2.3 trở lên đã thay thế trong admin bảng borrow_purposes
-            $borrow_purposes = \App\Models\BorrowPurpose::all()->pluck('name','slug')->toArray();
+            $borrow_purposes = \App\Models\BorrowPurpose::query()->whereNull('deleted_at')->pluck('name','slug')->toArray();
             return $borrow_purposes ?? self::PURPOSE;
         }
         return self::PURPOSE;

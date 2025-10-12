@@ -83,7 +83,7 @@
                             <td>{{ $item->borrow_date_fm }}</td>
                             <td>{!! $item->device_names !!}</td>
                             <td>{!! $item->lab_names !!}</td>
-                            <td>{{ App\Models\Borrow::get_borrow_purposes()[$item->borrow_purpose] }}</td>
+                            <td>{{  isset(App\Models\Borrow::get_borrow_purposes()[$item->borrow_purpose]) ?  App\Models\Borrow::get_borrow_purposes()[$item->borrow_purpose] : $item->borrow_purpose }}</td>
                             <td>{!! $item->status_fm !!}</td>
                             <td>
                                 <div class="dropdown">
