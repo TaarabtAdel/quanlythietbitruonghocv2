@@ -88,13 +88,15 @@
                                     </tr>
                                 </thead>
                                 <tbody class="tiet_fake_devices">
-                                    @foreach($borrow_fake_items[$tiet] as $key => $borrow_fake_item)
-                                    <tr class="fake_device_item">
-                                        <td>{{ $key + 1 }}</td>
-                                        <td>{{ $borrow_fake_item->device_name }}</td>
-                                        <td width="100px">{{ $borrow_fake_item->quantity }}</td>
-                                    </tr>
-                                    @endforeach
+                                    @if( !empty($borrow_fake_items[$tiet]) )
+                                        @foreach($borrow_fake_items[$tiet] as $key => $borrow_fake_item)
+                                        <tr class="fake_device_item">
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $borrow_fake_item->device_name }}</td>
+                                            <td width="100px">{{ $borrow_fake_item->quantity }}</td>
+                                        </tr>
+                                        @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
