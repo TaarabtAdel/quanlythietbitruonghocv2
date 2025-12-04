@@ -26,7 +26,7 @@ use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\BorrowLabController;
 use App\Http\Controllers\Admin\UpdateController;
-use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\InventoryAuditController;
 
 // Teacher Controllers
 use App\Http\Controllers\Teacher\AssetController as TeacherAssetController;
@@ -82,7 +82,7 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('devices', DeviceController::class);
     Route::resource('device-types', DeviceTypeController::class);
     Route::resource('documents', DocumentController::class);
-    Route::resource('inventories', InventoryController::class);
+    Route::resource('inventory_audits', InventoryAuditController::class);
     Route::resource('groups', GroupController::class);
     Route::resource('labs', LabController::class);
     Route::resource('nests', NestController::class);

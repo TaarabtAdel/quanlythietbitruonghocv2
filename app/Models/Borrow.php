@@ -13,7 +13,7 @@ class Borrow extends MainModel
     use HasFactory;
     protected $table ='borrows';
     use SoftDeletes;
-     const ACTIVE    = 1;
+    const ACTIVE    = 1;
     const INACTIVE  = 0;
     const DRAFT     = -1;
     const CANCELED     = -2;

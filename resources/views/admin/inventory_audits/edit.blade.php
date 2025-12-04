@@ -6,15 +6,15 @@
 ])
 
 <form action="{{ isset($item) && $item->id 
-        ? route($route_prefix.'update', $item->id) 
-        : route($route_prefix.'store') }}" 
+        ? route($route_prefix.'.update', $item->id) 
+        : route($route_prefix.'.store') }}" 
       method="post" 
       enctype="multipart/form-data">
 
     @csrf
     @if(isset($item) && $item->id)
         @method('PUT')
-        @include('admin.inventories.includes.form')
+        @include('admin.inventory_audits.includes.form')
     @endif
 
 </form>
