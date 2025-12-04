@@ -168,8 +168,8 @@ class Borrow extends MainModel
                     ]);
                 }
             }
-        
         }
+
         // Xóa phòng bộ môn
         if( $request->devices && in_array($request->task,['delete-lab']) ){
             $tiet   = $request->tiet;
@@ -187,6 +187,13 @@ class Borrow extends MainModel
                 unset($borrow_device['id']);
                 $borrow_device['tiet'] = $tiet + 1;
                 $item->borrow_devices()->create($borrow_device);
+            }
+            // Thiết bị tự chuẩn bị
+            $borrow_fake_devices = $item->borrow_fake_devices()->where('tiet',$tiet)->get()->toArray();
+            foreach( $borrow_fake_devices as $borrow_fake_device ){
+                unset($borrow_fake_device['id']);
+                $borrow_fake_device['tiet'] = $tiet + 1;
+                $item->borrow_fake_devices()->create($borrow_fake_device);
             }
         }
 
@@ -214,48 +221,69 @@ class Borrow extends MainModel
             }
         }
         // Lưu yêu cầu
-        if( $request->devices && in_array($request->task,['save-form','save-draft']) ){
+        if( in_array($request->task,['save-form','save-draft']) ){
             $number_tiets = range(1, 10);
             $active_tiets = [];
-            foreach( $request->devices as $tiet => $device ){
-                $active_tiets[] = $tiet;
-                $updateData = [
-                    'lesson_name' => $device['lesson_name'],
-                    'session' => $device['session'],
-                    'lecture_name' => $device['lecture_name'],
-                    'room_id' => $device['room_id'],
-                    'lecture_number' => $device['lecture_number'],
-                    // 'quantity' => $device['quantity'] ?? 1,
-                    'lab_id' => $device['lab_id'],
-                    'borrow_date' => $item->borrow_date
-                ];
-                // Kiểm tra tại thời điểm lưu có trùng phòng bộ môn hay không
-                $lab_id         = $updateData['lab_id'];//Phòng
-                $session        = $updateData['session'];//Buổi
-                $tietTKB        = $updateData['lecture_number'];//Tiết TKB
-                $date          = $updateData['borrow_date'];//Ngày dạy
 
-                if($lab_id){
-                    $check_borrow_lab = BorrowDevice::select(['borrow_id', 'lab_id', 'session', 'lecture_number'])
-                    ->where('borrow_date', $date)
-                    ->where('lecture_number', $tietTKB)
-                    ->where('session', $session)
-                    ->where('lab_id', $lab_id)
-                    ->where('borrow_id', '!=', $id)
-                    ->whereHas('borrow', function ($query) {
-                        $query->where('status', '>=', 0);
-                    })->first();
-                    if($check_borrow_lab){
-                        $lab = \App\Models\Lab::find($lab_id);
-                        $borrow = \App\Models\Borrow::find($check_borrow_lab->borrow_id);
-                        $user = \App\Models\User::find($borrow->user_id);
-                        return [
-                            'success' => false,
-                            'message' => '<strong>'.$lab->name.'</strong> đã có <strong>'.$user->name.'</strong> mượn. Buổi: <strong>'.$session.'</strong>, Tiết TKB: <strong>'.$tietTKB.'</strong>',
-                        ];
+            // Lưu thiết bị từ kho
+            if( count($request->devices) ){
+                foreach( $request->devices as $tiet => $device ){
+                    $active_tiets[] = $tiet;
+                    $updateData = [
+                        'lesson_name' => $device['lesson_name'],
+                        'session' => $device['session'],
+                        'lecture_name' => $device['lecture_name'],
+                        'room_id' => $device['room_id'],
+                        'lecture_number' => $device['lecture_number'],
+                        // 'quantity' => $device['quantity'] ?? 1,
+                        'lab_id' => $device['lab_id'],
+                        'borrow_date' => $item->borrow_date
+                    ];
+                    // Kiểm tra tại thời điểm lưu có trùng phòng bộ môn hay không
+                    $lab_id         = $updateData['lab_id'];//Phòng
+                    $session        = $updateData['session'];//Buổi
+                    $tietTKB        = $updateData['lecture_number'];//Tiết TKB
+                    $date          = $updateData['borrow_date'];//Ngày dạy
+
+                    if($lab_id){
+                        $check_borrow_lab = BorrowDevice::select(['borrow_id', 'lab_id', 'session', 'lecture_number'])
+                        ->where('borrow_date', $date)
+                        ->where('lecture_number', $tietTKB)
+                        ->where('session', $session)
+                        ->where('lab_id', $lab_id)
+                        ->where('borrow_id', '!=', $id)
+                        ->whereHas('borrow', function ($query) {
+                            $query->where('status', '>=', 0);
+                        })->first();
+                        if($check_borrow_lab){
+                            $lab = \App\Models\Lab::find($lab_id);
+                            $borrow = \App\Models\Borrow::find($check_borrow_lab->borrow_id);
+                            $user = \App\Models\User::find($borrow->user_id);
+                            return [
+                                'success' => false,
+                                'message' => '<strong>'.$lab->name.'</strong> đã có <strong>'.$user->name.'</strong> mượn. Buổi: <strong>'.$session.'</strong>, Tiết TKB: <strong>'.$tietTKB.'</strong>',
+                            ];
+                        }
                     }
+                    $item->borrow_devices()->where('tiet',$tiet)->update($updateData);
                 }
-                $item->borrow_devices()->where('tiet',$tiet)->update($updateData);
+            }
+
+            // Lưu thiết bị tự chuẩn bị
+            if( count($request->quantity_fake_devices) ){
+                $borrow_devices = $item->borrow_devices()->where('tiet',$tiet);
+                // Lưu thiết bị ảo khi ko có thiết bị
+                if($borrow_devices->count() == 0){
+                    $borrow_devices->create([
+                        'lesson_name' => $device['lesson_name'],
+                        'session' => $device['session'],
+                        'lecture_name' => $device['lecture_name'],
+                        'room_id' => $device['room_id'],
+                        'lecture_number' => $device['lecture_number'],
+                        'lab_id' => $device['lab_id'],
+                        'borrow_date' => $item->borrow_date,
+                    ]);
+                }
             }
 
             // Xử lý phiếu có thiết bị + phòng bộ môn
@@ -296,6 +324,10 @@ class Borrow extends MainModel
         return $this->hasMany(BorrowDevice::class);
     }
 
+    public function borrow_fake_devices(){
+        return $this->hasMany(BorrowDeviceFake::class);
+    }
+
     // Attributes
     public static function copyItem($id){
         $item = self::findItem($id);
@@ -332,6 +364,16 @@ class Borrow extends MainModel
         $results = [];
         if( count($item->borrow_devices) ){
             foreach( $item->borrow_devices as $borrow_device ){
+                $results[$borrow_device->tiet][] = $borrow_device;
+            }
+        }
+        return $results;
+    }
+    public function getBorrowFakeItemsAttribute(){
+        $item = self::find($this->id);
+        $results = [];
+        if( count($item->borrow_fake_devices) ){
+            foreach( $item->borrow_fake_devices as $borrow_device ){
                 $results[$borrow_device->tiet][] = $borrow_device;
             }
         }
@@ -553,6 +595,78 @@ class Borrow extends MainModel
             }
         }
         return $items;
+    }
+    // Lấy dang sách phòng mượn tổng hợp theo tuần
+    public static function getBorrowedLabsSummary($request){
+        // 1. Lấy ngày bắt đầu và kết thúc của tuần
+        $startDayEndDate = self::getStartEndDateFromWeek($request->week);
+
+        // 2. Thực hiện truy vấn và lấy dữ liệu dưới dạng Collection
+        $borrow_labs = BorrowDevice::select('*')
+            ->whereBetween('borrow_date', [$startDayEndDate['startDate']->format('Y-m-d'), $startDayEndDate['endDate']->format('Y-m-d')])
+            ->where('lab_id', '>', 0)
+            ->whereHas('borrow', function($query) use($request){
+                $query->where('status', '>=', 0);
+            })
+            ->orderBy('borrow_date', 'asc')
+            ->distinct()
+            ->get(); // Trả về Laravel Collection
+
+        // 3. Xử lý nhóm và định dạng dữ liệu (Thay thế tất cả các vòng lặp foreach thủ công)
+        $final_grouped_items = $borrow_labs
+            // Bước A: Chuẩn bị dữ liệu và tạo khóa nhóm
+            ->map(function ($item) {
+                // Định dạng tiết học: 5s, 3c
+                $session_short = ($item->session === 'Sáng') ? 's' : 'c';
+                $session_and_lecture = $item->lecture_number . $session_short;
+
+                return [
+                    // Khóa nhóm chính
+                    'group_key' => $item->borrow_date . '|' . ($item->borrow->user->name ?? '') . '|' . $item->lab_id,
+                    // Thông tin cần thiết
+                    'borrow_date' => $item->borrow_date,
+                    'user_name'   => $item->borrow->user->name ?? '',
+                    'lab_id'      => $item->lab_id,
+                    'lab_name'    => $item->lab->name ?? '',
+                    'lecture'     => $session_and_lecture, // Tiết học đã định dạng
+                    'lecture_number_int' => (int) $item->lecture_number, // Dùng để sắp xếp
+                ];
+            })
+            // Bước B: Nhóm dữ liệu theo khóa chính (Ngày|Giáo viên|Phòng)
+            ->groupBy('group_key')
+            // Bước C: Xử lý từng nhóm để gộp các tiết học và định dạng kết quả cuối cùng
+            ->map(function ($group) {
+                // Lấy thông tin cơ bản từ bản ghi đầu tiên của nhóm
+                $first_item = $group->first();
+
+                // Lấy tất cả các tiết học (đã định dạng)
+                $unique_lectures = $group->pluck('lecture')->unique()->all();
+
+                // Sắp xếp các tiết học dựa trên số tiết (sử dụng trường lecture_number_int)
+                // Thay vì dùng usort trên chuỗi '5s', ta sắp xếp các bản ghi gốc trước khi pluck, hoặc dùng logic substr
+                // Tuy nhiên, việc sắp xếp thủ công trên mảng unique_lectures vẫn là cách hiệu quả nhất cho định dạng này
+                usort($unique_lectures, function($a, $b) {
+                    $num_a = (int) substr($a, 0, -1); // Lấy số từ '5s'
+                    $num_b = (int) substr($b, 0, -1);
+                    return $num_a - $num_b;
+                });
+                
+                // Gộp chuỗi tiết học
+                $lectures_combined = implode(', ', $unique_lectures);
+
+                return [
+                    'borrow_date' => $first_item['borrow_date'],
+                    'user_name'   => $first_item['user_name'],
+                    'lab_id'      => $first_item['lab_id'],
+                    'lab_name'    => $first_item['lab_name'],
+                    'lectures_combined' => $lectures_combined,
+                ];
+            })
+            // Bước D: Nhóm lại theo ngày để có định dạng cuối cùng: ["2025-10-01" => [ nhóm 1, nhóm 2, ... ]]
+            ->groupBy('borrow_date')
+            ->toArray();
+
+        return $final_grouped_items;
     }
     public static function getPermissions(){
         $permissions = [

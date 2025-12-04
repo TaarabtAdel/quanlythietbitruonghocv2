@@ -78,15 +78,16 @@
                     <div class="col-12">
                         <label class="fw-bold" for="">DANH SÁCH THIẾT BỊ TRONG TIẾT NÀY</label>
                         <div class="mt-2">
-                            <button type="button" class="btn btn-sm btn-primary show-devices" data-tiet-id="{{ $tiet }}">Thêm Thiết Bị</button>
+                            <button type="button" class="btn btn-sm btn-primary show-devices" data-tiet-id="{{ $tiet }}">Thêm Thiết Bị Từ Kho Thiết Bị</button>
                         </div>
                     </div>
                     <div class="col-12 mt-2">
                         <div class="table-responsive white-space-nowrap">
+                            <label class="fw-bold" for="">Thiết bị trong kho</label>
                             <table class="table align-middle">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>STT</th>
+                                        <th width="50px">STT</th>
                                         <th width="300px">Tên thiết bị</th>
                                         <th>Số lượng</th>
                                         <th>Loại thiết bị</th>
@@ -113,6 +114,36 @@
                                         </td>
                                     </tr>
                                     @endforeach
+                                </tbody>
+                            </table>
+                            <div class="mt-3 mb-2">
+                                <button type="button" class="btn btn-sm btn-primary show-device-fakes" data-tiet-id="{{ $tiet }}">Thêm Thiết Bị Tự Chuẩn Bị</button>
+                            </div>
+                            <label class="fw-bold" for="">Thiết bị tự chuẩn bị</label>
+                            <table class="table align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="50px">STT</th>
+                                        <th width="69%">Tên thiết bị</th>
+                                        <th>Số lượng</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tiet_fake_devices">
+                                    @if( $borrow_fake_items && count( $borrow_fake_items ) )
+                                        @foreach($borrow_fake_items as $key => $borrow_fake_item)
+                                        <tr class="device_item">
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $borrow_fake_item->device_name }}</td>
+                                            <td width="100px">
+                                                <input class="form-control change-qty-fake-device" name="quantity_fake_devices[{{ $borrow_fake_item->id }}][quantity]" type="number" value="{{ $borrow_fake_item->quantity }}">
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-danger delete-fake_device" data-id="{{ $borrow_fake_item->id }}" data-tiet-id="{{ $tiet }}">Xóa</button>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         </div>

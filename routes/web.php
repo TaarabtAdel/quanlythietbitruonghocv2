@@ -90,7 +90,7 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('users', UserController::class);
 
     Route::get('/system/update', [UpdateController::class, 'index'])->name('system.update');
-    Route::get('/system/doUpdate', [UpdateController::class, 'doUpdate'])->name('system.doUpdate');
+    Route::post('/system/doUpdate', [UpdateController::class, 'doUpdate'])->name('system.doUpdate');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -104,6 +104,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/borrows/labs', [TeacherBorrowLabController::class, 'index'])->name('borrows.labs');
 
     // 2. Tạo phiếu mượn + Phiếu mượn
+    Route::post('/borrows/saveFakeDevices/{id}', [TeacherBorrowController::class, 'saveFakeDevices'])->name('borrows.saveFakeDevices');
+    Route::get('/borrows/getFakeDevices', [TeacherBorrowController::class, 'getFakeDevices'])->name('borrows.getFakeDevices');
+    Route::post('/borrows/delete_fake_device', [TeacherBorrowController::class, 'delete_fake_device'])->name('borrows.delete_fake_device');
+    Route::post('/borrows/update_qty_fake_device', [TeacherBorrowController::class, 'update_qty_fake_device'])->name('borrows.update_qty_fake_device');
+
+
     Route::resource('borrows', TeacherBorrowController::class);
 
     // 5. Văn bản thiết bị

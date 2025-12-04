@@ -68,6 +68,7 @@
             @include('teacher.borrows.includes.borrow-item',[
             'tiet' => $tiet,
             'borrow_items' => $borrow_items,
+            'borrow_fake_items' => $borrow_fake_items[$tiet] ?? [],
             'borrow' => $borrow_items[0],
             ])
         @endforeach
@@ -75,6 +76,7 @@
         @include('teacher.borrows.includes.borrow-item',[
             'tiet' => 0 ,
             'borrow_items' => null,
+            'borrow_fake_items' => null,
             'borrow' => null,
         ])
     @endif

@@ -46,11 +46,13 @@
 
 <!--end row-->
 @include('teacher.borrows.includes.modal-devices')
+@include('teacher.borrows.includes.modal-device-fakes')
 @include('teacher.borrows.includes.modal-labs')
 @endsection
 @push('footer')
     <script>
         var tiet_id = 0;
+        var borrow_id = '{{ $item->id }}';
         // device-table-results
         var indexUrl = "{{ route('borrows.index') }}";
         var positionUrl = "";
@@ -204,7 +206,6 @@
                     }
                 });
             }
-
         });
     </script>
 @endpush

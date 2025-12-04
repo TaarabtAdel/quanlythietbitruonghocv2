@@ -10,3 +10,11 @@
     <p class="mb-0">Không chọn có nghĩa là xuất cho tất cả các phòng</p>
     <x-form-input-error field="lab_id" />
 </div>
+<div class="form-group mb-4">
+    <label class="form-label fw-bold">Chọn Loại Xuất :</label>
+    <select name="export_type" class="form-select">
+        <option value="detail">Theo Phòng</option>
+        <option value="all">Tổng hợp</option>
+    </select>
+    <x-form-input-error field="export_type" />
+</div>

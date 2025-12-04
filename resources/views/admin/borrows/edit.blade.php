@@ -51,6 +51,7 @@
 <!--end row-->
 @include('teacher.borrows.includes.modal-devices')
 @include('teacher.borrows.includes.modal-labs')
+@include('teacher.borrows.includes.modal-device-fakes')
 @endsection
 @push('footer')
     <script>
