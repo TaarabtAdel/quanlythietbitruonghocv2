@@ -153,7 +153,7 @@
                         <td>${device_type_name}</td>
                         <td>${department_name}</td>
                         <td>
-                            <button class="btn btn-sm btn-danger">Xóa</button>
+                            <button class="btn btn-sm btn-danger delete-device" data-device-id="${device_id}" data-tiet-id="${tiet_id}">Xóa</button>
                         </td>
                     </tr>
                 `;
