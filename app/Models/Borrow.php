@@ -430,6 +430,26 @@ class Borrow extends MainModel
         return $names;
     }
 
+    public function getFakeDeviceNamesAttribute()
+    {
+        $names = '';
+
+        if ($this->borrow_fake_devices && $this->borrow_fake_devices->count()) {
+            $names = '<br><i>Thiết bị tự chuẩn bị</i>';
+            // $deviceWithQty = $this->borrow_devices->map(function ($borrowDevice) {
+            //     $device = \App\Models\Device::find($borrowDevice->device_id);
+            //     if ($device) {
+            //         return $device->name . '<strong class="text-danger"> (x' . $borrowDevice->quantity . ') </strong>';
+            //     }
+            //     return null;
+            // })->filter()->toArray();
+
+            // $names = implode('<br>', $deviceWithQty);
+        }
+
+        return $names;
+    }
+
     public function getStatusFmAttribute(){
         switch ($this->status) {
             case self::DRAFT:
