@@ -116,6 +116,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @if( \App\Models\Option::get_option_name('enable_fake_device') )
                             <div class="mt-3 mb-2">
                                 <button type="button" class="btn btn-sm btn-primary show-device-fakes" data-tiet-id="{{ $tiet }}">Thêm Thiết Bị Tự Chuẩn Bị</button>
                             </div>
@@ -146,6 +147,7 @@
                                     @endif
                                 </tbody>
                             </table>
+                            @endif
                         </div>
                     </div>
                 </div>

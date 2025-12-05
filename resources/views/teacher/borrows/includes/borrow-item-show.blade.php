@@ -78,6 +78,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @if( \App\Models\Option::get_option_name('enable_fake_device') )
                             <label class="fw-bold" for="">Thiết bị tự chuẩn bị</label>
                             <table class="table align-middle">
                                 <thead class="table-light">
@@ -99,6 +100,7 @@
                                     @endif
                                 </tbody>
                             </table>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -270,7 +270,7 @@ class Borrow extends MainModel
             }
 
             // Lưu thiết bị tự chuẩn bị
-            if( count($request->quantity_fake_devices) ){
+            if( !empty($request->quantity_fake_devices) ){
                 $borrow_devices = $item->borrow_devices()->where('tiet',$tiet);
                 // Lưu thiết bị ảo khi ko có thiết bị
                 if($borrow_devices->count() == 0){

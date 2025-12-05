@@ -24,6 +24,10 @@ class Option extends Model
                 ->value('option_value');
         return $option_value ?? $default;
     }
+    public static function get_option_name($option_name,$default = ''){
+        $option_value = self::where('option_name',$option_name)->value('option_value');
+        return $option_value ?? $default;
+    }
     public static function update_option($group,$name,$value = ''){
         return self::where('option_group',$group)
                 ->where('option_name',$name)
