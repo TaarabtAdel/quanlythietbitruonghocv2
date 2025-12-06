@@ -44,10 +44,19 @@
         </thead>
         <tbody>
             @foreach($items as $key => $item )
-            <tr data-quantity="1" data-name="{{ $item->name }}" data-device_type_name="{{ $item->device_type_name }}" data-department_name="{{ $item->department_name }}">
+            <tr 
+                data-quantity="1" 
+                data-total="{{ $item->quantity }}" 
+                data-broken="{{ $item->broken ?? 0 }}" 
+                data-name="{{ $item->name }}" 
+                data-year="{{ $item->year }}" 
+                data-country="{{ $item->country_name }}" 
+                data-unit="{{ $item->unit }}" 
+                data-price="{{ $item->price }}" 
+                data-device_type_name="{{ $item->device_type_name }}" data-department_name="{{ $item->department_name }}">
                 <td>{{ $key + 1 }}</td>
                 <td>{{ $item->name }}</td>
-                <td>{{ $item->quantity }}</td>
+                <td>{{ $item->quantity }} {{ $item->unit }}</td>
                 <td>{{ $item->device_type_name }}</td>
                 <td>{{ $item->department_name }}</td>
                 <td> <button data-device-id="{{ $item->id }}" class="btn btn-sm btn-primary add-device">Thêm</button> </td>
