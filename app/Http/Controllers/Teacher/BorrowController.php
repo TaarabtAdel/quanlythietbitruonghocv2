@@ -13,6 +13,9 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\BorrowDeviceFake;
+use Illuminate\Support\Facades\DB;
+
 class BorrowController extends Controller
 {
     protected $view_path    = 'teacher.borrows.';
@@ -82,7 +85,7 @@ class BorrowController extends Controller
             ]);
             return redirect()->route($this->route_prefix.'edit',$saved->id)->with('success', __('sys.store_item_success'));
         } catch (QueryException $e) {
-            //Log::error('Error in store method: ' . $e->getMessage());
+            Log::error('Error in store method: ' . $e->getMessage());
             return redirect()->back()->with('error', __('sys.store_item_error'));
         }
     }
@@ -95,6 +98,7 @@ class BorrowController extends Controller
         try {
             $rooms = \App\Models\Room::all();
             $item = $this->model::find($id);
+            $borrow_fake_items = $item->borrow_fake_items;
             if( $item->user_id != Auth::id() ){
                 abort(403);
             }
@@ -103,6 +107,7 @@ class BorrowController extends Controller
                 'view_path'     => $this->view_path,
                 'model'         => $this->model,
                 'item'          => $item,
+                'borrow_fake_items' => $borrow_fake_items,
                 'rooms'         => $rooms,
             ];
             return view($this->view_path.'show', $params);
@@ -126,11 +131,12 @@ class BorrowController extends Controller
             if( !$item->can_edit  ){
                 abort(403);
             }
-
+            $borrow_fake_items = $item->borrow_fake_items;
             $params = [
                 'route_prefix'  => $this->route_prefix,
                 'model'         => $this->model,
                 'item'          => $item,
+                'borrow_fake_items' => $borrow_fake_items,
                 'rooms'         => $rooms
             ];
             return view($this->view_path.'edit', $params);
@@ -213,4 +219,127 @@ class BorrowController extends Controller
             return redirect()->back()->with('error', __('sys.copy_item_error'));
         }
     }
+
+    public function saveFakeDevices(Request $request, $id)
+    {
+        $tiet_id = $request->tiet_id;
+        $device_fakes = $request->device_fakes;
+
+        if (empty($device_fakes) || !is_array($device_fakes)) {
+            return response()->json(['message' => 'No device data provided'], 400);
+        }
+        DB::beginTransaction();
+        try {
+            // Xóa dữ liệu cũ cùng borrow_id + tiết (nếu cần làm mới)
+            BorrowDeviceFake::where('borrow_id', $id)
+                ->where('tiet', $tiet_id)
+                ->delete();
+            // Lưu danh sách mới
+            foreach ($device_fakes as $fake) {
+                if (!empty($fake['device_name']) && isset($fake['qty'])) {
+                    BorrowDeviceFake::create([
+                        'borrow_id'    => $id,
+                        'device_name'  => $fake['device_name'],
+                        'quantity'     => (int) $fake['qty'],
+                        'tiet'         => $tiet_id,
+                    ]);
+                }
+            }
+            DB::commit();
+            return response()->json(['success'=>true, 'message' => 'Fake devices saved successfully']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success'=>false, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function getFakeDevices(Request $request)
+    {
+        $id = $request->query('id');
+        $tiet_id = $request->query('tiet_id', ''); // mặc định rỗng nếu không truyền
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Missing borrow_id (id)'
+            ]);
+        }
+        // Base query
+        $query = BorrowDeviceFake::where('borrow_id', $id);
+        // Nếu có truyền tiet_id (kể cả = 0), lọc theo tiet_id
+        if ($tiet_id !== '' && $tiet_id !== null) {
+            $query->where('tiet', $tiet_id);
+        }
+        $devices = $query->orderBy('tiet')->get();
+        // Nếu có tiet_id thì không cần nhóm, trả thẳng mảng thiết bị
+        if ($tiet_id !== '' && $tiet_id !== null) {
+            $data = $devices->map(function ($item) {
+                return [
+                    'id'          => $item->id,
+                    'device_name' => $item->device_name,
+                    'quantity'    => (int) $item->quantity,
+                    'tiet_id'     => (int) $item->tiet,
+                ];
+            });
+            return response()->json([
+                'success' => true,
+                'data'    => $data,
+            ]);
+        }
+        // Nếu không truyền tiet_id => nhóm theo 'tiet'
+        $grouped = $devices->groupBy('tiet')->map(function ($items, $tiet) {
+            return [
+                'tiet_id' => (int) $tiet,
+                'devices' => $items->map(function ($item) {
+                    return [
+                        'id'          => $item->id,
+                        'device_name' => $item->device_name,
+                        'quantity'    => (int) $item->quantity,
+                    ];
+                })->values(),
+            ];
+        })->values();
+        return response()->json([
+            'success' => true,
+            'data'    => $grouped,
+        ]);
+    }
+
+    // delete_fake_device
+    public function delete_fake_device(Request $request)
+    {
+        $device_id = $request->input('fake_device_id');
+        if (!$device_id) {
+            return response()->json(['success' => false, 'message' => 'Missing device_id'], 400);
+        }
+        try {
+            $device = BorrowDeviceFake::findOrFail($device_id);
+            $device->delete();
+            return response()->json(['success' => true, 'message' => 'Device deleted successfully']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['success' => false, 'message' => 'Device not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error deleting device'], 500);
+        }
+        
+    }
+    // update_qty_fake_device
+    public function update_qty_fake_device(Request $request)
+    {
+        $device_id = $request->input('fake_device_id');
+        $quantity = $request->input('quantity');
+        if (!$device_id || !is_numeric($quantity) || $quantity < 0) {
+            return response()->json(['success' => false, 'message' => 'Invalid input'], 400);
+        }
+        try {
+            $device = BorrowDeviceFake::findOrFail($device_id);
+            $device->quantity = (int)$quantity;
+            $device->save();
+            return response()->json(['success' => true, 'message' => 'Quantity updated successfully']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['success' => false, 'message' => 'Device not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error updating quantity'], 500);
+        }
+    }
+
 }

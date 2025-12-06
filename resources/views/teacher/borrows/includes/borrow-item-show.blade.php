@@ -52,6 +52,7 @@
                     </div>
                     <div class="col-12 mt-2">
                         <div class="table-responsive white-space-nowrap">
+                            <label class="fw-bold" for="">Thiết bị trong kho</label>
                             <table class="table align-middle">
                                 <thead class="table-light">
                                     <tr>
@@ -77,6 +78,29 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            @if( \App\Models\Option::get_option_name('enable_fake_device') )
+                            <label class="fw-bold" for="">Thiết bị tự chuẩn bị</label>
+                            <table class="table align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="10%">STT</th>
+                                        <th width="300px">Tên thiết bị</th>
+                                        <th>Số lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tiet_fake_devices">
+                                    @if( !empty($borrow_fake_items[$tiet]) )
+                                        @foreach($borrow_fake_items[$tiet] as $key => $borrow_fake_item)
+                                        <tr class="fake_device_item">
+                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $borrow_fake_item->device_name }}</td>
+                                            <td width="100px">{{ $borrow_fake_item->quantity }}</td>
+                                        </tr>
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
+                            @endif
                         </div>
                     </div>
                 </div>

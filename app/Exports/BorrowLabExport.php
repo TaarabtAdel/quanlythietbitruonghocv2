@@ -37,29 +37,71 @@ class BorrowLabExport {
     ];
     public function handle($request = null){
         $type = request()->type;
+        $export_type = request()->export_type ?? 'detail';
 
-        // Đường dẫn đến mẫu Excel đã có sẵn
-        $templatePath = public_path('system/export/'.strtolower($type).'.xlsx');
-        // Tạo một Spreadsheet từ mẫu
-        $reader = IOFactory::createReader("Xlsx");
-        $spreadsheet = $reader->load($templatePath);
+        if($export_type == 'detail'){
+            // Đường dẫn đến mẫu Excel đã có sẵn
+            $templatePath = public_path('system/export/'.strtolower($type).'.xlsx');
+            // Tạo một Spreadsheet từ mẫu
+            $reader = IOFactory::createReader("Xlsx");
+            $spreadsheet = $reader->load($templatePath);
 
-        if( $request->lab_id ){
-            $lab_ids[] = $request->lab_id;
-        }else{
-            $lab_ids = Lab::getAll(true)->pluck('id')->toArray();
-        }
-        // Sao chép sheet nếu labs_ids > 1
-        foreach( $lab_ids as $sheetIndex => $lab_id ){
-            if($sheetIndex != count($lab_ids) - 1){
-                $originalSheet = $spreadsheet->getActiveSheet();
-                $newSheet = clone $originalSheet;
-                $newSheet->setTitle('Sheet '.$sheetIndex + 1);
-                $spreadsheet->addSheet($newSheet);
+            if( $request->lab_id ){
+                $lab_ids[] = $request->lab_id;
+            }else{
+                $lab_ids = Lab::getAll(true)->pluck('id')->toArray();
             }
-        }
-        foreach( $lab_ids as $sheetIndex => $lab_id ){
-            $spreadsheet = $this->exportSingleSheet($lab_id,$request,$spreadsheet,$sheetIndex);
+            // Sao chép sheet nếu labs_ids > 1
+            foreach( $lab_ids as $sheetIndex => $lab_id ){
+                if($sheetIndex != count($lab_ids) - 1){
+                    $originalSheet = $spreadsheet->getActiveSheet();
+                    $newSheet = clone $originalSheet;
+                    $newSheet->setTitle('Sheet '.$sheetIndex + 1);
+                    $spreadsheet->addSheet($newSheet);
+                }
+            }
+            foreach( $lab_ids as $sheetIndex => $lab_id ){
+                $spreadsheet = $this->exportSingleSheet($lab_id,$request,$spreadsheet,$sheetIndex);
+            }
+        }else{
+            // Đường dẫn đến mẫu Excel đã có sẵn
+            $templatePath = public_path('system/export/'.strtolower($type).'_all.xlsx');
+            $reader = IOFactory::createReader("Xlsx");
+            $spreadsheet = $reader->load($templatePath);
+            // Lấy sheet hiện tại
+            $sheet = $spreadsheet->getActiveSheet();
+            // Lấy đơn vị tạo
+            $company_parent = \App\Models\Option::get_option('general','company_parent');
+            $company_name   = \App\Models\Option::get_option('general','company_name');
+            $company_address   = \App\Models\Option::get_option('general','company_address');
+            // Tên sở
+            $sheet->setCellValue('A1', $company_parent ?? '');
+            // Tên trường 
+            $sheet->setCellValue('A2', $company_name ?? '');
+
+
+            // Tieu de
+            $startDayEndDate = Borrow::getStartEndDateFromWeek($request->week);
+            $startDay   = $startDayEndDate['startDate']->format('d/m/Y') ?? '';
+            $endDay     = $startDayEndDate['endDate']->format('d/m/Y') ?? '';
+            $sheet->setCellValue('C6',$startDay);
+            $sheet->setCellValue('C7',$endDay);
+            //Ngày xuất:
+            $sheet->setCellValue('E7', date('d/m/Y'));
+
+            // Tìm kiếm tất cả các lab được mượn trong tuần
+            $borrowedSummaryLabs = Borrow::getBorrowedLabsSummary($request);
+            $index = 0;
+            foreach( $borrowedSummaryLabs as $date => $labs ){
+                foreach( $labs as $lab ){
+                    $row = 10 + $index;
+                    $sheet->setCellValue('A'.$row, Carbon::parse($date)->format('d/m/Y'));
+                    $sheet->setCellValue('B'.$row, $lab['user_name'] ?? '');
+                    $sheet->setCellValue('C'.$row, $lab['lab_name'] ?? '');
+                    $sheet->setCellValue('E'.$row, $lab['lectures_combined'] ?? '');
+                    $index++;
+                }
+            }
         }
 
         $newFilePath = public_path('system/tmp/'.strtolower($type).'-'.date('d-m-Y-H-i-s').'.xlsx');

@@ -84,6 +84,12 @@ class OptionController extends Controller
                 'option_label' => 'Kiểm tra trùng lặp thiết bị',
                 'option_value' => 1,
                 'type' => 'checkbox'
+            ],
+            [
+                'option_name' => 'enable_fake_device',
+                'option_label' => 'Cho phép giáo viên đưa lên thiết thị tự chuẩn bị trong phiếu mượn',
+                'option_value' => 0,
+                'type' => 'checkbox'
             ]
         ],
         'borrow_lab' => [

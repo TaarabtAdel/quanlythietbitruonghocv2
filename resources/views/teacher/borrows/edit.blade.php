@@ -46,11 +46,13 @@
 
 <!--end row-->
 @include('teacher.borrows.includes.modal-devices')
+@include('teacher.borrows.includes.modal-device-fakes')
 @include('teacher.borrows.includes.modal-labs')
 @endsection
 @push('footer')
     <script>
         var tiet_id = 0;
+        var borrow_id = '{{ $item->id }}';
         // device-table-results
         var indexUrl = "{{ route('borrows.index') }}";
         var positionUrl = "";
@@ -151,7 +153,7 @@
                         <td>${device_type_name}</td>
                         <td>${department_name}</td>
                         <td>
-                            <button class="btn btn-sm btn-danger">Xóa</button>
+                            <button class="btn btn-sm btn-danger delete-device" data-device-id="${device_id}" data-tiet-id="${tiet_id}">Xóa</button>
                         </td>
                     </tr>
                 `;
@@ -204,7 +206,6 @@
                     }
                 });
             }
-
         });
     </script>
 @endpush

@@ -31,11 +31,13 @@ class StoreBorrowRequest extends FormRequest
                 if( !empty($device['lab_id']) ){
                     $has_labs = true;
                 }
-                if( !$has_devices && !$has_labs ){
+                if( !$has_devices && !$has_labs && empty(request()->quantity_fake_devices) ){
                     $rules['tiet_'.$tiet.'_validate'] = 'required';
                     $validate_tiet[$tiet] = false;
                 }
             }
+
+            
 
             // Kiểm tra tiết dạy cùng buổi và cùng tiết tkb
             $session_lectures = [];

@@ -81,7 +81,7 @@
                                             <p class="mb-0 product-category">{{ $item['created_at_fm'] }} - <span class="return-{{ $item->is_returned }}">{{ App\Models\Borrow::RETURN_STATUS[$item->is_returned] }}</span></p>
                                         </td>
                                         <td>{{ $item->borrow_date_fm }}</td>
-                                        <td>{!! $item->device_names !!}</td>
+                                        <td>{!! $item->device_names !!} {!! $item->fake_device_names !!}</td>
                                         <td>{!! $item->lab_names !!}</td>
                                         <td>{{ isset($borrow_purposes[$item->borrow_purpose]) ? $borrow_purposes[$item->borrow_purpose] : '' }}</td>
                                         <td>{!! $item->status_fm !!}</td>

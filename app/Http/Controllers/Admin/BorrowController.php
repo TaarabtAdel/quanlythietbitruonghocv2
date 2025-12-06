@@ -96,10 +96,12 @@ class BorrowController extends Controller
             $rooms = \App\Models\Room::getAll();
             $item = $this->model::findItem($id);
             $this->authorize('view', $item);
+            $borrow_fake_items = $item->borrow_fake_items;
             $params = [
                 'route_prefix'  => $this->route_prefix,
                 'model'         => $this->model,
                 'item'          => $item,
+                'borrow_fake_items' => $borrow_fake_items,
                 'rooms'         => $rooms,
             ];
             return view($this->view_path.'show', $params);
@@ -118,10 +120,12 @@ class BorrowController extends Controller
             $rooms = \App\Models\Room::getAll();
             $item = $this->model::findItem($id);
             $this->authorize('update', $item);
+            $borrow_fake_items = $item->borrow_fake_items;
             $params = [
                 'route_prefix'  => $this->route_prefix,
                 'model'         => $this->model,
                 'item'          => $item,
+                'borrow_fake_items' => $borrow_fake_items,
                 'rooms'         => $rooms,
             ];
             return view($this->view_path.'edit', $params);
