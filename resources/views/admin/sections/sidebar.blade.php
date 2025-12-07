@@ -128,6 +128,16 @@
                         </li>
                         @endif
                     @endif
+                    @if(version_compare(env('SYSTEM_VERSION', '1.0'), '2.6', '>='))
+                        @if (Auth::check() && Auth::user()->hasPermission('InventoryAudit'))
+                        <li>
+                            <a href="{{ route('admin.inventory_audits.index') }}">
+                                <span class="material-symbols-outlined">arrow_right</span>Phiếu Kiểm Kê
+                            </a>
+                        </li>
+                        @endif
+                    @endif
+
                 </ul>
             </li>
             @endif
@@ -277,14 +287,7 @@
                     </li>
                     @endif
 
-                    @if (Auth::check() && Auth::user()->hasPermission('InventoryAudit'))
-                    <li>
-                        <a href="{{ route('admin.inventory_audits.index') }}">
-                            <span class="material-symbols-outlined">arrow_right</span>Phiếu Kiểm Kê
-                        </a>
-                    </li>
-                    @endif
-
+                   
                     @if (Auth::check() && Auth::user()->hasPermission('Export_Device'))
                     <li>
                         <a href="{{ route('admin.export.index', ['type' => 'Device']) }}">

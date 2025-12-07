@@ -5,7 +5,7 @@
             @if(isset($audit))
             THÔNG TIN PHIẾU #{{ $item->id }} - {{ $item->status }}
             @else
-            TẠO PHIẾU KIỂM KÊ MỚI
+            XEM PHIẾU KIỂM KÊ MỚI
             @endif
         </div>
         <div class="my-3 border-top"></div>
@@ -65,7 +65,7 @@
                     <span class="input-error text-danger">@error('audit_date') {{ $message }} @enderror</span>
 
                     <label class="form-label mt-2" for="school_year">Năm Học</label>
-                    <x-form-input-school-years name="school_year" selected_id="{{ request()->school_year }}"
+                    <x-form-input-school-years name="school_year" selected_id="{{ $item->school_year }}"
                         id="school_year" />
                     <x-form-input-error field="school_year" />
                 </div>
@@ -99,6 +99,29 @@
     </div>
 </div>
 
+<div class="alert alert-light" role="alert">
+    <h5 class="alert-heading" style="margin-top: 0;">Thông tin quan trọng về Kiểm kê & Kho</h5>
+    <hr style="margin: 8px 0;">
+
+    <p style="margin-bottom: 10px; font-size: 1.1em;">
+        <strong>⚠️ Lưu ý: Hãy lưu lại liên tục các thay đổi của bạn.</strong>
+    </p>
+
+    <p style="margin-bottom: 5px;">
+        Khi bạn nhấn nút <strong>"Lưu và cập nhật Tổng Sổ / Hỏng trong kho"</strong>, hệ thống sẽ thực hiện cập nhật số
+        lượng tồn kho chính dựa trên kết quả kiểm kê cuối cùng:
+    </p>
+    <ul style="margin-bottom: 0; padding-left: 20px;">
+        <li>Trường <strong>Tổng số</strong> (sau năm học) trong kiểm kê sẽ cập nhật vào cột <strong>Tổng số
+                lượng</strong> trong kho.</li>
+        <li>Trường <strong>Hỏng</strong> (sau năm học) trong kiểm kê sẽ cập nhật vào cột <strong>Số lượng hỏng</strong>
+            trong kho.</li>
+    </ul>
+    <p style="margin-top: 8px; font-weight: bold; color: #007bff;">
+        Thao tác này sẽ đảm bảo số liệu kiểm kê khớp với số liệu tồn kho hiện tại.
+    </p>
+</div>
+
 <div id="repeater">
     <div class="table-responsive">
         <table class="table table-bordered table-striped table-sm" style="width: 100%;">
@@ -128,36 +151,81 @@
                 </tr>
             </thead>
             <tbody id="devices">
-                <!-- <tr>
-                    <td class="p-1 align-middle">1</td>
-                    <td class="align-middle">Âm thoa $440 \text{H}_z$</td>
-                    <td class="text-center align-middle">2025</td>
-                    <td class="text-center align-middle">VN</td>
-                    <td class="text-center align-middle">Bộ</td>
-                    <td class="text-center align-middle">185000</td>
-                    <td class="p-1 align-middle">
-                        <input type="number" class="form-control form-control-sm text-center" value="4">
-                    </td>
-                    <td class="p-1 align-middle">
-                        <input type="number" class="form-control form-control-sm text-center" value="0">
+                @php
+                // Khởi tạo biến STT (Số thứ tự)
+                $stt = 1;
+                @endphp
+
+                {{-- Lặp qua các bản ghi chi tiết (InventoryRecords) --}}
+                @foreach ($item->records as $record)
+
+                {{-- Dùng $record->id làm index để đảm bảo tính duy nhất và liên kết với bản ghi đã lưu --}}
+                <tr class="device_item" data-index="{{ $record->id }}">
+
+                    {{-- Cột 1: STT và device_id ẩn (Handle cho Sortable) --}}
+                    <td class="text-center align-middle">
+                        {{ $stt++ }}
+                        <input name="devices[{{ $record->id }}][device_id]" type="hidden"
+                            value="{{ $record->device_id }}">
                     </td>
 
-                    <td class="p-1 align-middle">
-                        <input type="number" class="form-control form-control-sm text-center">
+                    {{-- Cột 2-6: Dữ liệu tĩnh của thiết bị (Lấy qua quan hệ ->device) --}}
+                    <td class="align-middle">
+                        {{ $record->device->name ?? 'Không tìm thấy tên thiết bị' }}
                     </td>
+                    <td class="text-center align-middle">{{ $record->device->year ?? '' }}</td>
+                    <td class="text-center align-middle">{{ $record->device->country ?? '' }}</td>
+                    <td class="text-center align-middle">{{ $record->device->unit ?? '' }}</td>
+                    <td class="text-center align-middle">{{ $record->device->price ? number_format($record->device->price) : 0 }}</td>
+
+                    {{-- Cột 7: Số lượng đầu năm (initial_total) --}}
                     <td class="p-1 align-middle">
-                        <input type="number" class="form-control form-control-sm text-center">
+                        <input name="devices[{{ $record->id }}][initial_total]" type="number" min="0"
+                            class="form-control form-control-sm text-center initial-total qty-input"
+                            value="{{ $record->initial_total }}">
                     </td>
+
+                    {{-- Cột 8: Số lượng hỏng đầu năm (initial_broken/damaged) --}}
                     <td class="p-1 align-middle">
-                        <input type="number" class="form-control form-control-sm text-center" value="4">
+                        <input name="devices[{{ $record->id }}][initial_broken]" type="number" min="0"
+                            class="form-control form-control-sm text-center initial-broken qty-input"
+                            value="{{ $record->initial_damaged }}"> {{-- Lấy từ DB: initial_damaged --}}
                     </td>
+
+                    {{-- Cột 9: Tăng thêm (increase) --}}
                     <td class="p-1 align-middle">
-                        <input type="number" class="form-control form-control-sm text-center" value="0">
+                        <input name="devices[{{ $record->id }}][increase]" type="number" min="0"
+                            class="form-control form-control-sm text-center increase-qty qty-input"
+                            value="{{ $record->increase_quantity }}"> {{-- Lấy từ DB: increase_quantity --}}
                     </td>
+
+                    {{-- Cột 10: Giảm đi (decrease) --}}
+                    <td class="p-1 align-middle">
+                        <input name="devices[{{ $record->id }}][decrease]" type="number" min="0"
+                            class="form-control form-control-sm text-center decrease-qty qty-input"
+                            value="{{ $record->decrease_quantity }}"> {{-- Lấy từ DB: decrease_quantity --}}
+                    </td>
+
+                    {{-- Cột 11: Tổng số còn lại cuối năm (final_total) --}}
+                    <td class="p-1 align-middle">
+                        <input name="devices[{{ $record->id }}][final_total]" type="number" min="0"
+                            class="form-control form-control-sm text-center final-total-qty"
+                            value="{{ $record->final_total }}" readonly>
+                    </td>
+
+                    {{-- Cột 12: Số lượng hỏng cuối năm (final_broken/damaged) --}}
+                    <td class="p-1 align-middle">
+                        <input name="devices[{{ $record->id }}][final_broken]" type="number" min="0"
+                            class="form-control form-control-sm text-center final-broken-qty qty-input"
+                            value="{{ $record->final_damaged }}"> {{-- Lấy từ DB: final_damaged --}}
+                    </td>
+
+                    {{-- Cột 13: Thao tác --}}
                     <td class="p-1 align-middle text-center">
-                        <button type="button" class="btn btn-danger btn-sm">Xóa</button>
+                        <button type="button" class="btn btn-danger btn-sm delete-device-row">Xóa</button>
                     </td>
-                </tr> -->
+                </tr>
+                @endforeach
             </tbody>
         </table>
     </div>

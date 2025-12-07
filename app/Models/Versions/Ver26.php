@@ -54,6 +54,11 @@ class Ver26 extends Model
                 $table->softDeletes();
             });
         }
+
+        Schema::table('devices', function (Blueprint $table) {
+            // Thêm cột 'broken' kiểu integer, mặc định là 0
+            $table->string('broken')->nullable();
+        });
     }
 
 }

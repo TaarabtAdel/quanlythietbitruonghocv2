@@ -82,7 +82,11 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('devices', DeviceController::class);
     Route::resource('device-types', DeviceTypeController::class);
     Route::resource('documents', DocumentController::class);
+    
+    // export
+    Route::get('inventory_audits/{id}/export', [InventoryAuditController::class, 'export'])->name('inventory_audits.export');
     Route::resource('inventory_audits', InventoryAuditController::class);
+
     Route::resource('groups', GroupController::class);
     Route::resource('labs', LabController::class);
     Route::resource('nests', NestController::class);

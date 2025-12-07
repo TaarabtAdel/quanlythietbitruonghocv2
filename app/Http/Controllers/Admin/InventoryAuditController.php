@@ -5,7 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
+
 use App\Models\InventoryAudit;
+use App\Models\InventoryRecord; 
+use App\Models\Device; 
 
 class InventoryAuditController extends Controller
 {
@@ -61,30 +66,6 @@ class InventoryAuditController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name'            => 'required|string|max:255',
-        ]);
-
-        $data = array_merge($request->except(['_token', '_method']), $validated);
-        $data['deleted_at'] = $request->status == 1 ? NULL : now();
-        unset($data['status']);
-
-        if ($request->hasFile('image')) {
-            $data['image'] = $this->model::uploadFile($request->file('image'), $this->model::$upload_dir);
-        } 
-
-        $item = $this->model::create($data);
-
-        return redirect()
-            ->route($this->route_prefix.'index')
-            ->with('success', 'Mục đích mượn đã được thêm thành công.');
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(string $id)
@@ -122,20 +103,98 @@ class InventoryAuditController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $item = $this->model::findOrFail($id);
-
-        $validated = $request->validate([
-            'name'            => 'required|string|max:255',
+        // 1. Validate dữ liệu cần thiết
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'audit_date' => 'nullable|date',
+            'devices' => 'required|array',
+            'devices.*.device_id' => 'required_with:devices|integer|exists:devices,id',
+            'devices.*.initial_total' => 'nullable|integer',
+            // Thêm các rules validation khác cho các trường còn lại...
         ]);
 
-        $data = array_merge($request->except(['_token', '_method']), $validated);
-        $data['deleted_at'] = $request->status == 1 ? NULL : now();
-        unset($data['status']);
-        $item->update($data);
+        DB::beginTransaction();
+        try {
+            $audit = InventoryAudit::findOrFail($id);
+            $inventoryAuditId = $audit->id;
+            
+            // Cập nhật InventoryAudit (giữ nguyên logic của phần trước)
+            $audit->update([
+                'name' => $request->input('name'),
+                'audit_date' => $request->input('audit_date'),
+                'school_year' => $request->input('school_year'),
+                'status' => $request->input('status'),
+                'note' => $request->input('note'),
+                // ... (các trường khác)
+            ]);
 
-        return redirect()
-            ->back()
-            ->with('success', 'Mục đích mượn đã được cập nhật.');
+            // --- PHẦN 2: ĐỒNG BỘ BẢNG INVENTORY_RECORDS BẰNG UPSERT ---
+
+            // 2. Xóa các bản ghi chi tiết bị loại bỏ khỏi Request
+            InventoryRecord::where('inventory_audit_id', $inventoryAuditId)->delete();
+            
+            $devices = $request->input('devices', []);
+            $recordsToUpsert = [];
+            $deviceIdsInRequest = []; // Dùng để theo dõi các ID thiết bị được gửi lên
+
+            foreach ($devices as $deviceRecord) {
+                $deviceId = (int) $deviceRecord['device_id'];
+                $deviceIdsInRequest[] = $deviceId;
+                
+                $recordsToUpsert[] = [
+                    // Khóa duy nhất để xác định bản ghi (thiết bị + lần kiểm kê)
+                    'device_id' => $deviceId, 
+                    'inventory_audit_id' => $inventoryAuditId,
+
+                    // Dữ liệu cần cập nhật hoặc tạo mới
+                    'initial_total' => (int) ($deviceRecord['initial_total'] ?? 0),
+                    'initial_damaged' => (int) ($deviceRecord['initial_broken'] ?? 0),
+                    'increase_quantity' => (int) ($deviceRecord['increase'] ?? 0),
+                    'decrease_quantity' => (int) ($deviceRecord['decrease'] ?? 0),
+                    'final_total' => (int) ($deviceRecord['final_total'] ?? 0),
+                    'final_damaged' => (int) ($deviceRecord['final_broken'] ?? 0),
+                    'updated_at' => now(), // Đảm bảo trường updated_at được cập nhật
+                ];
+            }
+            
+            // 1. Thực hiện Upsert (Insert Or Update)
+            if (!empty($recordsToUpsert)) {
+                // Trường hợp 1: Sử dụng Upsert (Yêu cầu Laravel >= 8)
+                InventoryRecord::upsert(
+                    $recordsToUpsert,
+                    ['device_id', 'inventory_audit_id'], // Các cột tạo nên khóa duy nhất (để xác định cần UPDATE hay INSERT)
+                    [
+                        'initial_total', 'initial_damaged', 'increase_quantity', 
+                        'decrease_quantity', 'final_total', 'final_damaged', 'updated_at' // Các cột cần cập nhật nếu bản ghi tồn tại
+                    ]
+                );
+            }
+
+            // --- PHẦN 3: CẬP NHẬT SỐ LƯỢNG KHO CHÍNH (BẢNG DEVICES) ---
+            if ($request->task == 'submit_request_update') {
+                // Cập nhật từng thiết bị dựa trên dữ liệu cuối cùng của kiểm kê
+                foreach ($recordsToUpsert as $record) {
+                    // Lấy các giá trị cần cập nhật
+                    $deviceId = $record['device_id'];
+                    // final_total: Tổng số lượng còn lại cuối năm (bao gồm cả Tốt và Hỏng)
+                    $quantity = $record['final_total']; 
+                    // final_damaged: Số lượng hỏng cuối năm
+                    $broken = $record['final_damaged'];   
+                    // Thực hiện cập nhật trong bảng devices
+                    Device::where('id', $deviceId)->update([
+                        'quantity' => $quantity, // Cập nhật tổng số lượng
+                        'broken' => $broken,     // Cập nhật số lượng hỏng
+                    ]);
+                }
+            }
+            // --- KẾT THÚC CẬP NHẬT KHO ---
+
+            DB::commit();
+            return response()->json(['msg' => 'Cập nhật kiểm kê thành công!'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['msg' => 'Đã xảy ra lỗi.', 'error' => $e->getMessage()], 200);
+        }
     }
 
     /**

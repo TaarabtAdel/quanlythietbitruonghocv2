@@ -36,6 +36,7 @@ return [
     'search_name' => 'Tìm kiếm tên',
     'add_new' => 'Thêm mới',
     'ExportBorrowDetail' => 'Xuất phiếu mượn',
+    'Export' => 'Xuất phiếu',
     'copy_item_success' => 'Tạo bản sao thành công',
     'copy_item_error' => 'Tạo bản sao thất bại',
     'show' => 'Xem',

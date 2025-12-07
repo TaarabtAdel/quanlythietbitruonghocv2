@@ -13,7 +13,7 @@
     transition: background-color 0.3s ease;
 }
 </style>
-<form action="{{ isset($item) && $item->id 
+<form id="inventory_audits-form" action="{{ isset($item) && $item->id 
         ? route($route_prefix.'.update', $item->id) 
         : route($route_prefix.'.store') }}" method="post" enctype="multipart/form-data">
 
@@ -27,8 +27,11 @@
 <div class="card">
     <div class="card-body">
         <div class="d-flex align-items-center justify-content-end gap-2 flex-column flex-lg-row">
-            <button type="button" id="submit_request" class="btn btn-sm btn-primary px-4 ml-2 col-12 col-lg-auto">Lưu
-                lại</button>
+            <a href="{{ route($route_prefix.'.index') }}" class="btn btn-sm btn-secondary px-4 col-12 col-lg-auto">
+                <i class='bx bx-arrow-back'></i> Quay lại
+            </a>
+            <button type="button" name="submit_request" class="btn btn-sm btn-primary px-4 ml-2 col-12 col-lg-auto submit_request">Lưu lại</button>
+            <button type="button"  name="submit_request_update" class="btn btn-sm btn-success px-4 ml-2 col-12 col-lg-auto submit_request">Lưu và cập nhật Tổng Sổ / Hỏng trong kho</button>
         </div>
     </div>
 </div>
@@ -128,8 +131,16 @@ jQuery(document).ready(function($) {
     }
 
     // --- 4. Logic LƯU DỮ LIỆU ---
-    jQuery('body').on('click', "#submit_request", function(e) {
+    jQuery('body').on('click', ".submit_request", function(e) {
         e.preventDefault();
+        let task = jQuery(this).attr('name');
+
+        if( task == 'submit_request_update' ){
+            let confirmationMessage = "Bạn có chắc chắn muốn LƯU và cập nhật Tổng Sổ / Hỏng trong kho không? Thao tác này sẽ thay đổi số lượng thiết bị chính thức.";
+            if (!confirm(confirmationMessage)) {
+                return;
+            }
+        }
 
         let devicesData = [];
 
@@ -157,7 +168,6 @@ jQuery(document).ready(function($) {
                     rowData[field] = $(this).val();
                 }
             });
-
             devicesData.push(rowData);
         });
 
@@ -165,6 +175,31 @@ jQuery(document).ready(function($) {
         console.log(devicesData);
 
         // TODO: THỰC HIỆN AJAX SUBMISSION TẠI ĐÂY
+        var actionUrl = jQuery('#inventory_audits-form').attr('action');
+
+        let formDataArray = jQuery('#inventory_audits-form').serializeArray();
+        let combinedData = {};
+        // Chuyển mảng key/value thành đối tượng JavaScript đơn giản
+        jQuery.each(formDataArray, function(i, field) {
+            combinedData[field.name] = field.value;
+        });
+        combinedData['task'] = task;
+        console.log(combinedData);
+        jQuery.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: actionUrl,
+            type: "POST",
+            dataType:'json',
+            data: combinedData,
+            success: function (res) {
+                showAlertSuccess(res.msg)
+            },
+            error: function(xhr, status, error) {
+                showAlertError('Xử lý không thành công');
+            },
+        });
     });
 
     // --- 5. Logic Xử lý sự kiện (Tính toán, Đổi màu nền) ---
