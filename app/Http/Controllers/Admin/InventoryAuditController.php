@@ -213,4 +213,17 @@ class InventoryAuditController extends Controller
             ->route($this->route_prefix.'index', ['page' => $request->page])
             ->with('success', 'Mục đích mượn đã được xóa.');
     }
+    // copy
+    public function copy(Request $request, string $id){
+        try {
+            $this->model::copyItem($id);
+            return redirect()->route($this->route_prefix.'index')->with('success', __('sys.copy_item_success'));
+        } catch (\Exception $e) {
+            //Log::error('Item not found: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('sys.item_not_found'));
+        } catch (QueryException $e) {
+            //Log::error('Error in copy method: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('sys.copy_item_error'));
+        }
+    }
 }

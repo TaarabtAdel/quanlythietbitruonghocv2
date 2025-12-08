@@ -115,6 +115,15 @@
                                                     </a>
                                                 </li>
                                             @endif
+                                            {{-- Nút Chỉnh sửa --}}
+                                            @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_copy'))
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ route($route_prefix.'.copy', $item->id) }}?page={{ request()->page }}">
+                                                        {{ __('sys.copy') }}
+                                                    </a>
+                                                </li>
+                                            @endif
                                             {{-- Nút Xóa --}}
                                             @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_delete'))
                                                 <li>

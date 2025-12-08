@@ -160,7 +160,7 @@
                 @foreach ($item->records as $record)
 
                 {{-- Dùng $record->id làm index để đảm bảo tính duy nhất và liên kết với bản ghi đã lưu --}}
-                <tr class="device_item" data-index="{{ $record->id }}">
+                <tr class="device_item" data-index="{{ $record->id }}" data-device-id="{{ $record->device_id }}">
 
                     {{-- Cột 1: STT và device_id ẩn (Handle cho Sortable) --}}
                     <td class="text-center align-middle">

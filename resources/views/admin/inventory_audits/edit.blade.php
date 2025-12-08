@@ -43,6 +43,18 @@
 <script>
 jQuery(document).ready(function($) {
 
+    // Init added_ids
+    let added_ids = [];
+    jQuery('.device_item').each( function(key,val){
+        let device_id = jQuery(this).data('device-id');
+        added_ids.push(device_id);
+    });
+    setTimeout(() => {
+        jQuery('body').find('#added_ids').val(btoa(JSON.stringify(added_ids)));
+        jQuery('body').find('#f_added_ids').val(btoa(JSON.stringify(added_ids)));
+        jQuery('.form-search .f-filter-up[name="name"]').trigger('keyup');
+    }, 1000);
+
     // --- Biến và Khởi tạo ---
     let deviceCount = $('#devices tr').length;
     // Bắt đầu unique index cao hơn số hàng hiện có để tránh xung đột với dữ liệu cũ
@@ -62,7 +74,7 @@ jQuery(document).ready(function($) {
         let initial_broken = data.initial_broken || 0;
 
         let html = `
-            <tr class="device_item" data-index="${index}">
+            <tr class="device_item" data-index="${index}" data-device-id="${device_id}">
                 <td class="text-center align-middle">
                     ${stt}
                     <input name="devices[${index}][device_id]" type="hidden" value="${device_id}">
@@ -263,6 +275,11 @@ jQuery(document).ready(function($) {
 
         let device_html = createNewDeviceRow(deviceCount, newRowData);
         jQuery('#devices').append(device_html);
+
+        added_ids.push(device_id);
+        console.log('added_ids',added_ids);
+        jQuery('body').find('#added_ids').val(btoa(JSON.stringify(added_ids)));
+        jQuery('body').find('#f_added_ids').val(btoa(JSON.stringify(added_ids)));
 
         jQuery(this).closest('td').empty().html('<span class="text-success">Đã Thêm</span>');
 

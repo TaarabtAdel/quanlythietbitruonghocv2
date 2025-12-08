@@ -28,12 +28,18 @@ class DeviceController extends Controller
         if($request->department_id){
             $query->where('department_id',$request->department_id);
         }
+        $added_ids = [];
+        if($request->f_added_ids){
+            $jsonString = base64_decode($request->f_added_ids);
+            $added_ids  = json_decode($jsonString, true);
+        }
         $items = $query->paginate($limit);
         $param = [
             'items' => $items,
             'device_types' => $device_types,
             'departments' => $departments,
-            'request' => $request
+            'request' => $request,
+            'added_ids' => $added_ids,
         ];
         if( $request->ajax() ){
             return view($this->view_path.'.index-ajax',$param);

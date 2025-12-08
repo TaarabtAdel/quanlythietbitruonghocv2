@@ -1,4 +1,5 @@
 <form class="row form-search" action="{{ route('devices.index') }}" method="get">
+    <input type="hidden" name="f_added_ids" id="f_added_ids" value="">
     <div class="col-12 col-lg-3 mb-2">
         <input type="text" name="name" class="form-control f-filter-up" placeholder="Tên thiết bị" value="{{ request()->name }}">
     </div>
@@ -59,10 +60,21 @@
                 <td>{{ $item->quantity }} {{ $item->unit }}</td>
                 <td>{{ $item->device_type_name }}</td>
                 <td>{{ $item->department_name }}</td>
-                <td> <button data-device-id="{{ $item->id }}" class="btn btn-sm btn-primary add-device">Thêm</button> </td>
+                <td> 
+                    @if( in_array( $item->id, $added_ids ) )
+                    <span class="text-success">Đã Thêm</span>
+                    @else
+                    <button data-device-id="{{ $item->id }}" class="btn btn-sm btn-primary add-device">Thêm</button> 
+                    @endif
+                </td>
             </tr>
             @endforeach
         </tbody>
     </table>
     @include('globals.pagination')
 </div>
+<script>
+    jQuery( document ).ready( function(){
+        jQuery('#f_added_ids').val(jQuery('#added_ids').val());
+    })
+</script>

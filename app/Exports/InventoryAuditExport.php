@@ -39,66 +39,109 @@ class InventoryAuditExport {
         
         $id = request()->id;
         $type = request()->type;
-        // Lấy thông tin người dùng và mượn thiết bị
+        
+        // 1. Lấy dữ liệu và kiểm tra
         $inventory_audit = InventoryAudit::find($id);
-        $user = $inventory_audit->user;
+        if (!$inventory_audit) {
+            return "Không tìm thấy phiếu kiểm kê với ID: " . $id;
+        }
 
-        // Đường dẫn đến mẫu Excel đã có sẵn
         $templatePath = public_path('system/export/'.strtolower($type).'.xlsx');
+        if (!file_exists($templatePath)) {
+            return "Không tìm thấy file mẫu Excel tại đường dẫn: " . $templatePath;
+        }
 
-        // Tạo một Spreadsheet từ mẫu
+        // 2. Tải Spreadsheet và Lấy thông tin chung
         $reader = IOFactory::createReader("Xlsx");
         $spreadsheet = $reader->load($templatePath);
+        
+        $commonData = $this->getCommonData($inventory_audit);
 
-        // Lấy ngày, tháng và năm hiện tại
+        // 3. Xử lý từng Sheet
+        // Xử lý Sheet 1 (Index 0)
+        $this->fillSheet1($spreadsheet->getSheet(0), $inventory_audit, $commonData);
+        
+        // Xử lý Sheet 2 (Index 1) - Nếu tồn tại
+        if ($spreadsheet->getSheetCount() > 1) {
+            $this->fillSheet2($spreadsheet->getSheet(1), $inventory_audit, $commonData);
+        }
+
+        // 4. Lưu file
+        $spreadsheet->setActiveSheetIndex(0);
+        $newFilePath = public_path('system/tmp/'.strtolower($type).'-'.$inventory_audit->id.'-'.date('d-m-Y-H-i-s').'.xlsx');
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save($newFilePath);
+
+        return $newFilePath;
+    }
+
+    private function getCommonData($inventory_audit) {
         $currentDay = date('d',strtotime($inventory_audit->created_at));
         $currentMonth = date('m',strtotime($inventory_audit->created_at));
         $currentYear = date('Y',strtotime($inventory_audit->created_at));
         
-        // Lấy đơn vị tạo
-        $company_parent = \App\Models\Option::get_option('general','company_parent');
-        $company_name   = \App\Models\Option::get_option('general','company_name');
-        $company_address   = \App\Models\Option::get_option('general','company_address');
-        $newValue = $company_address.', ngày ' . $currentDay . ' tháng ' . $currentMonth . ' năm ' . $currentYear;
+        return [
+            // Giả định Option::get_option() hoạt động tốt
+            'company_parent'    => \App\Models\Option::get_option('general','company_parent'),
+            'company_name'      => \App\Models\Option::get_option('general','company_name'),
+            'company_address'   => \App\Models\Option::get_option('general','company_address'),
+            'id'                => $inventory_audit->id,
+            'audit_date'        => date('d/m/Y',strtotime($inventory_audit->audit_date)),
+            'school_year'       => $inventory_audit->school_year,
+            'name'              => $inventory_audit->name,
+            'date_string'       => \App\Models\Option::get_option('general','company_address') 
+                                    . ', ngày ' . $currentDay . ' tháng ' . $currentMonth 
+                                    . ' năm ' . $currentYear,
+        ];
+    }
+
+    private function fillSheet1(Worksheet $sheet, $inventory_audit, $data)
+    {
+        // 1. Điền Dữ Liệu Cố Định
+        $sheet->setCellValue('A1', $data['company_parent'] ?? '');
+        $sheet->setCellValue('A2', $data['company_name'] ?? '');
+        $sheet->setCellValue('C6', $data['name'] ?? '');
+        $sheet->setCellValue('C7', $data['audit_date']);
+        $sheet->setCellValue('J7', $data['id']);
+        $sheet->setCellValue('J6', $data['school_year']);
+
+        // 2. Xử lý Danh Sách Thiết Bị ( Sheet Sổ kiểm kê )
+        $this->fillDeviceRecords($sheet, $inventory_audit->records);
+    }
+
+    private function fillSheet2(Worksheet $sheet, $inventory_audit, $data)
+    {
+        // 1. Điền Dữ Liệu Cố Định (Hiện tại đang giống Sheet 1, bạn có thể TÙY CHỈNH TẠI ĐÂY)
+        $sheet->setCellValue('A1', $data['company_parent'] ?? '');
+        $sheet->setCellValue('A2', $data['company_name'] ?? '');
+        $sheet->setCellValue('C6', $data['name'] ?? '');
+        $sheet->setCellValue('C7', $data['audit_date']);
+        $sheet->setCellValue('J7', $data['id']);
+        $sheet->setCellValue('J6', $data['school_year']);
         
-        // Lấy sheet hiện tại
-        $sheet = $spreadsheet->getActiveSheet();
-        // Tên sở
-        $sheet->setCellValue('A1', $company_parent ?? '');
-        // Tên trường 
-        $sheet->setCellValue('A2', $company_name ?? '');
+        // 2. Xử lý Danh Sách Thiết Bị (Sheet Phiếu báo cáo)
+        $this->fillDeviceRecordsReport($sheet, $inventory_audit->records);
+    }
 
-        // Tên
-        $sheet->setCellValue('C6', $inventory_audit->name ?? '');
-        //Ngày kiểm:
-        $sheet->setCellValue('C7', date('d/m/Y',strtotime($inventory_audit->audit_date)));
-
-        //Mã phiếu:
-        $sheet->setCellValue('J7', $id);
-
-        //Năm học:
-        $sheet->setCellValue('J6', $inventory_audit->school_year);
-        
-
+    private function fillDeviceRecords(Worksheet $sheet, $records)
+    {
         // Lấy style mẫu từ hàng 12
         $styleArrayA12 = $sheet->getStyle('A12')->exportArray();
-
-        // Copy chiều cao dòng
         $rowHeight = $sheet->getRowDimension(12)->getRowHeight();
-
-        // Tìm merge của dòng 12 (ví dụ B12:C12)
+        
+        // Tìm merge của dòng 12
         $mergeCols = [];
         foreach ($sheet->getMergeCells() as $merge) {
             if (preg_match('/([A-Z]+)12:([A-Z]+)12/', $merge, $m)) {
-                $mergeCols[] = [$m[1], $m[2]];  // ví dụ ['B', 'C']
+                $mergeCols[] = [$m[1], $m[2]]; 
             }
         }
-
         $index = 12;
-        $stt   = 1;
-
-        foreach ($inventory_audit->records as $record) {
-
+        $stt = 1;
+        
+        foreach ($records as $record) {
+            
             //--- Gán dữ liệu ---
             $sheet->setCellValue('A' . $index, $stt);
             $sheet->setCellValue('B' . $index, $record->device->name ?? '');
@@ -113,61 +156,130 @@ class InventoryAuditExport {
             $sheet->setCellValue('L' . $index, $record->final_total ?? 0);
             $sheet->setCellValue('M' . $index, $record->final_damaged ?? 0);
 
-            // --- Copy merge của dòng 12 ---
+            // --- Copy merge, border và alignment ---
             foreach ($mergeCols as [$colStart, $colEnd]) {
                 $newMerge = "{$colStart}{$index}:{$colEnd}{$index}";
                 $sheet->mergeCells($newMerge);
-
-                // --- Set border cho vùng merge cùng lúc ---
+                
                 $sheet->getStyle($newMerge)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'borderStyle' => Border::BORDER_THIN,
                             'color' => ['argb' => 'FF000000']
                         ]
                     ],
                     'alignment' => [
-                        'horizontal' => ($colStart === 'B') ? \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT : \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                        'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                        'horizontal' => ($colStart === 'B') ? Alignment::HORIZONTAL_LEFT : Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
                         'wrapText' => true,
                     ]
                 ]);
             }
-
+            
             //--- Sao chép style FULL từ A12 sang A$index..M$index ---
             for ($col = 'A'; $col <= 'M'; $col++) {
                 // Nếu ô này thuộc merge và không phải ô đầu → bỏ qua
-                if ($sheet->getCell($col . '12')->isInMergeRange()) {
-                    if (!$sheet->getCell($col . '12')->isMergeRangeValueCell()) {
-                        continue;
-                    }
+                $originalCell = $sheet->getCell($col . '12');
+                if ($originalCell->isInMergeRange() && !$originalCell->isMergeRangeValueCell()) {
+                     continue;
                 }
                 $sheet->getStyle($col . $index)->applyFromArray($styleArrayA12);
             }
-
+            
+            // Thiết lập alignment riêng cho cột B (Tên thiết bị)
             $sheet->getStyle('B'.$index)->getAlignment()
-            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT)
-            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER)
+            ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+            ->setVertical(Alignment::VERTICAL_CENTER)
             ->setWrapText(true);
 
             // Copy chiều cao dòng
             $sheet->getRowDimension($index)->setRowHeight($rowHeight);
-
+            
             $index++;
             $stt++;
         }
+    }
 
-
-        // Lưu file
-        $spreadsheet->setActiveSheetIndex(0);
-        $newFilePath = public_path('system/tmp/'.strtolower($type).'-'.$inventory_audit->id.'-'.date('d-m-Y-H-i-s').'.xlsx');
-
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save($newFilePath);
-
-        return $newFilePath;
-
-
+    private function fillDeviceRecordsReport(Worksheet $sheet, $records){
+        // Lấy style mẫu từ hàng 11
+        $styleArrayA11 = $sheet->getStyle('A11')->exportArray();
+        $rowHeight = $sheet->getRowDimension(11)->getRowHeight();
         
+        // Tìm merge của dòng 11
+        $mergeCols = [];
+        foreach ($sheet->getMergeCells() as $merge) {
+            if (preg_match('/([A-Z]+)11:([A-Z]+)11/', $merge, $m)) {
+                $mergeCols[] = [$m[1], $m[2]]; 
+            }
+        }
+        $index = 11;
+        $stt = 1;
+
+        foreach ($records as $record) {
+            //--- Gán dữ liệu ---
+            $sheet->setCellValue('A' . $index, $stt);
+            // Tên thiết bị
+            $sheet->setCellValue('B' . $index, $record->device->name ?? '');
+            // Nước sx
+            $sheet->setCellValue('D' . $index, $record->device->country_name ?? '');
+            // Năm sx
+            $sheet->setCellValue('E' . $index, $record->device->year ?? '');
+            // F: Số lượng
+            $sheet->setCellValue('F' . $index, $record->initial_total .' '. $record->device->unit);
+            // G: Đơn giá
+            $sheet->setCellValue('G' . $index, $record->device->price);
+            // H: Thành tiền
+            $sheet->setCellValue('H' . $index, $record->device->price * $record->initial_total);
+            // I: Hỏng
+            $sheet->setCellValue('I' . $index, $record->initial_damaged ?? 0);
+            // J: Số lượng (Hiện có)
+             $sheet->setCellValue('L' . $index, $record->final_total ?? 0);
+            // K: Đơn giá (Hiện có)
+            $sheet->setCellValue('L' . $index, $record->device->price ?? 0);
+            // L: Thành tiền (Hiện có)
+            $sheet->setCellValue('H' . $index, $record->device->price * $record->final_total);
+
+            // --- Copy merge, border và alignment ---
+            foreach ($mergeCols as [$colStart, $colEnd]) {
+                $newMerge = "{$colStart}{$index}:{$colEnd}{$index}";
+                $sheet->mergeCells($newMerge);
+                $sheet->getStyle($newMerge)->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['argb' => 'FF000000']
+                        ]
+                    ],
+                    'alignment' => [
+                        'horizontal' => ($colStart === 'B') ? Alignment::HORIZONTAL_LEFT : Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                        'wrapText' => true,
+                    ]
+                ]);
+            }
+            //--- Sao chép style FULL từ A11 sang A$index..M$index ---
+            for ($col = 'A'; $col <= 'L'; $col++) {
+                // Nếu ô này thuộc merge và không phải ô đầu → bỏ qua
+                $originalCell = $sheet->getCell($col . '11');
+                if ($originalCell->isInMergeRange() && !$originalCell->isMergeRangeValueCell()) {
+                     continue;
+                }
+                $sheet->getStyle($col . $index)->applyFromArray($styleArrayA11);
+            }
+            
+            // Thiết lập alignment riêng cho cột B (Tên thiết bị)
+            $sheet->getStyle('B'.$index)->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+            ->setVertical(Alignment::VERTICAL_CENTER)
+            ->setWrapText(true);
+
+            // Copy chiều cao dòng
+            $sheet->getRowDimension($index)->setRowHeight($rowHeight);
+            
+            $index++;
+            $stt++;
+        
+        }
+
     }
 }

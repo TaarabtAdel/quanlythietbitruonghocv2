@@ -85,6 +85,7 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     
     // export
     Route::get('inventory_audits/{id}/export', [InventoryAuditController::class, 'export'])->name('inventory_audits.export');
+    Route::get('inventory_audits/{id}/copy', [InventoryAuditController::class, 'copy'])->name('inventory_audits.copy');
     Route::resource('inventory_audits', InventoryAuditController::class);
 
     Route::resource('groups', GroupController::class);
