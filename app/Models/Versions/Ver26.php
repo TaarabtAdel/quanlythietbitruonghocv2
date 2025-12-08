@@ -9,16 +9,56 @@ use Illuminate\Support\Facades\DB;
 use App\Models\GroupRoleModel;
 use App\Models\AdminGroup;
 use App\Models\AdminRole;
+use App\Models\Device;
 
 class Ver26 extends Model
 {
     public static function doUpdate(){
         try {
             self::updateDatabase();
+            self::optimizeDeviceData();
             return true;
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    public static function optimizeDeviceData()
+    {
+        // Lấy tất cả các thiết bị cần tối ưu hóa giá
+        $devices = Device::all();
+
+        $count = 0;
+        
+        foreach ($devices as $device) {
+            $originalPrice = $device->price;
+
+            // 1. Kiểm tra xem giá có phải là một chuỗi (string) không
+            if (!is_string($originalPrice)) {
+                // Nếu giá đã là số hợp lệ, bỏ qua
+                continue;
+            }
+
+            // 2. Loại bỏ các ký tự phân tách hàng nghìn (dấu phẩy, dấu chấm, khoảng trắng)
+            // Lưu ý: Nếu bạn muốn giữ lại dấu thập phân (ví dụ: 7.5 triệu -> 7500000)
+            // bạn phải loại bỏ tất cả dấu chấm và phẩy.
+            // Ví dụ: "7.500.000" => "7500000"
+            // Ví dụ: "7,500,000" => "7500000"
+            
+            $cleanedPrice = str_replace(['.', ',', ' '], '', $originalPrice);
+            
+            // 3. Chuyển đổi chuỗi đã làm sạch thành số nguyên (bigint/integer)
+            $newPrice = (int) $cleanedPrice;
+
+            // 4. Chỉ cập nhật nếu giá trị đã thay đổi
+            if ($device->price !== $newPrice) {
+                $device->price = $newPrice;
+                $device->save();
+                $count++;
+            }
+        }
+
+        return "Đã tối ưu hóa thành công $count bản ghi giá thiết bị.";
     }
 
     public static function updateDatabase()
@@ -32,6 +72,7 @@ class Ver26 extends Model
                 $table->string('school_year', 9)->nullable(); 
                 $table->date('audit_date')->nullable(); // Ngày kiểm duyệt thực tế
                 $table->string('status')->default('Draft'); // Trạng thái
+                $table->date('deleted_at')->nullable();
                 $table->timestamps();
             });
         }
@@ -56,8 +97,14 @@ class Ver26 extends Model
         }
 
         Schema::table('devices', function (Blueprint $table) {
-            // Thêm cột 'broken' kiểu integer, mặc định là 0
-            $table->string('broken')->nullable();
+            // Chỉ thêm cột 'broken' nếu nó chưa tồn tại
+            if (!Schema::hasColumn('devices', 'broken')) {
+                // Bạn nên sử dụng kiểu integer cho cột 'broken' để lưu trạng thái
+                $table->integer('broken')->default(0)->nullable(false); 
+                
+                // Nếu bạn muốn giữ lại kiểu string như trong câu hỏi ban đầu:
+                // $table->string('broken')->nullable();
+            }
         });
     }
 

@@ -229,15 +229,15 @@ class InventoryAuditExport {
             // G: Đơn giá
             $sheet->setCellValue('G' . $index, $record->device->price);
             // H: Thành tiền
-            $sheet->setCellValue('H' . $index, $record->device->price * $record->initial_total);
+            $sheet->setCellValue('H' . $index, (int)$record->device->price * $record->initial_total);
             // I: Hỏng
             $sheet->setCellValue('I' . $index, $record->initial_damaged ?? 0);
             // J: Số lượng (Hiện có)
-             $sheet->setCellValue('L' . $index, $record->final_total ?? 0);
+            $sheet->setCellValue('J' . $index, $record->final_total ?? 0);
             // K: Đơn giá (Hiện có)
-            $sheet->setCellValue('L' . $index, $record->device->price ?? 0);
+            $sheet->setCellValue('K' . $index, $record->device->price ?? 0);
             // L: Thành tiền (Hiện có)
-            $sheet->setCellValue('H' . $index, $record->device->price * $record->final_total);
+            $sheet->setCellValue('L' . $index, (int)$record->device->price * $record->final_total);
 
             // --- Copy merge, border và alignment ---
             foreach ($mergeCols as [$colStart, $colEnd]) {

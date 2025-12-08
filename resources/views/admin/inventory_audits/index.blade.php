@@ -42,8 +42,8 @@
         {{-- Lọc theo Năm học --}}
         <div class="col-lg-3 col-md-4 mb-3">
             <label class="form-label fw-bold">Năm học</label>
-            <input class="form-control" name="school_year" type="text" placeholder="VD: 2024-2025"
-                value="{{ request()->school_year }}">
+            <x-form-input-school-years name="school_year" selected_id="{{ request()->school_year }}"
+                    autoSubmit="true" />
         </div>
         
         {{-- Lọc theo Trạng Thái (Sử dụng X-form-input-status hoặc Select Box thủ công) --}}
@@ -53,7 +53,6 @@
             <select name="status" class="form-control" onchange="this.form.submit()">
                 <option value="">-- Tất cả --</option>
                 <option value="-1" {{ request()->status == '-1' ? 'selected' : '' }}>Nháp</option>
-                <option value="0" {{ request()->status == '0' ? 'selected' : '' }}>Chờ duyệt</option>
                 <option value="1" {{ request()->status == '1' ? 'selected' : '' }}>Đã duyệt</option>
             </select>
             
@@ -98,7 +97,7 @@
                                 {{-- Giả định mối quan hệ 'user' đã được nạp eager load --}}
                                 <td>{{ @$item->user->name ?? 'Hệ thống' }}</td> 
                                 {{-- Sử dụng Accessor status_text đã định nghĩa trong Model --}}
-                                <td>{!! $item->status_text !!}</td> 
+                                <td>{!! $item->status_fm !!}</td> 
                                 <td>
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-light border dropdown-toggle dropdown-toggle-nocaret"
@@ -106,6 +105,12 @@
                                             <i class="bi bi-three-dots"></i>
                                         </button>
                                         <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route($route_prefix.'.show', $item->id) }}?page={{ request()->page }}">
+                                                    {{ __('sys.show') }}
+                                                </a>
+                                            </li>
                                             {{-- Nút Chỉnh sửa --}}
                                             @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_update'))
                                                 <li>

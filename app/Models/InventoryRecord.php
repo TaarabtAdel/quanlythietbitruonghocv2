@@ -45,6 +45,13 @@ class InventoryRecord extends Model
         return $this->belongsTo(InventoryAudit::class, 'inventory_audit_id'); 
     }
 
+    public function inventoryAudit()
+    {
+        // Giả định foreign key là 'inventory_audit_id'
+        // và local key là 'id'
+        return $this->belongsTo(InventoryAudit::class, 'inventory_audit_id', 'id');
+    }
+
     /**
      * Mối quan hệ: Một bản ghi chi tiết là của một thiết bị (Device).
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

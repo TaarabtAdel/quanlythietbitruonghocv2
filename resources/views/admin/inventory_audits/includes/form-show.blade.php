@@ -128,7 +128,7 @@
                     <td class="text-center align-middle">{{ $record->device->year ?? '' }}</td>
                     <td class="text-center align-middle">{{ $record->device->country ?? '' }}</td>
                     <td class="text-center align-middle">{{ $record->device->unit ?? '' }}</td>
-                    <td class="text-center align-middle">{{ $record->device->price ? number_format($record->device->price) : 0 }}</td>
+                    <td class="text-center align-middle">{{ (int)$record->device->price ? number_format((int)$record->device->price) : 0 }}</td>
 
                     {{-- Cột 7: Số lượng đầu năm (initial_total) --}}
                     <td class="text-center align-middle fw-bold">{{ $record->initial_total }}</td>

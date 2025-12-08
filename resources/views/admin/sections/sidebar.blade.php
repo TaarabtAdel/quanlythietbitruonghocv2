@@ -286,6 +286,12 @@
                         </a>
                     </li>
                     @endif
+                    <li>
+                        <a href="{{ route('admin.export.index', ['type' => 'InventoryAuditCombined']) }}">
+                            <span class="material-symbols-outlined">arrow_right</span>Sổ Theo Dõi Thiết Bị
+                        </a>
+                    </li>
+                    
 
                    
                     @if (Auth::check() && Auth::user()->hasPermission('Export_Device'))

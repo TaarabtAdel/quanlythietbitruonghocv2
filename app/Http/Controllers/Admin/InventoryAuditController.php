@@ -29,9 +29,11 @@ class InventoryAuditController extends Controller
             $name = trim($request->name);
             $query->where('name', 'like', "%{$name}%");
         }
-
         if ($request->status) {
             $query->where('status',$request->status);
+        }
+        if ($request->school_year) {
+            $query->where('school_year',$request->school_year);
         }
 
         $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
@@ -210,14 +212,14 @@ class InventoryAuditController extends Controller
             $item->save();
         }
         return redirect()
-            ->route($this->route_prefix.'index', ['page' => $request->page])
-            ->with('success', 'Mục đích mượn đã được xóa.');
+            ->route($this->route_prefix.'.index', ['page' => $request->page])
+            ->with('success', 'Phiếu đã được xóa.');
     }
     // copy
     public function copy(Request $request, string $id){
         try {
             $this->model::copyItem($id);
-            return redirect()->route($this->route_prefix.'index')->with('success', __('sys.copy_item_success'));
+            return redirect()->route($this->route_prefix.'.index')->with('success', __('sys.copy_item_success'));
         } catch (\Exception $e) {
             //Log::error('Item not found: ' . $e->getMessage());
             return redirect()->back()->with('error', __('sys.item_not_found'));
