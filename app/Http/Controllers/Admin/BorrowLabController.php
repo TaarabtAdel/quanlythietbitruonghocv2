@@ -61,7 +61,13 @@ class BorrowLabController extends Controller
 
         $nest_id = $request->nest_id;
         $query = $this->model::query(true);
+
         $query->whereBetween('borrow_date', array_values($startDateEndDate));
+
+        if ($request->sw_start_week && $request->sw_end_week) {
+            $query->whereBetween('borrow_date', [$request->sw_start_week,$request->sw_end_week]);
+        }
+
         if($request->nest_id){
             $query->whereHas('borrow.user', function ($query) use ($request) {
                 $query->where('nest_id', $request->nest_id );

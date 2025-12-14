@@ -68,11 +68,17 @@ class BorrowLab extends Model
                 $query->whereBetween('borrow_date', $startDateEndDate);
             });
         }
-        if( $request->week ){
-            $startDateEndDate = Borrow::getStartEndDateFromWeek($request->week);
-            $query->whereHas('borrow', function ($query) use ($startDateEndDate) {
-                $query->whereBetween('borrow_date', $startDateEndDate);
+        if ($request->sw_start_week && $request->sw_end_week) {
+            $query->whereHas('borrow', function ($query) use ($request) {
+                $query->whereBetween('borrow_date', [$request->sw_start_week,$request->sw_end_week]);
             });
+        }else{
+            if( $request->week ){
+                $startDateEndDate = Borrow::getStartEndDateFromWeek($request->week);
+                $query->whereHas('borrow', function ($query) use ($startDateEndDate) {
+                    $query->whereBetween('borrow_date', $startDateEndDate);
+                });
+            }
         }
 
         $query
@@ -112,7 +118,16 @@ class BorrowLab extends Model
     // Lấy danh sách phòng mượn theo tuần
     public static function getBorrowedLab($request){
         $items = [];
-        if( $request->week && $request->lab_id ){
+
+        $periods = [];
+        if ($request->sw_start_week && $request->sw_end_week) {
+           $periods = CarbonPeriod::create($request->sw_start_week,$request->sw_end_week);
+        }else if($request->week ){
+            $startDayEndDate = Borrow::getStartEndDateFromWeek($request->week);
+            $periods = CarbonPeriod::create($startDayEndDate['startDate'],$startDayEndDate['endDate']);
+        }
+
+        if( count($periods) && $request->lab_id ){
             $startDayEndDate = Borrow::getStartEndDateFromWeek($request->week);
             $periods = CarbonPeriod::create($startDayEndDate['startDate'],$startDayEndDate['endDate']);
             foreach ($periods as $date) {

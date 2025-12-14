@@ -1,0 +1,157 @@
+/* CSS Cho Plugin (Sử dụng prefix để tránh xung đột) */
+.custom-school-week-container {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    width: auto;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: Arial, sans-serif;
+}
+
+/* Định dạng các hàng Select */
+.custom-school-week-container>div:first-child,
+.custom-school-week-container>div:nth-child(2) {
+    padding: 10px 10px 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Tiêu đề danh sách tuần */
+.custom-school-week-list-title {
+    padding: 5px 10px;
+    border-bottom: 1px solid #eee;
+    font-weight: bold;
+    color: #333;
+}
+
+.custom-school-week-container label {
+    font-weight: 500;
+    margin-right: 10px;
+    white-space: nowrap;
+    color: #555;
+    flex-basis: 70px;
+}
+
+.custom-school-week-container select {
+    flex-grow: 1;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+/* Định dạng danh sách Tuần */
+.custom-school-week-weeks-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.custom-school-week-option {
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #eee;
+}
+
+.custom-school-week-option:last-child {
+    border-bottom: none;
+}
+
+.custom-school-week-option:hover {
+    background-color: #f0f0f0 !important;
+}
+
+/* Class active khi được chọn */
+.custom-school-week-option.custom-school-week-active {
+    background-color: #dbeaff;
+    font-weight: bold;
+    border-left: 3px solid #007bff;
+}
+
+/* Thông báo không có dữ liệu */
+.custom-school-week-no-data {
+    padding: 10px;
+    color: gray;
+    font-style: italic;
+}
+
+.school-week-input-style {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 350px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+.sw-clear-selection {
+    display: block;
+    text-align: center;
+    padding: 8px;
+    margin-top: 5px;
+    cursor: pointer;
+    background-color: #f8f9fa; /* Màu nền nhẹ */
+    color: #dc3545; /* Màu chữ đỏ */
+    border-top: 1px solid #dee2e6;
+    font-weight: 500;
+}
+
+.sw-clear-selection:hover {
+    background-color: #e2e6ea;
+    color: #c82333;
+}
+/* 1. Wrapper chứa input và icon */
+.sw-input-wrapper {
+    position: relative;
+    display: inline-block; /* Hoặc display: flex */
+    width: 100%; /* Đảm bảo wrapper chiếm đủ chiều rộng */
+}
+
+/* 2. Định vị icon Xóa */
+.sw-clear-icon {
+    position: absolute;
+    top: 50%;
+    right: 5px; /* Khoảng cách từ mép phải */
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #dc3545; /* Màu đỏ */
+    font-size: 1.5em;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0 5px;
+    background: transparent;
+    z-index: 10; /* Đảm bảo icon nằm trên input */
+    display: none; /* Mặc định ẩn, chỉ hiện khi có giá trị */
+}
+
+.sw-clear-icon:hover {
+    color: #c82333;
+}
+
+/* 3. Hiển thị icon khi input có giá trị */
+.school-week-selected + .sw-clear-icon { /* Chọn icon ngay sau input có class này */
+    display: block; 
+}
+
+/* Đảm bảo input có đủ padding bên phải để không bị che bởi icon */
+.sw-input-wrapper input[type="text"] {
+    padding-right: 30px !important; /* Thêm padding đủ rộng cho icon */
+}
+
+/* Quy tắc in đậm cũ (giữ nguyên) */
+/* .school-week-selected {
+    font-weight: bold;
+    color: #004d99;
+    border-color: #007bff; 
+} */
+ li.custom-school-week-option.active {
+    font-weight: bold;
+    color: green;
+}

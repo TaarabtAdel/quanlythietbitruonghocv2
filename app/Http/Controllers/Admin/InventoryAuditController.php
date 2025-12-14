@@ -38,6 +38,13 @@ class InventoryAuditController extends Controller
 
         $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
 
+        if( $request->ajax() ){
+            return response()->json([
+                'success' => true,
+                'data' => $items,
+            ]);
+        }
+
         $params = [
             'route_prefix'  => $this->route_prefix,
             'model'         => $this->model,

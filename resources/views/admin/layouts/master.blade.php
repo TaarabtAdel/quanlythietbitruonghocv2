@@ -32,9 +32,11 @@
     <link href="/admin-assets/css/main.css" rel="stylesheet">
     <link href="/admin-assets/css/dark-theme.css" rel="stylesheet">
     <script src="/admin-assets/js/jquery.min.js"></script>
+    <link href="/admin-assets/css/school-week-plugin.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/weekSelect/weekSelect.js"></script>
+    <script src="/admin-assets/plugins/select2/js/select2.min.js"></script>
     @stack('header')
 </head>
 
@@ -64,7 +66,7 @@
     </script>
     <script src="/admin-assets/plugins/notifications/js/lobibox.min.js">
     </script>
-    <script src="/admin-assets/plugins/select2/js/select2.min.js"></script>
+    <script src="/admin-assets/js/school-week-plugin.js"></script>
 
     <!--BS Scripts-->
     <script src="/admin-assets/js/bootstrap.bundle.min.js"></script>

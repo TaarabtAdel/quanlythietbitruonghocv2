@@ -46,7 +46,7 @@ class InventoryAuditCombinedExport {
         $yearsToExport = array_filter($additionalYears); // Chỉ lấy các năm không rỗng
 
         // 2. Lấy dữ liệu năm gốc và kiểm tra
-        $inventory_audit_origin = InventoryAudit::where('school_year', $origin_year)->first();
+        $inventory_audit_origin = InventoryAudit::where('id', $origin_year)->first();
         if (!$inventory_audit_origin) {
             return "Không tìm thấy phiếu kiểm kê cho năm học gốc: " . $origin_year;
         }
@@ -80,7 +80,7 @@ class InventoryAuditCombinedExport {
             $commonData, 
             $unionDevices, // Danh sách Union
             $allAuditData, // Tất cả dữ liệu Audit
-            $origin_year, // Năm gốc
+            $origin_year, // ID Năm gốc
             $yearsToExport // Các năm phụ
         );
 
@@ -119,7 +119,7 @@ class InventoryAuditCombinedExport {
     private function getAllDeviceRecords(array $allYearsToQuery) 
     {
         // Lấy InventoryAudit IDs của tất cả các năm học cần xuất
-        $auditIds = InventoryAudit::whereIn('school_year', $allYearsToQuery)
+        $auditIds = InventoryAudit::whereIn('id', $allYearsToQuery)
                                   ->pluck('id', 'school_year')
                                   ->toArray();
 
@@ -166,6 +166,7 @@ class InventoryAuditCombinedExport {
 
     private function fillSheet(Worksheet $sheet, $inventory_audit_origin, $data, $unionDevices, array $allAuditData, $originYear, array $yearsToExport)
     {
+        $originYear = InventoryAudit::find($originYear)->school_year;
         // 1. Điền Dữ Liệu Cố Định
         $sheet->setCellValue('A1', $data['company_parent'] ?? '');
         $sheet->setCellValue('A2', $data['company_name'] ?? '');
@@ -189,6 +190,7 @@ class InventoryAuditCombinedExport {
         $titleIndex = 0;
 
         foreach ($yearsToExport as $year) {
+            $year = InventoryAudit::find($year)->school_year;
             $colName11 = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex);
             
             // 1. Thiết lập tiêu đề năm học chính (Hàng 11)

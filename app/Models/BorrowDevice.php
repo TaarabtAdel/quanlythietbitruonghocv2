@@ -71,11 +71,18 @@ class BorrowDevice extends Model
                 $query->whereBetween('borrow_date', $startDateEndDate);
             });
         }
-        if( $request->week ){
-            $startDateEndDate = Borrow::getStartEndDateFromWeek($request->week);
-            $query->whereHas('borrow', function ($query) use ($startDateEndDate) {
-                $query->whereBetween('borrow_date', $startDateEndDate);
+        
+        if ($request->sw_start_week && $request->sw_end_week) {
+            $query->whereHas('borrow', function ($query) use ($request) {
+                $query->whereBetween('borrow_date', [$request->sw_start_week,$request->sw_end_week]);
             });
+        }else{
+            if( $request->week ){
+                $startDateEndDate = Borrow::getStartEndDateFromWeek($request->week);
+                $query->whereHas('borrow', function ($query) use ($startDateEndDate) {
+                    $query->whereBetween('borrow_date', $startDateEndDate);
+                });
+            }
         }
 
         $query->orderBy('borrow_date', 'asc')
