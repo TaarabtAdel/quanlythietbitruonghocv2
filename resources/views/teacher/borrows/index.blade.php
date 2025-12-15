@@ -17,6 +17,9 @@
     @if( isset(request()->borrow_date) )
     <p class="mb-2 text-success">Dữ liệu đang hiển thị vào ngày <span class="fw-bold">{{ date('d/m/Y',strtotime(request()->borrow_date)) }}</span> </p>
     @endif
+     @if( isset(request()->sw_start_week) && isset(request()->sw_end_week) )
+    <p class="mb-2 text-success">Dữ liệu đang hiển thị từ ngày <span class="fw-bold">{{ date('d/m/Y',strtotime(request()->sw_start_week)) }}</span> đến <span class="fw-bold">{{ date('d/m/Y',strtotime(request()->sw_end_week)) }}</span> </p>
+    @endif
     <div class="row">
         <!-- <div class="col-lg-3 col-md-6 col-sm-12">
             <label class="form-label fw-bold">Buổi</label>
@@ -32,8 +35,8 @@
         </div>
         <div class="col-lg-3 col-md-6 col-sm-12">
             <label class="form-label fw-bold">Ngày dạy : Tuần</label>
-            <input type="week" min="2022-W01" max="{{ date('Y') }}-W99" name="week" class="form-control"
-                value="{{ request()->week }}" onchange="this.form.submit()">
+            <x-form-input-school-week name="week" selected_id="{{ request()->week }}"
+                    autoSubmit="true" />
         </div>
         <div class="col-lg-3 col-md-6 col-sm-12">
             <label class="form-label fw-bold">Ngày dạy : Năm</label>

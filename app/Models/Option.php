@@ -24,6 +24,10 @@ class Option extends Model
                 ->value('option_value');
         return $option_value ?? $default;
     }
+    public static function get_option_by_name($name,$default = ''){
+        $option_value = self::where('option_name',$name)
+                ->value('option_value');
+    }
     public static function get_option_name($option_name,$default = ''){
         $option_value = self::where('option_name',$option_name)->value('option_value');
         return $option_value ?? $default;

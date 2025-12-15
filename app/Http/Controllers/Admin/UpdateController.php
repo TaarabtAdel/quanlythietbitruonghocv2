@@ -29,6 +29,9 @@ class UpdateController extends Controller
             case '2.5':
                 $updated = \App\Models\Versions\Ver25::doUpdate();
                 break;
+            case '2.6':
+                $updated = \App\Models\Versions\Ver26::doUpdate();
+                break;
             default:
                 $updated = \App\Models\Versions\Ver25::doUpdate();
                 break;

@@ -7,10 +7,12 @@
 
 <!-- Item actions -->
 <form action="{{ route($route_prefix.'labs') }}" method="get">
+    @if( isset(request()->sw_start_week) && isset(request()->sw_end_week) )
+    <p class="mb-2">Dữ liệu đang hiển thị từ ngày <span class="fw-bold">{{ date('d/m/Y',strtotime(request()->sw_start_week)) }}</span> đến <span class="fw-bold">{{ date('d/m/Y',strtotime(request()->sw_end_week)) }}</span> </p>
+    @else
+    <p class="mb-2">Dữ liệu đang hiển thị từ <span class="fw-bold">{{ @$startDate->format('d/m/Y') }}</span> đến <span class="fw-bold">{{ @$endDate->format('d/m/Y') }}</span> </p>
+    @endif
     <p class="mb-2">Lưu ý: <br> 
-        - Dữ liệu đang hiển thị từ <span class="fw-bold">{{ @$startDate->format('d/m/Y') }}</span> đến
-        <span class="fw-bold">{{ @$endDate->format('d/m/Y') }}</span>
-        <br> 
         - Xem chi tiết một phòng bằng cách chọn Phòng Học <br>
         - Xem chi tiết một tổ bằng cách chọn Tổ
     </p>
@@ -41,8 +43,9 @@
         </div>
         <div class="col col-12 col-lg-2">
             <label class="form-label fw-bold">Ngày dạy : Tuần</label>
-            <input type="week" min="2022-W01" max="{{ date('Y') }}-W99" name="week" class="form-control"
-                value="{{ request()->week }}" onchange="this.form.submit()">
+            <x-form-input-school-week name="week" selected_id="{{ request()->week }}" autoSubmit="true" />
+            <!-- <input type="week" min="2022-W01" max="{{ date('Y') }}-W99" name="week" class="form-control"
+                value="{{ request()->week }}" onchange="this.form.submit()"> -->
         </div>
     </div>
 </form>

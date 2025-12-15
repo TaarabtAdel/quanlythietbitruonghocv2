@@ -128,6 +128,17 @@
                         </li>
                         @endif
                     @endif
+
+                    @if(\App\Models\Option::get_option_by_name('app_verison') >= '2.6')
+                        @if (Auth::check() && Auth::user()->hasPermission('InventoryAudit'))
+                        <li>
+                            <a href="{{ route('admin.inventory_audits.index') }}">
+                                <span class="material-symbols-outlined">arrow_right</span>Phiếu Kiểm Kê
+                            </a>
+                        </li>
+                        @endif
+                    @endif
+
                 </ul>
             </li>
             @endif
@@ -276,6 +287,16 @@
                         </a>
                     </li>
                     @endif
+
+                    @if (Auth::check() && Auth::user()->hasPermission('InventoryAuditCombined') && \App\Models\Option::get_option_by_name('app_verison') >= '2.6')
+                    <li>
+                        <a href="{{ route('admin.export.index', ['type' => 'InventoryAuditCombined']) }}">
+                            <span class="material-symbols-outlined">arrow_right</span>Sổ Theo Dõi Thiết Bị
+                        </a>
+                    </li>
+                    @endif
+
+                   
                     @if (Auth::check() && Auth::user()->hasPermission('Export_Device'))
                     <li>
                         <a href="{{ route('admin.export.index', ['type' => 'Device']) }}">

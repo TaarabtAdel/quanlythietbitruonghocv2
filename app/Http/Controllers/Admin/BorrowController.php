@@ -66,6 +66,9 @@ class BorrowController extends Controller
                 $startDateEndDate = $this->model::getStartEndDateFromYear($request->school_years);
                 $query->whereBetween('borrow_date', $startDateEndDate);
             }
+            if ($request->sw_start_week && $request->sw_end_week) {
+                $query->whereBetween('borrow_date', [$request->sw_start_week,$request->sw_end_week]);
+            }
             $query->orderBy('id','DESC');
             $items = $query->paginate(20);
 

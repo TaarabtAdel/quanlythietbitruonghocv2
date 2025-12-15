@@ -110,6 +110,7 @@
     "BorrowDetail" : "Phiếu báo mượn",
     "Lab" : "Phòng bộ môn",
     "BorrowDevice" : "Báo cáo mượn theo mục đích sử dụng",
+    "InventoryAuditCombined" : "Sổ theo dõi thiết bị",
     "Asset" : "Tài sản",
     "Asset_viewAny": "Xem Danh Sách",
     "Asset_view": "Xem Chi Tiết",

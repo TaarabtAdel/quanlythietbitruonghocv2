@@ -34,8 +34,12 @@ class BorrowController extends Controller
             $query->where('status',$request->status);
         }
         if( $request->borrow_date){
-                $query->whereDate('borrow_date',$request->borrow_date);
-            }
+            $query->whereDate('borrow_date',$request->borrow_date);
+        }
+        if ($request->sw_start_week && $request->sw_end_week) {
+            $query->whereBetween('borrow_date', [$request->sw_start_week,$request->sw_end_week]);
+            $query->orderBy('borrow_date','ASC');
+        }
 
         if ($request && $request->school_years) {
             $yearRange = explode('-', $request->school_years);

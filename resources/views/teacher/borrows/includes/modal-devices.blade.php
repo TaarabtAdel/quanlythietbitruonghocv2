@@ -1,4 +1,5 @@
 <div class="modal fade" id="modal-devices" tabindex="-1" aria-hidden="true">
+    <input type="hidden" id="added_ids">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -28,7 +29,9 @@
         jQuery('body').on('click', wrapperResults + ' .page-link', function(e) {
             e.preventDefault();
             let url = jQuery(this).attr('href');
-            getAjaxTable(url, wrapperResults, positionUrl);
+            let filterData = jQuery(wrapperResults).find('.form-search').serialize();
+            getAjaxTable(url, wrapperResults, positionUrl, filterData);
+            return false;
         });
         jQuery('body').on('change', wrapperResults + ' .f-filter', function() {
             let filterData = jQuery(wrapperResults).find('.form-search').serialize();

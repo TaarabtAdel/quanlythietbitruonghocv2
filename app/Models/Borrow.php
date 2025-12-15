@@ -13,7 +13,7 @@ class Borrow extends MainModel
     use HasFactory;
     protected $table ='borrows';
     use SoftDeletes;
-     const ACTIVE    = 1;
+    const ACTIVE    = 1;
     const INACTIVE  = 0;
     const DRAFT     = -1;
     const CANCELED     = -2;
@@ -494,9 +494,14 @@ class Borrow extends MainModel
     // Custom methods
     public static function getBorrowedLabs($request){
         $items = [];
-        if( $request->week ){
+        $periods = [];
+        if ($request->sw_start_week && $request->sw_end_week) {
+           $periods = CarbonPeriod::create($request->sw_start_week,$request->sw_end_week);
+        }else if($request->week ){
             $startDayEndDate = self::getStartEndDateFromWeek($request->week);
             $periods = CarbonPeriod::create($startDayEndDate['startDate'],$startDayEndDate['endDate']);
+        }
+        if( !empty($periods)){
             foreach ($periods as $date) {
                 $date = $date->format('Y-m-d');
                 $items[$date] = [];
@@ -558,9 +563,15 @@ class Borrow extends MainModel
     // Lấy danh sách phòng mượn theo tuần
     public static function getBorrowedLab($request){
         $items = [];
-        if( $request->week && $request->lab_id ){
+        $periods = [];
+        if ($request->sw_start_week && $request->sw_end_week) {
+           $periods = CarbonPeriod::create($request->sw_start_week,$request->sw_end_week);
+        }else if($request->week ){
             $startDayEndDate = self::getStartEndDateFromWeek($request->week);
             $periods = CarbonPeriod::create($startDayEndDate['startDate'],$startDayEndDate['endDate']);
+        }
+
+        if( count($periods) && $request->lab_id ){
             foreach ($periods as $date) {
                 $date = $date->format('Y-m-d');
                 $items[$date] = [];
@@ -619,7 +630,15 @@ class Borrow extends MainModel
     // Lấy dang sách phòng mượn tổng hợp theo tuần
     public static function getBorrowedLabsSummary($request){
         // 1. Lấy ngày bắt đầu và kết thúc của tuần
-        $startDayEndDate = self::getStartEndDateFromWeek($request->week);
+        if($request->week){
+            $startDayEndDate = self::getStartEndDateFromWeek($request->week);
+        }
+        if($request->sw_start_week && $request->sw_end_week){
+            $startDayEndDate = [
+                'startDate' => Carbon::parse($request->sw_start_week),
+                'endDate'   => Carbon::parse($request->sw_end_week),
+            ];
+        }
 
         // 2. Thực hiện truy vấn và lấy dữ liệu dưới dạng Collection
         $borrow_labs = BorrowDevice::select('*')

@@ -28,7 +28,7 @@ class BorrowLabExport {
     public function rules(): array
     {
         $rules = [
-            'week' => 'required',
+            'sw_start_week' => 'required',
         ];
         return $rules;
     }
@@ -81,7 +81,15 @@ class BorrowLabExport {
 
 
             // Tieu de
-            $startDayEndDate = Borrow::getStartEndDateFromWeek($request->week);
+            if ($request->week) {
+                $startDayEndDate = Borrow::getStartEndDateFromWeek($request->week);
+            }
+            if ($request->sw_start_week && $request->sw_end_week) {
+                $startDayEndDate = [
+                    'startDate' => Carbon::parse($request->sw_start_week),
+                    'endDate'   => Carbon::parse($request->sw_end_week),
+                ];
+            }
             $startDay   = $startDayEndDate['startDate']->format('d/m/Y') ?? '';
             $endDay     = $startDayEndDate['endDate']->format('d/m/Y') ?? '';
             $sheet->setCellValue('C6',$startDay);
@@ -133,9 +141,19 @@ class BorrowLabExport {
         ]);
         $borrowLabs = Borrow::getBorrowedLab($request);
         // Tieu de
-        $startDayEndDate = Borrow::getStartEndDateFromWeek($request->week);
+        if ($request->week) {
+            $startDayEndDate = Borrow::getStartEndDateFromWeek($request->week);
+        }
+        if ($request->sw_start_week && $request->sw_end_week) {
+            $startDayEndDate = [
+                'startDate' => Carbon::parse($request->sw_start_week),
+                'endDate'   => Carbon::parse($request->sw_end_week),
+            ];
+        }
         $startDay   = $startDayEndDate['startDate']->format('d/m/Y') ?? '';
         $endDay     = $startDayEndDate['endDate']->format('d/m/Y') ?? '';
+
+
         $sheet->setCellValue('A4','LỊCH BÁO MƯỢN '.mb_strtoupper($lab_name, 'UTF-8'));
         $sheet->setCellValue('C6',$startDay);
         $sheet->setCellValue('C7',$endDay);
