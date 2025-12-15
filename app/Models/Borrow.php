@@ -270,7 +270,7 @@ class Borrow extends MainModel
             }
 
             // Lưu thiết bị tự chuẩn bị
-            if( count($request->quantity_fake_devices) ){
+            if( !empty($request->quantity_fake_devices) ){
                 $borrow_devices = $item->borrow_devices()->where('tiet',$tiet);
                 // Lưu thiết bị ảo khi ko có thiết bị
                 if($borrow_devices->count() == 0){
@@ -425,6 +425,26 @@ class Borrow extends MainModel
             })->filter()->toArray();
 
             $names = implode('<br>', $deviceWithQty);
+        }
+
+        return $names;
+    }
+
+    public function getFakeDeviceNamesAttribute()
+    {
+        $names = '';
+
+        if ($this->borrow_fake_devices && $this->borrow_fake_devices->count()) {
+            $names = '<br><i>Thiết bị tự chuẩn bị</i>';
+            // $deviceWithQty = $this->borrow_devices->map(function ($borrowDevice) {
+            //     $device = \App\Models\Device::find($borrowDevice->device_id);
+            //     if ($device) {
+            //         return $device->name . '<strong class="text-danger"> (x' . $borrowDevice->quantity . ') </strong>';
+            //     }
+            //     return null;
+            // })->filter()->toArray();
+
+            // $names = implode('<br>', $deviceWithQty);
         }
 
         return $names;

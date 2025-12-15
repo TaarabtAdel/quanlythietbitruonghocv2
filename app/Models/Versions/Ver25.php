@@ -23,6 +23,16 @@ class Ver25 extends Model
 
     public static function updateDatabase()
     {
+        \App\Models\Option::updateOrCreate(
+            ['option_name' => 'enable_fake_device'], // điều kiện tìm
+            [
+                'option_value' => 0,
+                'option_label' => 'Cho phép giáo viên đưa lên thiết thị tự chuẩn bị trong phiếu mượn',
+                'option_group' => 'borrow_device',
+                'option_group_name' => 'Mượn thiết bị',
+            ]
+        );
+
         if (!Schema::hasTable('borrow_device_fakes')) {
             Schema::create('borrow_device_fakes', function (Blueprint $table) {
                 $table->id();
