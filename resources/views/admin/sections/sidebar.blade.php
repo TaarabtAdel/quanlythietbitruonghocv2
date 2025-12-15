@@ -129,7 +129,7 @@
                         @endif
                     @endif
 
-                    @if(\App\Models\Option::get_option_by_name('app_verison') >= '2.6')
+                    @if(\App\Models\Option::get_option_name('app_verison') >= '2.6')
                         @if (Auth::check() && Auth::user()->hasPermission('InventoryAudit'))
                         <li>
                             <a href="{{ route('admin.inventory_audits.index') }}">
@@ -288,7 +288,7 @@
                     </li>
                     @endif
 
-                    @if (Auth::check() && Auth::user()->hasPermission('InventoryAuditCombined') && \App\Models\Option::get_option_by_name('app_verison') >= '2.6')
+                    @if (Auth::check() && Auth::user()->hasPermission('InventoryAuditCombined') && \App\Models\Option::get_option_name('app_verison') >= '2.6')
                     <li>
                         <a href="{{ route('admin.export.index', ['type' => 'InventoryAuditCombined']) }}">
                             <span class="material-symbols-outlined">arrow_right</span>Sổ Theo Dõi Thiết Bị
