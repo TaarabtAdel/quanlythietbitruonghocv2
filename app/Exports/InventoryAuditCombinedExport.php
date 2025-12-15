@@ -270,8 +270,8 @@ class InventoryAuditCombinedExport {
             
             // --- Gán dữ liệu Các Năm Phụ (Bắt đầu từ cột N) ---
             $currentColIndex = 14; 
-            
             foreach ($yearsToExport as $schoolYear) {
+                $schoolYear = InventoryAudit::find($schoolYear)->school_year;
                 // Lấy dữ liệu của năm học này cho thiết bị hiện tại (sử dụng ?? [] để điền 0 nếu không có)
                 $yearData = $allAuditData[$deviceId][$schoolYear] ?? [];
                 
