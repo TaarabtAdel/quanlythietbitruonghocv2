@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\SystemController;
 use App\Http\Controllers\Admin\BorrowLabController;
 use App\Http\Controllers\Admin\UpdateController;
 use App\Http\Controllers\Admin\InventoryAuditController;
+use App\Http\Controllers\Admin\CurriculumController;
 
 // Teacher Controllers
 use App\Http\Controllers\Teacher\AssetController as TeacherAssetController;
@@ -44,6 +45,7 @@ use App\Http\Controllers\Teacher\RoomController as TeacherRoomController;
 use App\Http\Controllers\Teacher\UserController as TeacherUserController;
 use App\Http\Controllers\Teacher\HomeController as TeacherHomeController;
 use App\Http\Controllers\Teacher\BorrowLabController as TeacherBorrowLabController;
+use App\Http\Controllers\Teacher\CurriculumController as TeacherCurriculumController;
 
 // Routes for Admin Authentication
 Route::get('/admin/login', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login');
@@ -93,6 +95,7 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('nests', NestController::class);
     Route::resource('rooms', RoomController::class);
     Route::resource('users', UserController::class);
+    Route::resource('curricula', CurriculumController::class);
 
     Route::get('/system/update', [UpdateController::class, 'index'])->name('system.update');
     Route::post('/system/doUpdate', [UpdateController::class, 'doUpdate'])->name('system.doUpdate');
@@ -138,5 +141,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('profile', [TeacherUserController::class, 'profile'])->name('users.profile');
     Route::get('profileEdit', [TeacherUserController::class, 'profileEdit'])->name('users.profileEdit');
     Route::post('postProfileEdit', [TeacherUserController::class, 'postProfileEdit'])->name('users.postProfileEdit');
+
+    // Chương trình đào tạo
+    Route::get('curricula', [TeacherCurriculumController::class, 'index'])->name('curricula.index');
+    Route::get('curricula/{id}', [TeacherCurriculumController::class, 'show'])->name('curricula.show');
 });
 
