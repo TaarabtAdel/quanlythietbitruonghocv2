@@ -36,17 +36,17 @@ class CurriculumImport implements ToCollection
             }
         }
 
-        // Validation - cột đầu tiên là tên bài học (lesson_name)
+        // Validation - cột thứ ba là tên bài học (lesson_name)
         Validator::make($rows->toArray(), [
-            '*.3' => 'required', // Tên bài học là bắt buộc (cột D)
+            '*.2' => 'required', // Tên bài học là bắt buộc (cột C)
         ],[
-            '*.3.required' => 'Tên bài học ở hàng :attribute là bắt buộc.',
+            '*.2.required' => 'Tên bài học ở hàng :attribute là bắt buộc.',
         ])->validate();
 
         DB::beginTransaction();
         try {
-            // Tạo hoặc tìm curriculum dựa trên academic_year, department_id, grade
-            // Format Excel: Cột A = sub_subject_type, Cột B = week, Cột C = lesson_number, Cột D = lesson_name, Cột E = note
+            // Tạo hoặc tìm curriculum dựa trên academic_year, department_id, grade, subject_type
+            // Format Excel: Cột A = week, Cột B = lesson_number, Cột C = lesson_name, Cột D = note
             
             if (empty($this->department_id)) {
                 throw new \Exception('Vui lòng chọn bộ môn');
@@ -56,6 +56,7 @@ class CurriculumImport implements ToCollection
             $curriculum = Curriculum::where('academic_year', $this->school_year)
                 ->where('department_id', $this->department_id)
                 ->where('grade', $this->grade)
+                ->where('subject_type', $this->subject_type)
                 ->first();
 
             if (!$curriculum) {
@@ -63,6 +64,7 @@ class CurriculumImport implements ToCollection
                     'academic_year' => $this->school_year,
                     'department_id' => $this->department_id,
                     'grade' => $this->grade,
+                    'subject_type' => $this->subject_type,
                 ]);
             }
 
@@ -78,17 +80,16 @@ class CurriculumImport implements ToCollection
                 }
                 
                 // Bỏ qua dòng không có tên bài học
-                if (empty($row[3])) {
+                if (empty($row[2])) {
                     continue;
                 }
 
                 $details[] = [
                     'curriculum_id' => $curriculum->id,
-                    'sub_subject_type' => $row[0] ?? null, // Loại phân môn (cột A)
-                    'week' => !empty($row[1]) ? (int)$row[1] : null, // Tuần (cột B)
-                    'lesson_number' => !empty($row[2]) ? (int)$row[2] : null, // Số tiết (cột C)
-                    'lesson_name' => $row[3] ?? null, // Tên bài học (cột D)
-                    'note' => $row[4] ?? null, // Ghi chú (cột E)
+                    'week' => !empty($row[0]) ? (int)$row[0] : null, // Tuần (cột A)
+                    'lesson_number' => !empty($row[1]) ? (int)$row[1] : null, // Số tiết (cột B)
+                    'lesson_name' => $row[2] ?? null, // Tên bài học (cột C)
+                    'note' => $row[3] ?? null, // Ghi chú (cột D)
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];

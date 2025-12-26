@@ -23,6 +23,24 @@
             <x-form-input-error field="grade"/>
         </div>
 
+        <div class="mb-4">
+            <label class="mb-3">Phân môn</label>
+            <select name="subject_type" class="form-control">
+                <option value="">--- Chọn phân môn ---</option>
+                <option value="co_ban" {{ ($item->subject_type ?? old('subject_type')) == 'co_ban' ? 'selected' : '' }}>Cơ bản</option>
+                <option value="chuyen_sau" {{ ($item->subject_type ?? old('subject_type')) == 'chuyen_sau' ? 'selected' : '' }}>Chuyên sâu</option>
+                <option value="tu_chon" {{ ($item->subject_type ?? old('subject_type')) == 'tu_chon' ? 'selected' : '' }}>Tự chọn</option>
+                <option value="bat_buoc" {{ ($item->subject_type ?? old('subject_type')) == 'bat_buoc' ? 'selected' : '' }}>Bắt buộc</option>
+            </select>
+            <x-form-input-error field="subject_type"/>
+        </div>
+
+        <div class="mb-4">
+            <label class="mb-3">Ghi chú</label>
+            <textarea class="form-control" name="note" rows="3">{{ $item->note ?? old('note') }}</textarea>
+            <x-form-input-error field="note"/>
+        </div>
+
         <div class="card mt-4">
             <div class="card-header">
                 <h5 class="card-title mb-0">Chi tiết phân phối chương trình</h5>
@@ -33,7 +51,6 @@
                         <thead class="table-light">
                             <tr>
                                 <th width="50" class="text-center">STT</th>
-                                <th>Loại phân môn</th>
                                 <th width="100" class="text-center">Tuần</th>
                                 <th width="100" class="text-center">Số tiết</th>
                                 <th>Tên bài học <span class="text-danger">(*)</span></th>
@@ -46,15 +63,6 @@
                                 @foreach($item->details as $index => $detail)
                                 <tr class="detail-row" data-index="{{ $index }}">
                                     <td class="text-center align-middle">{{ $index + 1 }}</td>
-                                    <td>
-                                        <select name="details[{{ $index }}][sub_subject_type]" class="form-control form-control-sm">
-                                            <option value="">---</option>
-                                            <option value="co_ban" {{ $detail->sub_subject_type == 'co_ban' ? 'selected' : '' }}>Cơ bản</option>
-                                            <option value="chuyen_sau" {{ $detail->sub_subject_type == 'chuyen_sau' ? 'selected' : '' }}>Chuyên sâu</option>
-                                            <option value="tu_chon" {{ $detail->sub_subject_type == 'tu_chon' ? 'selected' : '' }}>Tự chọn</option>
-                                            <option value="bat_buoc" {{ $detail->sub_subject_type == 'bat_buoc' ? 'selected' : '' }}>Bắt buộc</option>
-                                        </select>
-                                    </td>
                                     <td>
                                         <input type="number" name="details[{{ $index }}][week]" class="form-control form-control-sm text-center" value="{{ $detail->week }}" placeholder="Tuần" min="1">
                                     </td>
@@ -77,15 +85,6 @@
                             @else
                                 <tr class="detail-row" data-index="0">
                                     <td class="text-center align-middle">1</td>
-                                    <td>
-                                        <select name="details[0][sub_subject_type]" class="form-control form-control-sm">
-                                            <option value="">---</option>
-                                            <option value="co_ban">Cơ bản</option>
-                                            <option value="chuyen_sau">Chuyên sâu</option>
-                                            <option value="tu_chon">Tự chọn</option>
-                                            <option value="bat_buoc">Bắt buộc</option>
-                                        </select>
-                                    </td>
                                     <td>
                                         <input type="number" name="details[0][week]" class="form-control form-control-sm text-center" placeholder="Tuần" min="1">
                                     </td>

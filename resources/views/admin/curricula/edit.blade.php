@@ -43,15 +43,6 @@ jQuery(document).ready(function($) {
             <tr class="detail-row" data-index="${detailCount}">
                 <td class="text-center align-middle">${detailCount}</td>
                 <td>
-                    <select name="details[${detailCount}][sub_subject_type]" class="form-control form-control-sm">
-                        <option value="">---</option>
-                        <option value="co_ban">Cơ bản</option>
-                        <option value="chuyen_sau">Chuyên sâu</option>
-                        <option value="tu_chon">Tự chọn</option>
-                        <option value="bat_buoc">Bắt buộc</option>
-                    </select>
-                </td>
-                <td>
                     <input type="number" name="details[${detailCount}][week]" class="form-control form-control-sm text-center" placeholder="Tuần" min="1">
                 </td>
                 <td>

@@ -8,9 +8,11 @@ class Curriculum extends Model
 {
     protected $table = 'curriculums';
     protected $fillable = [
-        'academic_year',
-        'department_id',
-        'grade',
+        'academic_year',//năm học   
+        'department_id',//Môn học
+        'grade',//khối
+        'subject_type',//Phân môn
+        'note',//Ghi chú
     ];
     const ACTIVE    = 1;
     const INACTIVE  = 0;

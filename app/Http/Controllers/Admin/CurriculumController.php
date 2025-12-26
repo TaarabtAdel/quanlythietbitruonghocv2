@@ -33,6 +33,10 @@ class CurriculumController extends Controller
             $query->where('grade', $request->grade);
         }
 
+        if ($request->filled('subject_type')) {
+            $query->where('subject_type', $request->subject_type);
+        }
+
         $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
 
         $params = [
@@ -68,6 +72,8 @@ class CurriculumController extends Controller
             'academic_year' => 'required|string',
             'department_id' => 'required|exists:departments,id',
             'grade'        => 'nullable|string',
+            'subject_type' => 'nullable|string',
+            'note'         => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -82,7 +88,6 @@ class CurriculumController extends Controller
                     if (!empty($detail['lesson_name'])) {
                         $details[] = [
                             'curriculum_id' => $curriculum->id,
-                            'sub_subject_type' => $detail['sub_subject_type'] ?? null,
                             'week' => !empty($detail['week']) ? (int)$detail['week'] : null,
                             'lesson_number' => !empty($detail['lesson_number']) ? (int)$detail['lesson_number'] : null,
                             'lesson_name' => $detail['lesson_name'],
@@ -154,6 +159,8 @@ class CurriculumController extends Controller
             'academic_year' => 'required|string',
             'department_id' => 'required|exists:departments,id',
             'grade'        => 'nullable|string',
+            'subject_type' => 'nullable|string',
+            'note'         => 'nullable|string',
         ]);
 
         DB::beginTransaction();

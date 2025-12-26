@@ -35,6 +35,16 @@
                 <option value="12" {{ request()->grade == '12' ? 'selected' : '' }}>Khối 12</option>
             </select>
         </div>
+        <div class="col">
+            <label class="form-label fw-bold">Phân môn</label>
+            <select name="subject_type" class="form-control" onchange="this.form.submit()">
+                <option value="">--- Tất cả ---</option>
+                <option value="co_ban" {{ request()->subject_type == 'co_ban' ? 'selected' : '' }}>Cơ bản</option>
+                <option value="chuyen_sau" {{ request()->subject_type == 'chuyen_sau' ? 'selected' : '' }}>Chuyên sâu</option>
+                <option value="tu_chon" {{ request()->subject_type == 'tu_chon' ? 'selected' : '' }}>Tự chọn</option>
+                <option value="bat_buoc" {{ request()->subject_type == 'bat_buoc' ? 'selected' : '' }}>Bắt buộc</option>
+            </select>
+        </div>
     </div>
 </form>
 
@@ -49,6 +59,7 @@
                             <th>Năm học</th>
                             <th>Bộ môn</th>
                             <th>Khối</th>
+                            <th>Phân môn</th>
                             <th>Số bài học</th>
                             <th></th>
                         </tr>
@@ -61,6 +72,17 @@
                             <td>{{ $item->academic_year }}</td>
                             <td>{{ $item->department->name ?? '-' }}</td>
                             <td>{{ $item->grade_name }}</td>
+                            <td>
+                                @php
+                                    $typeNames = [
+                                        'co_ban' => 'Cơ bản',
+                                        'chuyen_sau' => 'Chuyên sâu',
+                                        'tu_chon' => 'Tự chọn',
+                                        'bat_buoc' => 'Bắt buộc'
+                                    ];
+                                @endphp
+                                {{ $typeNames[$item->subject_type] ?? $item->subject_type ?? '-' }}
+                            </td>
                             <td>{{ $item->details_count }}</td>
                             <td>
                                 <div class="dropdown">
@@ -106,7 +128,7 @@
                         @endforeach
                         @else
                         <tr>
-                            <td colspan="6" class="text-center">{{ __('sys.no_item_found') }}</td>
+                            <td colspan="7" class="text-center">{{ __('sys.no_item_found') }}</td>
                         </tr>
                         @endif
                     </tbody>

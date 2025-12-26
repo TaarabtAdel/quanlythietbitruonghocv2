@@ -55,11 +55,10 @@
                 <h6 class="card-title">Hướng dẫn nhập dữ liệu</h6>
                 <ul class="mb-0">
                     <li>File Excel phải có định dạng .xls hoặc .xlsx</li>
-                    <li>Cột đầu tiên (A): Loại phân môn</li>
-                    <li>Cột thứ hai (B): Tuần</li>
-                    <li>Cột thứ ba (C): Số tiết</li>
-                    <li>Cột thứ tư (D): Tên bài học <strong>(bắt buộc)</strong></li>
-                    <li>Cột thứ năm (E): Ghi chú</li>
+                    <li>Cột đầu tiên (A): Tuần</li>
+                    <li>Cột thứ hai (B): Số tiết</li>
+                    <li>Cột thứ ba (C): Tên bài học <strong>(bắt buộc)</strong></li>
+                    <li>Cột thứ tư (D): Ghi chú</li>
                     <li>Dòng đầu tiên là tiêu đề, sẽ được bỏ qua</li>
                     <li>Dữ liệu mới sẽ được thêm vào chương trình đào tạo</li>
                 </ul>
