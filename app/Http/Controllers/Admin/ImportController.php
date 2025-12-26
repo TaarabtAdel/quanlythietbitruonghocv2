@@ -22,9 +22,9 @@ class ImportController extends Controller
             'route_prefix'  => $this->route_prefix,
             'templateFile'  => $type_slug.'.xlsx',
         ];
-        // if($type){
-        //     return view($this->view_path.'types.'.$type_slug, $params);
-        // }
+        if($type == 'Curriculum'){
+            return view($this->view_path.'types.'.$type_slug, $params);
+        }
         return view($this->view_path.'index', $params);
     }
     /**
@@ -34,18 +34,23 @@ class ImportController extends Controller
     {
         $type = $request->type ?? '';
         $modelClass = '\App\Imports\\' . $type.'Import';
-        $import = new $modelClass();
-        $rules = $import->rules ?? [];
-        $messages = $import->messages ?? [];
-        $rules = array_merge($rules,[
-            'file' => 'required|mimes:xlsx, xls'
-        ]);
-        $messages = array_merge($messages,[
-            'required' => 'Trường yêu cầu',
-            'mimes' => 'Định dạng tệp không hỗ trợ',
-        ]);
-        if( count($rules) ){
-            $validator = Validator::make($request->all(),$rules,$messages);
+        
+        // Truyền các tham số bổ sung cho CurriculumImport
+        if($type == 'Curriculum') {
+            $rules = [
+                'file' => 'required|mimes:xlsx,xls',
+                'school_year' => 'required|string',
+                'department_id' => 'required|exists:departments,id',
+            ];
+            $messages = [
+                'file.required' => 'Vui lòng chọn file',
+                'file.mimes' => 'File phải có định dạng .xls hoặc .xlsx',
+                'school_year.required' => 'Vui lòng chọn năm học',
+                'department_id.required' => 'Vui lòng chọn bộ môn',
+                'department_id.exists' => 'Bộ môn không tồn tại',
+            ];
+            
+            $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
                 return redirect()
                     ->back()
@@ -53,7 +58,36 @@ class ImportController extends Controller
                     ->withErrors($validator)
                     ->withInput();
             }
+            
+            $import = new $modelClass(
+                $request->school_year,
+                $request->department_id,
+                $request->subject_type,
+                $request->grade
+            );
+        } else {
+            $import = new $modelClass();
+            $rules = $import->rules ?? [];
+            $messages = $import->messages ?? [];
+            $rules = array_merge($rules,[
+                'file' => 'required|mimes:xlsx, xls'
+            ]);
+            $messages = array_merge($messages,[
+                'required' => 'Trường yêu cầu',
+                'mimes' => 'Định dạng tệp không hỗ trợ',
+            ]);
+            if( count($rules) ){
+                $validator = Validator::make($request->all(),$rules,$messages);
+                if ($validator->fails()) {
+                    return redirect()
+                        ->back()
+                        ->with('error','Vui lòng nhập các trường bắt buộc')
+                        ->withErrors($validator)
+                        ->withInput();
+                }
+            }
         }
+        
         try {
             $file = $request->file('file');
 
@@ -71,10 +105,9 @@ class ImportController extends Controller
             // xong thì xóa file tạm
             unlink($path->getPathname());
 
-            // Excel::import($import, $request->file('file'));
             return redirect()->back()->with('success', 'Nhập dữ liệu thành công');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Nhập dữ liệu thất bại');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Nhập dữ liệu thất bại: ' . $e->getMessage());
         }
     }
 }
