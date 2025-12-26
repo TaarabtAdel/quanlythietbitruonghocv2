@@ -23,9 +23,10 @@
             <label class="form-label fw-bold">Khối <span class="text-danger">(*)</span></label>
             <select name="grade" class="form-control" required>
                 <option value="">--- Chọn khối ---</option>
-                <option value="10" {{ old('grade') == '10' ? 'selected' : '' }}>Khối 10</option>
-                <option value="11" {{ old('grade') == '11' ? 'selected' : '' }}>Khối 11</option>
-                <option value="12" {{ old('grade') == '12' ? 'selected' : '' }}>Khối 12</option>
+                <!-- Từ 1 -> 12 -->
+                @for($i = 1; $i <= 12; $i++)
+                    <option value="{{ $i }}" {{ old('grade') == $i ? 'selected' : '' }}>Khối {{ $i }}</option>
+                @endfor
             </select>
             <x-form-input-error field="grade" />
         </div>
@@ -34,10 +35,8 @@
             <label class="form-label fw-bold">Loại phân môn</label>
             <select name="subject_type" class="form-control">
                 <option value="">--- Chọn loại phân môn ---</option>
-                <option value="co_ban" {{ old('subject_type') == 'co_ban' ? 'selected' : '' }}>Cơ bản</option>
-                <option value="chuyen_sau" {{ old('subject_type') == 'chuyen_sau' ? 'selected' : '' }}>Chuyên sâu</option>
-                <option value="tu_chon" {{ old('subject_type') == 'tu_chon' ? 'selected' : '' }}>Tự chọn</option>
-                <option value="bat_buoc" {{ old('subject_type') == 'bat_buoc' ? 'selected' : '' }}>Bắt buộc</option>
+                <option value="mon_chinh" {{ old('subject_type') == 'mon_chinh' ? 'selected' : '' }}>Môn chính</option>
+                <option value="chuyen_de" {{ old('subject_type') == 'chuyen_de' ? 'selected' : '' }}>Chuyên đề</option>
             </select>
             <x-form-input-error field="subject_type" />
         </div>

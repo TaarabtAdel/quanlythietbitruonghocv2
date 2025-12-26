@@ -242,6 +242,13 @@
                         </a>
                     </li>
                     @endif
+                    @if (Auth::check() && Auth::user()->hasPermission('Import_Curriculum'))
+                    <li>
+                        <a href="{{ route('admin.import.index', ['type' => 'Curriculum']) }}">
+                            <span class="material-symbols-outlined">arrow_right</span>Phân Phối C.Trình
+                        </a>
+                    </li>
+                    @endif
                 </ul>
             </li>
             @endif

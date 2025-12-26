@@ -16,9 +16,9 @@
             <label class="mb-3">Khối</label>
             <select name="grade" class="form-control">
                 <option value="">--- Chọn khối ---</option>
-                <option value="10" {{ ($item->grade ?? old('grade')) == '10' ? 'selected' : '' }}>Khối 10</option>
-                <option value="11" {{ ($item->grade ?? old('grade')) == '11' ? 'selected' : '' }}>Khối 11</option>
-                <option value="12" {{ ($item->grade ?? old('grade')) == '12' ? 'selected' : '' }}>Khối 12</option>
+                @for($i = 1; $i <= 12; $i++)
+                    <option value="{{ $i }}" {{ ($item->grade ?? old('grade')) == $i ? 'selected' : '' }}>Khối {{ $i }}</option>
+                @endfor
             </select>
             <x-form-input-error field="grade"/>
         </div>

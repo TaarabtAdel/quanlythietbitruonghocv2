@@ -20,11 +20,9 @@ class ImportController extends Controller
         $type_slug = strtolower($type);
         $params = [
             'route_prefix'  => $this->route_prefix,
+            'view_path'     => $this->view_path,
             'templateFile'  => $type_slug.'.xlsx',
         ];
-        if($type == 'Curriculum'){
-            return view($this->view_path.'types.'.$type_slug, $params);
-        }
         return view($this->view_path.'index', $params);
     }
     /**
