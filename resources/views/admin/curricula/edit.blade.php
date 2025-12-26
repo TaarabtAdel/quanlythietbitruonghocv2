@@ -43,16 +43,13 @@ jQuery(document).ready(function($) {
             <tr class="detail-row" data-index="${detailCount}">
                 <td class="text-center align-middle">${detailCount}</td>
                 <td>
-                    <input type="number" name="details[${detailCount}][week]" class="form-control form-control-sm text-center" placeholder="Tuần" min="1">
+                    <input type="number" name="details[${detailCount}][week]" class="form-control form-control-sm text-center" placeholder="Tuần PPCT" min="1">
                 </td>
                 <td>
-                    <input type="number" name="details[${detailCount}][lesson_number]" class="form-control form-control-sm text-center" placeholder="Số tiết" min="1">
+                    <input type="number" name="details[${detailCount}][lesson_number]" class="form-control form-control-sm text-center" placeholder="Tiết PPCT" min="1">
                 </td>
                 <td>
                     <input type="text" name="details[${detailCount}][lesson_name]" class="form-control form-control-sm" placeholder="Tên bài học" required>
-                </td>
-                <td>
-                    <input type="text" name="details[${detailCount}][note]" class="form-control form-control-sm" placeholder="Ghi chú">
                 </td>
                 <td class="text-center align-middle">
                     <button type="button" class="btn btn-sm btn-danger remove-detail">

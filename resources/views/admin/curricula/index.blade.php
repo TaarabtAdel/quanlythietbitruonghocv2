@@ -39,10 +39,8 @@
             <label class="form-label fw-bold">Phân môn</label>
             <select name="subject_type" class="form-control" onchange="this.form.submit()">
                 <option value="">--- Tất cả ---</option>
-                <option value="co_ban" {{ request()->subject_type == 'co_ban' ? 'selected' : '' }}>Cơ bản</option>
-                <option value="chuyen_sau" {{ request()->subject_type == 'chuyen_sau' ? 'selected' : '' }}>Chuyên sâu</option>
-                <option value="tu_chon" {{ request()->subject_type == 'tu_chon' ? 'selected' : '' }}>Tự chọn</option>
-                <option value="bat_buoc" {{ request()->subject_type == 'bat_buoc' ? 'selected' : '' }}>Bắt buộc</option>
+                <option value="mon_chinh" {{ request()->subject_type == 'mon_chinh' ? 'selected' : '' }}>Môn chính</option>
+                <option value="chuyen_de" {{ request()->subject_type == 'chuyen_de' ? 'selected' : '' }}>Chuyên đề</option>
             </select>
         </div>
     </div>
@@ -75,10 +73,8 @@
                             <td>
                                 @php
                                     $typeNames = [
-                                        'co_ban' => 'Cơ bản',
-                                        'chuyen_sau' => 'Chuyên sâu',
-                                        'tu_chon' => 'Tự chọn',
-                                        'bat_buoc' => 'Bắt buộc'
+                                        'mon_chinh' => 'Môn chính',
+                                        'chuyen_de' => 'Chuyên đề',
                                     ];
                                 @endphp
                                 {{ $typeNames[$item->subject_type] ?? $item->subject_type ?? '-' }}

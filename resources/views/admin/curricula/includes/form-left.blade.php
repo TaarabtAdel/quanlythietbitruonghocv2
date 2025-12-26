@@ -27,10 +27,8 @@
             <label class="mb-3">Phân môn</label>
             <select name="subject_type" class="form-control">
                 <option value="">--- Chọn phân môn ---</option>
-                <option value="co_ban" {{ ($item->subject_type ?? old('subject_type')) == 'co_ban' ? 'selected' : '' }}>Cơ bản</option>
-                <option value="chuyen_sau" {{ ($item->subject_type ?? old('subject_type')) == 'chuyen_sau' ? 'selected' : '' }}>Chuyên sâu</option>
-                <option value="tu_chon" {{ ($item->subject_type ?? old('subject_type')) == 'tu_chon' ? 'selected' : '' }}>Tự chọn</option>
-                <option value="bat_buoc" {{ ($item->subject_type ?? old('subject_type')) == 'bat_buoc' ? 'selected' : '' }}>Bắt buộc</option>
+                <option value="mon_chinh" {{ ($item->subject_type ?? old('subject_type')) == 'mon_chinh' ? 'selected' : '' }}>Môn chính</option>
+                <option value="chuyen_de" {{ ($item->subject_type ?? old('subject_type')) == 'chuyen_de' ? 'selected' : '' }}>Chuyên đề</option>
             </select>
             <x-form-input-error field="subject_type"/>
         </div>
@@ -51,10 +49,9 @@
                         <thead class="table-light">
                             <tr>
                                 <th width="50" class="text-center">STT</th>
-                                <th width="100" class="text-center">Tuần</th>
-                                <th width="100" class="text-center">Số tiết</th>
+                                <th width="100" class="text-center">Tuần PPCT</th>
+                                <th width="100" class="text-center">Tiết PPCT</th>
                                 <th>Tên bài học <span class="text-danger">(*)</span></th>
-                                <th>Ghi chú</th>
                                 <th width="80" class="text-center">Thao tác</th>
                             </tr>
                         </thead>
@@ -72,9 +69,6 @@
                                     <td>
                                         <input type="text" name="details[{{ $index }}][lesson_name]" class="form-control form-control-sm" value="{{ $detail->lesson_name }}" placeholder="Tên bài học" required>
                                     </td>
-                                    <td>
-                                        <input type="text" name="details[{{ $index }}][note]" class="form-control form-control-sm" value="{{ $detail->note }}" placeholder="Ghi chú">
-                                    </td>
                                     <td class="text-center align-middle">
                                         <button type="button" class="btn btn-sm btn-danger remove-detail">
                                             <i class="bi bi-trash"></i>
@@ -86,16 +80,13 @@
                                 <tr class="detail-row" data-index="0">
                                     <td class="text-center align-middle">1</td>
                                     <td>
-                                        <input type="number" name="details[0][week]" class="form-control form-control-sm text-center" placeholder="Tuần" min="1">
+                                        <input type="number" name="details[0][week]" class="form-control form-control-sm text-center" placeholder="Tuần PPCT" min="1">
                                     </td>
                                     <td>
-                                        <input type="number" name="details[0][lesson_number]" class="form-control form-control-sm text-center" placeholder="Số tiết" min="1">
+                                        <input type="number" name="details[0][lesson_number]" class="form-control form-control-sm text-center" placeholder="Tiết PPCT" min="1">
                                     </td>
                                     <td>
                                         <input type="text" name="details[0][lesson_name]" class="form-control form-control-sm" placeholder="Tên bài học" required>
-                                    </td>
-                                    <td>
-                                        <input type="text" name="details[0][note]" class="form-control form-control-sm" placeholder="Ghi chú">
                                     </td>
                                     <td class="text-center align-middle">
                                         <button type="button" class="btn btn-sm btn-danger remove-detail">

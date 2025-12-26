@@ -31,10 +31,8 @@
                     <p>
                         @php
                             $typeNames = [
-                                'co_ban' => 'Cơ bản',
-                                'chuyen_sau' => 'Chuyên sâu',
-                                'tu_chon' => 'Tự chọn',
-                                'bat_buoc' => 'Bắt buộc'
+                                'mon_chinh' => 'Môn chính',
+                                'chuyen_de' => 'Chuyên đề',
                             ];
                         @endphp
                         {{ $typeNames[$item->subject_type] ?? $item->subject_type ?? '-' }}
@@ -65,10 +63,9 @@
                         <thead class="table-light">
                             <tr>
                                 <th width="50" class="text-center">STT</th>
-                                <th width="100" class="text-center">Tuần</th>
-                                <th width="100" class="text-center">Số tiết</th>
+                                <th width="100" class="text-center">Tuần PPCT</th>
+                                <th width="100" class="text-center">Tiết PPCT</th>
                                 <th>Tên bài học</th>
-                                <th>Ghi chú</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,7 +76,6 @@
                                     <td class="text-center">{{ $detail->week ?? '-' }}</td>
                                     <td class="text-center">{{ $detail->lesson_number ?? '-' }}</td>
                                     <td>{{ $detail->lesson_name }}</td>
-                                    <td>{{ $detail->note ?? '-' }}</td>
                                 </tr>
                                 @endforeach
                             @else
