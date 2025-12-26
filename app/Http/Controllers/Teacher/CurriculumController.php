@@ -17,20 +17,18 @@ class CurriculumController extends Controller
      */
     public function index(Request $request)
     {
-        $query = $this->model::with('department')->whereNull('deleted_at')->orderBy('created_at','DESC');
+        $query = $this->model::with('department')->withCount('details')->orderBy('created_at','DESC');
 
-        if ($request->filled('name')) {
-            $name = trim($request->name);
-            $query->where('name', 'like', "%{$name}%");
-        }
-
-        if ($request->filled('code')) {
-            $code = trim($request->code);
-            $query->where('code', 'like', "%{$code}%");
+        if ($request->filled('academic_year')) {
+            $query->where('academic_year', $request->academic_year);
         }
 
         if ($request->filled('department_id')) {
             $query->where('department_id', $request->department_id);
+        }
+
+        if ($request->filled('grade')) {
+            $query->where('grade', $request->grade);
         }
 
         $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
@@ -50,7 +48,7 @@ class CurriculumController extends Controller
      */
     public function show(string $id)
     {
-        $item = $this->model::with(['details', 'department', 'user'])->whereNull('deleted_at')->findOrFail($id);
+        $item = $this->model::with(['details', 'department'])->findOrFail($id);
 
         $params = [
             'route_prefix'  => $this->route_prefix,

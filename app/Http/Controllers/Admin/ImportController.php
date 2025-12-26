@@ -40,12 +40,15 @@ class ImportController extends Controller
             $rules = [
                 'file' => 'required|mimes:xlsx,xls',
                 'school_year' => 'required|string',
+                'department_id' => 'required|exists:departments,id',
                 'grade' => 'required|string',
             ];
             $messages = [
                 'file.required' => 'Vui lòng chọn file',
                 'file.mimes' => 'File phải có định dạng .xls hoặc .xlsx',
                 'school_year.required' => 'Vui lòng chọn năm học',
+                'department_id.required' => 'Vui lòng chọn bộ môn',
+                'department_id.exists' => 'Bộ môn không tồn tại',
                 'grade.required' => 'Vui lòng chọn khối',
             ];
             
@@ -60,7 +63,7 @@ class ImportController extends Controller
             
             $import = new $modelClass(
                 $request->school_year,
-                null, // department_id không còn trong model
+                $request->department_id,
                 $request->subject_type,
                 $request->grade
             );

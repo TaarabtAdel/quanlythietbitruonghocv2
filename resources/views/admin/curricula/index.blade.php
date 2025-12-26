@@ -2,14 +2,14 @@
 @section('content')
 @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_create'))
     @include('globals.breadcrumb',[
-        'page_title' => 'Danh sách chương trình đào tạo',
+        'page_title' => 'Danh sách phân phối chương trình',
         'actions' => [
             'add_new' => route($route_prefix.'create',['type'=>request()->type]),
         ]
     ])
 @else
     @include('globals.breadcrumb',[
-        'page_title' => 'Danh sách chương trình đào tạo',
+        'page_title' => 'Danh sách phân phối chương trình',
     ])
 @endif
 
@@ -19,19 +19,21 @@
     <input type="hidden" name="type" value="{{ request()->type }}">
     <div class="row">
         <div class="col">
-            <label class="form-label fw-bold">Tên chương trình</label>
-            <input class="form-control" name="name" type="text" placeholder="Nhập tên sau đó nhấn enter để tìm"
-                value="{{ request()->name }}">
+            <label class="form-label fw-bold">Bộ môn</label>
+            <x-form-input-departments name="department_id" selected_id="{{ request()->department_id }}" autoSubmit="1" />
         </div>
         <div class="col">
-            <label class="form-label fw-bold">Mã chương trình</label>
-            <input class="form-control" name="code" type="text" placeholder="Nhập mã sau đó nhấn enter để tìm"
-                value="{{ request()->code }}">
+            <label class="form-label fw-bold">Năm học</label>
+            <x-form-input-school-years name="academic_year" selected_id="{{ request()->academic_year }}" autoSubmit="1" />
         </div>
-        <div class="col col-lg-2">
-            <label class="form-label fw-bold">Trạng Thái</label>
-            <x-form-input-status name="status" status="{{ request()->status }}"
-                autoSubmit="1" />
+        <div class="col">
+            <label class="form-label fw-bold">Khối</label>
+            <select name="grade" class="form-control" onchange="this.form.submit()">
+                <option value="">--- Tất cả ---</option>
+                <option value="10" {{ request()->grade == '10' ? 'selected' : '' }}>Khối 10</option>
+                <option value="11" {{ request()->grade == '11' ? 'selected' : '' }}>Khối 11</option>
+                <option value="12" {{ request()->grade == '12' ? 'selected' : '' }}>Khối 12</option>
+            </select>
         </div>
     </div>
 </form>
@@ -44,10 +46,10 @@
                     <thead class="table-light">
                         <tr>
                             <th>STT</th>
-                            <th>Tên</th>
-                            <th>Mã</th>
+                            <th>Năm học</th>
                             <th>Bộ môn</th>
-                            <th>Trạng thái</th>
+                            <th>Khối</th>
+                            <th>Số bài học</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -56,10 +58,10 @@
                         @foreach( $items as $key => $item )
                         <tr>
                             <td>{{ ($items->currentPage() - 1) * $items->perPage() + ($key + 1) }}</td>
-                            <td>{{ $item->name }}</td>
-                            <td>{{ $item->code ?? '-' }}</td>
+                            <td>{{ $item->academic_year }}</td>
                             <td>{{ $item->department->name ?? '-' }}</td>
-                            <td>{!! $item->status_fm !!}</td>
+                            <td>{{ $item->grade_name }}</td>
+                            <td>{{ $item->details_count }}</td>
                             <td>
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-light border dropdown-toggle dropdown-toggle-nocaret"
@@ -92,7 +94,7 @@
                                                     @method('DELETE')
                                                     <button onclick=" return confirm('{{ __('sys.confirm_delete') }}') "
                                                         class="dropdown-item">
-                                                        {{ $item->deleted_at ? __('sys.force_delete') : __('sys.delete') }}
+                                                        {{ __('sys.delete') }}
                                                     </button>
                                                 </form>
                                             </li>
@@ -120,4 +122,3 @@
 </div>
 
 @endsection
-

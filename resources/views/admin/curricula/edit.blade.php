@@ -1,8 +1,8 @@
 @extends('admin.layouts.master')
-@section('title','Cập nhật chương trình đào tạo #'. ($item->id ?? 'Mới'))
+@section('title','Cập nhật phân phối chương trình #'. ($item->id ?? 'Mới'))
 @section('content')
 @include('globals.breadcrumb',[
-    'page_title' => isset($item) && $item->id ? 'Cập nhật chương trình đào tạo #'.$item->id : 'Thêm mới chương trình đào tạo',
+    'page_title' => isset($item) && $item->id ? 'Cập nhật phân phối chương trình #'.$item->id : 'Thêm mới phân phối chương trình',
 ])
 
 <form action="{{ isset($item) && $item->id 
@@ -43,16 +43,22 @@ jQuery(document).ready(function($) {
             <tr class="detail-row" data-index="${detailCount}">
                 <td class="text-center align-middle">${detailCount}</td>
                 <td>
-                    <input type="text" name="details[${detailCount}][subject_name]" class="form-control form-control-sm" placeholder="Tên môn học" required>
+                    <select name="details[${detailCount}][sub_subject_type]" class="form-control form-control-sm">
+                        <option value="">---</option>
+                        <option value="co_ban">Cơ bản</option>
+                        <option value="chuyen_sau">Chuyên sâu</option>
+                        <option value="tu_chon">Tự chọn</option>
+                        <option value="bat_buoc">Bắt buộc</option>
+                    </select>
                 </td>
                 <td>
-                    <input type="number" name="details[${detailCount}][credits]" class="form-control form-control-sm text-center" value="0" min="0">
+                    <input type="number" name="details[${detailCount}][week]" class="form-control form-control-sm text-center" placeholder="Tuần" min="1">
                 </td>
                 <td>
-                    <input type="number" name="details[${detailCount}][hours]" class="form-control form-control-sm text-center" value="0" min="0">
+                    <input type="number" name="details[${detailCount}][lesson_number]" class="form-control form-control-sm text-center" placeholder="Số tiết" min="1">
                 </td>
                 <td>
-                    <input type="number" name="details[${detailCount}][semester]" class="form-control form-control-sm text-center" placeholder="Học kỳ" min="1">
+                    <input type="text" name="details[${detailCount}][lesson_name]" class="form-control form-control-sm" placeholder="Tên bài học" required>
                 </td>
                 <td>
                     <input type="text" name="details[${detailCount}][note]" class="form-control form-control-sm" placeholder="Ghi chú">
@@ -87,8 +93,8 @@ jQuery(document).ready(function($) {
         // Validate ít nhất một chi tiết
         let hasDetail = false;
         $('#curriculum-details tbody tr').each(function() {
-            let subjectName = $(this).find('input[name*="[subject_name]"]').val();
-            if (subjectName && subjectName.trim() !== '') {
+            let lessonName = $(this).find('input[name*="[lesson_name]"]').val();
+            if (lessonName && lessonName.trim() !== '') {
                 hasDetail = true;
                 return false;
             }
@@ -96,11 +102,10 @@ jQuery(document).ready(function($) {
         
         if (!hasDetail) {
             e.preventDefault();
-            alert('Vui lòng thêm ít nhất một môn học vào chương trình đào tạo.');
+            alert('Vui lòng thêm ít nhất một bài học vào phân phối chương trình.');
             return false;
         }
     });
 });
 </script>
 @endpush
-

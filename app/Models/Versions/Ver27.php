@@ -25,9 +25,11 @@ class Ver27 extends Model
             Schema::create('curriculums', function (Blueprint $table) {
                 $table->id();
                 $table->string('academic_year'); // Năm học
-                $table->string('subject_name');  // Môn học
+                $table->unsignedBigInteger('department_id'); // Bộ môn
                 $table->string('grade')->nullable(); // Khối lớp (tùy chọn)
                 $table->timestamps();
+                
+                $table->foreign('department_id')->references('id')->on('departments')->nullOnDelete();
             });
         }
 

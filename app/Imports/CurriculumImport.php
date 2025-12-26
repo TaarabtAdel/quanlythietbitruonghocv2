@@ -36,35 +36,32 @@ class CurriculumImport implements ToCollection
             }
         }
 
-        // Validation - cột đầu tiên là tên môn học (subject_name)
+        // Validation - cột đầu tiên là tên bài học (lesson_name)
         Validator::make($rows->toArray(), [
-            '*.0' => 'required', // Tên môn học là bắt buộc
+            '*.3' => 'required', // Tên bài học là bắt buộc (cột D)
         ],[
-            '*.0.required' => 'Tên môn học ở hàng :attribute là bắt buộc.',
+            '*.3.required' => 'Tên bài học ở hàng :attribute là bắt buộc.',
         ])->validate();
 
         DB::beginTransaction();
         try {
-            // Tạo hoặc tìm curriculum dựa trên academic_year, subject_name, grade
-            // Format Excel: Cột A = subject_name, Cột B = sub_subject_type, Cột C = week, Cột D = lesson_number, Cột E = lesson_name, Cột F = note
+            // Tạo hoặc tìm curriculum dựa trên academic_year, department_id, grade
+            // Format Excel: Cột A = sub_subject_type, Cột B = week, Cột C = lesson_number, Cột D = lesson_name, Cột E = note
             
-            // Lấy subject_name từ dòng đầu tiên (hoặc có thể từ form)
-            $subjectName = $rows->first()[0] ?? '';
-            
-            if (empty($subjectName)) {
-                throw new \Exception('Không tìm thấy tên môn học trong file Excel');
+            if (empty($this->department_id)) {
+                throw new \Exception('Vui lòng chọn bộ môn');
             }
 
             // Tìm hoặc tạo curriculum
             $curriculum = Curriculum::where('academic_year', $this->school_year)
-                ->where('subject_name', $subjectName)
+                ->where('department_id', $this->department_id)
                 ->where('grade', $this->grade)
                 ->first();
 
             if (!$curriculum) {
                 $curriculum = Curriculum::create([
                     'academic_year' => $this->school_year,
-                    'subject_name' => $subjectName,
+                    'department_id' => $this->department_id,
                     'grade' => $this->grade,
                 ]);
             }
@@ -80,17 +77,18 @@ class CurriculumImport implements ToCollection
                     $row[$k] = trim($v ?? '');
                 }
                 
-                if (empty($row[0])) {
+                // Bỏ qua dòng không có tên bài học
+                if (empty($row[3])) {
                     continue;
                 }
 
                 $details[] = [
                     'curriculum_id' => $curriculum->id,
-                    'sub_subject_type' => $row[1] ?? null, // Loại phân môn
-                    'week' => !empty($row[2]) ? (int)$row[2] : null, // Tuần
-                    'lesson_number' => !empty($row[3]) ? (int)$row[3] : null, // Số tiết
-                    'lesson_name' => $row[4] ?? null, // Tên bài học
-                    'note' => $row[5] ?? null, // Ghi chú
+                    'sub_subject_type' => $row[0] ?? null, // Loại phân môn (cột A)
+                    'week' => !empty($row[1]) ? (int)$row[1] : null, // Tuần (cột B)
+                    'lesson_number' => !empty($row[2]) ? (int)$row[2] : null, // Số tiết (cột C)
+                    'lesson_name' => $row[3] ?? null, // Tên bài học (cột D)
+                    'note' => $row[4] ?? null, // Ghi chú (cột E)
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];

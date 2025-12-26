@@ -19,11 +19,10 @@ class CurriculumController extends Controller
      */
     public function index(Request $request)
     {
-        $query = $this->model::orderBy('created_at','DESC');
+        $query = $this->model::with('department')->withCount('details')->orderBy('created_at','DESC');
 
-        if ($request->filled('subject_name')) {
-            $subject_name = trim($request->subject_name);
-            $query->where('subject_name', 'like', "%{$subject_name}%");
+        if ($request->filled('department_id')) {
+            $query->where('department_id', $request->department_id);
         }
 
         if ($request->filled('academic_year')) {
@@ -67,7 +66,7 @@ class CurriculumController extends Controller
     {
         $validated = $request->validate([
             'academic_year' => 'required|string',
-            'subject_name' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
             'grade'        => 'nullable|string',
         ]);
 
@@ -116,7 +115,7 @@ class CurriculumController extends Controller
      */
     public function show(string $id)
     {
-        $item = $this->model::with('details')->findOrFail($id);
+        $item = $this->model::with(['details', 'department'])->findOrFail($id);
 
         $params = [
             'route_prefix'  => $this->route_prefix,
@@ -133,7 +132,7 @@ class CurriculumController extends Controller
      */
     public function edit(string $id)
     {
-        $item = $this->model::with('details')->findOrFail($id);
+        $item = $this->model::with(['details', 'department'])->findOrFail($id);
 
         $params = [
             'route_prefix'  => $this->route_prefix,
@@ -153,7 +152,7 @@ class CurriculumController extends Controller
 
         $validated = $request->validate([
             'academic_year' => 'required|string',
-            'subject_name' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
             'grade'        => 'nullable|string',
         ]);
 

@@ -9,16 +9,11 @@
     <div class="col-12 col-lg-8">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title mb-4">Thông tin chương trình đào tạo</h5>
+                <h5 class="card-title mb-4">Thông tin phân phối chương trình</h5>
                 
                 <div class="mb-3">
-                    <label class="fw-bold">Tên chương trình:</label>
-                    <p>{{ $item->name }}</p>
-                </div>
-
-                <div class="mb-3">
-                    <label class="fw-bold">Mã chương trình:</label>
-                    <p>{{ $item->code ?? '-' }}</p>
+                    <label class="fw-bold">Năm học:</label>
+                    <p>{{ $item->academic_year }}</p>
                 </div>
 
                 <div class="mb-3">
@@ -27,13 +22,8 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="fw-bold">Mô tả:</label>
-                    <p>{{ $item->description ?? '-' }}</p>
-                </div>
-
-                <div class="mb-3">
-                    <label class="fw-bold">Người tạo:</label>
-                    <p>{{ $item->user->name ?? '-' }}</p>
+                    <label class="fw-bold">Khối:</label>
+                    <p>{{ $item->grade_name }}</p>
                 </div>
 
                 <div class="mb-3">
@@ -45,7 +35,7 @@
 
         <div class="card mt-4">
             <div class="card-header">
-                <h5 class="card-title mb-0">Chi tiết các môn học</h5>
+                <h5 class="card-title mb-0">Chi tiết các bài học</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -53,10 +43,10 @@
                         <thead class="table-light">
                             <tr>
                                 <th width="50" class="text-center">STT</th>
-                                <th>Tên môn học</th>
-                                <th width="100" class="text-center">Số tín chỉ</th>
-                                <th width="100" class="text-center">Số giờ</th>
-                                <th width="100" class="text-center">Học kỳ</th>
+                                <th>Loại phân môn</th>
+                                <th width="100" class="text-center">Tuần</th>
+                                <th width="100" class="text-center">Số tiết</th>
+                                <th>Tên bài học</th>
                                 <th>Ghi chú</th>
                             </tr>
                         </thead>
@@ -65,16 +55,26 @@
                                 @foreach($item->details as $index => $detail)
                                 <tr>
                                     <td class="text-center">{{ $index + 1 }}</td>
-                                    <td>{{ $detail->subject_name }}</td>
-                                    <td class="text-center">{{ $detail->credits }}</td>
-                                    <td class="text-center">{{ $detail->hours }}</td>
-                                    <td class="text-center">{{ $detail->semester ?? '-' }}</td>
+                                    <td>
+                                        @php
+                                            $typeNames = [
+                                                'co_ban' => 'Cơ bản',
+                                                'chuyen_sau' => 'Chuyên sâu',
+                                                'tu_chon' => 'Tự chọn',
+                                                'bat_buoc' => 'Bắt buộc'
+                                            ];
+                                        @endphp
+                                        {{ $typeNames[$detail->sub_subject_type] ?? $detail->sub_subject_type ?? '-' }}
+                                    </td>
+                                    <td class="text-center">{{ $detail->week ?? '-' }}</td>
+                                    <td class="text-center">{{ $detail->lesson_number ?? '-' }}</td>
+                                    <td>{{ $detail->lesson_name }}</td>
                                     <td>{{ $detail->note ?? '-' }}</td>
                                 </tr>
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="6" class="text-center">Chưa có môn học nào</td>
+                                    <td colspan="6" class="text-center">Chưa có bài học nào</td>
                                 </tr>
                             @endif
                         </tbody>

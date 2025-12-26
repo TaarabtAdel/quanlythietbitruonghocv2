@@ -14,6 +14,12 @@
         </div>
 
         <div class="form-group mb-4">
+            <label class="form-label fw-bold">Bộ môn <span class="text-danger">(*)</span></label>
+            <x-form-input-departments name="department_id" selected_id="{{ old('department_id') }}" />
+            <x-form-input-error field="department_id" />
+        </div>
+
+        <div class="form-group mb-4">
             <label class="form-label fw-bold">Khối <span class="text-danger">(*)</span></label>
             <select name="grade" class="form-control" required>
                 <option value="">--- Chọn khối ---</option>
@@ -49,12 +55,11 @@
                 <h6 class="card-title">Hướng dẫn nhập dữ liệu</h6>
                 <ul class="mb-0">
                     <li>File Excel phải có định dạng .xls hoặc .xlsx</li>
-                    <li>Cột đầu tiên (A): Tên môn học <strong>(bắt buộc)</strong></li>
-                    <li>Cột thứ hai (B): Loại phân môn</li>
-                    <li>Cột thứ ba (C): Tuần</li>
-                    <li>Cột thứ tư (D): Số tiết</li>
-                    <li>Cột thứ năm (E): Tên bài học</li>
-                    <li>Cột thứ sáu (F): Ghi chú</li>
+                    <li>Cột đầu tiên (A): Loại phân môn</li>
+                    <li>Cột thứ hai (B): Tuần</li>
+                    <li>Cột thứ ba (C): Số tiết</li>
+                    <li>Cột thứ tư (D): Tên bài học <strong>(bắt buộc)</strong></li>
+                    <li>Cột thứ năm (E): Ghi chú</li>
                     <li>Dòng đầu tiên là tiêu đề, sẽ được bỏ qua</li>
                     <li>Dữ liệu mới sẽ được thêm vào chương trình đào tạo</li>
                 </ul>
