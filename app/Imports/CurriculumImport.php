@@ -36,7 +36,7 @@ class CurriculumImport implements ToCollection
             }
         }
 
-        // Validation
+        // Validation - cột đầu tiên là tên môn học (subject_name)
         Validator::make($rows->toArray(), [
             '*.0' => 'required', // Tên môn học là bắt buộc
         ],[
@@ -45,43 +45,35 @@ class CurriculumImport implements ToCollection
 
         DB::beginTransaction();
         try {
-            // Tạo tên chương trình đào tạo
-            $curriculumName = 'Chương trình đào tạo';
-            if ($this->school_year) {
-                $curriculumName .= ' ' . $this->school_year;
-            }
-            if ($this->grade) {
-                $curriculumName .= ' - Khối ' . $this->grade;
-            }
-            if ($this->subject_type) {
-                $subjectTypeNames = [
-                    'co_ban' => 'Cơ bản',
-                    'chuyen_sau' => 'Chuyên sâu',
-                    'tu_chon' => 'Tự chọn',
-                    'bat_buoc' => 'Bắt buộc'
-                ];
-                $curriculumName .= ' - ' . ($subjectTypeNames[$this->subject_type] ?? $this->subject_type);
+            // Tạo hoặc tìm curriculum dựa trên academic_year, subject_name, grade
+            // Format Excel: Cột A = subject_name, Cột B = sub_subject_type, Cột C = week, Cột D = lesson_number, Cột E = lesson_name, Cột F = note
+            
+            // Lấy subject_name từ dòng đầu tiên (hoặc có thể từ form)
+            $subjectName = $rows->first()[0] ?? '';
+            
+            if (empty($subjectName)) {
+                throw new \Exception('Không tìm thấy tên môn học trong file Excel');
             }
 
             // Tìm hoặc tạo curriculum
-            $curriculum = Curriculum::where('name', $curriculumName)
-                ->where('department_id', $this->department_id)
-                ->whereNull('deleted_at')
+            $curriculum = Curriculum::where('academic_year', $this->school_year)
+                ->where('subject_name', $subjectName)
+                ->where('grade', $this->grade)
                 ->first();
 
             if (!$curriculum) {
                 $curriculum = Curriculum::create([
-                    'name' => $curriculumName,
-                    'code' => 'CTDT-' . ($this->school_year ?? date('Y')) . '-' . ($this->grade ?? 'ALL'),
-                    'department_id' => $this->department_id,
-                    'description' => 'Chương trình đào tạo được import từ file Excel',
-                    'user_id' => auth()->id(),
+                    'academic_year' => $this->school_year,
+                    'subject_name' => $subjectName,
+                    'grade' => $this->grade,
                 ]);
             }
 
+            // Xóa các chi tiết cũ nếu đang cập nhật (hoặc có thể giữ lại)
+            // CurriculumDetail::where('curriculum_id', $curriculum->id)->delete();
+
             // Thêm các chi tiết mới
             $details = [];
-            $order = CurriculumDetail::where('curriculum_id', $curriculum->id)->max('order') ?? -1;
             
             foreach ($rows as $row) {
                 foreach( $row as $k => $v ){
@@ -92,15 +84,13 @@ class CurriculumImport implements ToCollection
                     continue;
                 }
 
-                $order++;
                 $details[] = [
                     'curriculum_id' => $curriculum->id,
-                    'subject_name' => $row[0], // Tên môn học
-                    'credits' => (int)($row[1] ?? 0), // Số tín chỉ
-                    'hours' => (int)($row[2] ?? 0), // Số giờ
-                    'semester' => !empty($row[3]) ? (int)$row[3] : null, // Học kỳ
-                    'note' => $row[4] ?? null, // Ghi chú
-                    'order' => $order,
+                    'sub_subject_type' => $row[1] ?? null, // Loại phân môn
+                    'week' => !empty($row[2]) ? (int)$row[2] : null, // Tuần
+                    'lesson_number' => !empty($row[3]) ? (int)$row[3] : null, // Số tiết
+                    'lesson_name' => $row[4] ?? null, // Tên bài học
+                    'note' => $row[5] ?? null, // Ghi chú
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -117,4 +107,3 @@ class CurriculumImport implements ToCollection
         }
     }
 }
-

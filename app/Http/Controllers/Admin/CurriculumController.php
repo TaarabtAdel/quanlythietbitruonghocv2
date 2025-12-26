@@ -19,20 +19,19 @@ class CurriculumController extends Controller
      */
     public function index(Request $request)
     {
-        $query = $this->model::with('department')->orderBy('created_at','DESC');
+        $query = $this->model::orderBy('created_at','DESC');
 
-        if ($request->filled('name')) {
-            $name = trim($request->name);
-            $query->where('name', 'like', "%{$name}%");
+        if ($request->filled('subject_name')) {
+            $subject_name = trim($request->subject_name);
+            $query->where('subject_name', 'like', "%{$subject_name}%");
         }
 
-        if ($request->filled('code')) {
-            $code = trim($request->code);
-            $query->where('code', 'like', "%{$code}%");
+        if ($request->filled('academic_year')) {
+            $query->where('academic_year', $request->academic_year);
         }
 
-        if ($request->status > -1) {
-            $request->status == 1 ? $query->whereNull('deleted_at') : $query->whereNotNull('deleted_at');
+        if ($request->filled('grade')) {
+            $query->where('grade', $request->grade);
         }
 
         $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
@@ -67,33 +66,27 @@ class CurriculumController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'            => 'required|string|max:255',
-            'code'            => 'nullable|string|max:255',
-            'description'     => 'nullable|string',
-            'department_id'   => 'nullable|exists:departments,id',
+            'academic_year' => 'required|string',
+            'subject_name' => 'required|string|max:255',
+            'grade'        => 'nullable|string',
         ]);
 
         DB::beginTransaction();
         try {
-            $data = array_merge($request->except(['_token', '_method', 'details']), $validated);
-            $data['deleted_at'] = $request->status == 1 ? NULL : now();
-            $data['user_id'] = auth()->id();
-            unset($data['status']);
-            
+            $data = $validated;
             $curriculum = $this->model::create($data);
 
             // Lưu các chi tiết
             if ($request->has('details') && is_array($request->details)) {
                 $details = [];
                 foreach ($request->details as $index => $detail) {
-                    if (!empty($detail['subject_name'])) {
+                    if (!empty($detail['lesson_name'])) {
                         $details[] = [
                             'curriculum_id' => $curriculum->id,
-                            'subject_name' => $detail['subject_name'],
-                            'credits' => $detail['credits'] ?? 0,
-                            'hours' => $detail['hours'] ?? 0,
-                            'semester' => $detail['semester'] ?? null,
-                            'order' => $index,
+                            'sub_subject_type' => $detail['sub_subject_type'] ?? null,
+                            'week' => !empty($detail['week']) ? (int)$detail['week'] : null,
+                            'lesson_number' => !empty($detail['lesson_number']) ? (int)$detail['lesson_number'] : null,
+                            'lesson_name' => $detail['lesson_name'],
                             'note' => $detail['note'] ?? null,
                             'created_at' => now(),
                             'updated_at' => now(),
@@ -123,7 +116,7 @@ class CurriculumController extends Controller
      */
     public function show(string $id)
     {
-        $item = $this->model::with(['details', 'department', 'user'])->findOrFail($id);
+        $item = $this->model::with('details')->findOrFail($id);
 
         $params = [
             'route_prefix'  => $this->route_prefix,
@@ -141,7 +134,6 @@ class CurriculumController extends Controller
     public function edit(string $id)
     {
         $item = $this->model::with('details')->findOrFail($id);
-        $item->status = $item->deleted_at ? 0 : 1;
 
         $params = [
             'route_prefix'  => $this->route_prefix,
@@ -160,18 +152,14 @@ class CurriculumController extends Controller
         $item = $this->model::findOrFail($id);
 
         $validated = $request->validate([
-            'name'            => 'required|string|max:255',
-            'code'            => 'nullable|string|max:255',
-            'description'     => 'nullable|string',
-            'department_id'   => 'nullable|exists:departments,id',
+            'academic_year' => 'required|string',
+            'subject_name' => 'required|string|max:255',
+            'grade'        => 'nullable|string',
         ]);
 
         DB::beginTransaction();
         try {
-            $data = array_merge($request->except(['_token', '_method', 'details']), $validated);
-            $data['deleted_at'] = $request->status == 1 ? NULL : now();
-            unset($data['status']);
-            $item->update($data);
+            $item->update($validated);
 
             // Xóa tất cả chi tiết cũ và tạo lại
             CurriculumDetail::where('curriculum_id', $id)->delete();
@@ -180,14 +168,13 @@ class CurriculumController extends Controller
             if ($request->has('details') && is_array($request->details)) {
                 $details = [];
                 foreach ($request->details as $index => $detail) {
-                    if (!empty($detail['subject_name'])) {
+                    if (!empty($detail['lesson_name'])) {
                         $details[] = [
                             'curriculum_id' => $id,
-                            'subject_name' => $detail['subject_name'],
-                            'credits' => $detail['credits'] ?? 0,
-                            'hours' => $detail['hours'] ?? 0,
-                            'semester' => $detail['semester'] ?? null,
-                            'order' => $index,
+                            'sub_subject_type' => $detail['sub_subject_type'] ?? null,
+                            'week' => !empty($detail['week']) ? (int)$detail['week'] : null,
+                            'lesson_number' => !empty($detail['lesson_number']) ? (int)$detail['lesson_number'] : null,
+                            'lesson_name' => $detail['lesson_name'],
                             'note' => $detail['note'] ?? null,
                             'created_at' => now(),
                             'updated_at' => now(),
@@ -218,15 +205,9 @@ class CurriculumController extends Controller
     public function destroy(Request $request, string $id)
     {
         $item = $this->model::findOrFail($id);
-        if($item->deleted_at){
-            $item->delete();
-        }else{
-            $item->deleted_at = now();
-            $item->save();
-        }
+        $item->delete();
         return redirect()
             ->route($this->route_prefix.'index', ['page' => $request->page])
             ->with('success', 'Chương trình đào tạo đã được xóa.');
     }
 }
-

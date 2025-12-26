@@ -14,9 +14,14 @@
         </div>
 
         <div class="form-group mb-4">
-            <label class="form-label fw-bold">Bộ môn <span class="text-danger">(*)</span></label>
-            <x-form-input-departments name="department_id" selected_id="{{ old('department_id') }}" />
-            <x-form-input-error field="department_id" />
+            <label class="form-label fw-bold">Khối <span class="text-danger">(*)</span></label>
+            <select name="grade" class="form-control" required>
+                <option value="">--- Chọn khối ---</option>
+                <option value="10" {{ old('grade') == '10' ? 'selected' : '' }}>Khối 10</option>
+                <option value="11" {{ old('grade') == '11' ? 'selected' : '' }}>Khối 11</option>
+                <option value="12" {{ old('grade') == '12' ? 'selected' : '' }}>Khối 12</option>
+            </select>
+            <x-form-input-error field="grade" />
         </div>
 
         <div class="form-group mb-4">
@@ -31,16 +36,6 @@
             <x-form-input-error field="subject_type" />
         </div>
 
-        <div class="form-group mb-4">
-            <label class="form-label fw-bold">Khối</label>
-            <select name="grade" class="form-control">
-                <option value="">--- Chọn khối ---</option>
-                <option value="10" {{ old('grade') == '10' ? 'selected' : '' }}>Khối 10</option>
-                <option value="11" {{ old('grade') == '11' ? 'selected' : '' }}>Khối 11</option>
-                <option value="12" {{ old('grade') == '12' ? 'selected' : '' }}>Khối 12</option>
-            </select>
-            <x-form-input-error field="grade" />
-        </div>
 
         <div class="form-group mb-4">
             <label class="form-label">Chọn Tệp (đuôi .xls, .xlsx) <span class="text-danger">(*)</span></label>
@@ -55,10 +50,11 @@
                 <ul class="mb-0">
                     <li>File Excel phải có định dạng .xls hoặc .xlsx</li>
                     <li>Cột đầu tiên (A): Tên môn học <strong>(bắt buộc)</strong></li>
-                    <li>Cột thứ hai (B): Số tín chỉ</li>
-                    <li>Cột thứ ba (C): Số giờ</li>
-                    <li>Cột thứ tư (D): Học kỳ</li>
-                    <li>Cột thứ năm (E): Ghi chú</li>
+                    <li>Cột thứ hai (B): Loại phân môn</li>
+                    <li>Cột thứ ba (C): Tuần</li>
+                    <li>Cột thứ tư (D): Số tiết</li>
+                    <li>Cột thứ năm (E): Tên bài học</li>
+                    <li>Cột thứ sáu (F): Ghi chú</li>
                     <li>Dòng đầu tiên là tiêu đề, sẽ được bỏ qua</li>
                     <li>Dữ liệu mới sẽ được thêm vào chương trình đào tạo</li>
                 </ul>
