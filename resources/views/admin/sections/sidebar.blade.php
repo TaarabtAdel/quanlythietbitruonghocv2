@@ -139,6 +139,16 @@
                         @endif
                     @endif
 
+                    @if(\App\Models\Option::get_option_name('app_verison') >= '2.7')
+                        @if (Auth::check() && Auth::user()->hasPermission('Curriculum'))
+                        <li>
+                            <a href="{{ route('admin.curricula.index') }}">
+                                <span class="material-symbols-outlined">arrow_right</span>Phân Phối Chương Trình
+                            </a>
+                        </li>
+                        @endif
+                    @endif
+
                 </ul>
             </li>
             @endif

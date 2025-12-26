@@ -12,6 +12,8 @@ class Curriculum extends Model
         'subject_name',
         'grade',
     ];
+    const ACTIVE    = 1;
+    const INACTIVE  = 0;
     public function details()
     {
         return $this->hasMany(CurriculumDetail::class, 'curriculum_id', 'id');
