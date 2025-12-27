@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Curriculum extends Model
 {
+    use SoftDeletes;
     protected $table = 'curriculums';
     protected $fillable = [
         'academic_year',//năm học   

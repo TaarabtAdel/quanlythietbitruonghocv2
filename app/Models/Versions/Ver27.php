@@ -30,7 +30,7 @@ class Ver27 extends Model
                 $table->string('subject_type')->nullable(); // Phân môn
                 $table->text('note')->nullable(); // Ghi chú
                 $table->timestamps();
-                
+                $table->softDeletes();
                 $table->foreign('department_id')->references('id')->on('departments')->nullOnDelete();
             });
         }

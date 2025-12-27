@@ -28,12 +28,7 @@
         </div>
         <div class="col">
             <label class="form-label fw-bold">Khối</label>
-            <select name="grade" class="form-control" onchange="this.form.submit()">
-                <option value="">--- Tất cả ---</option>
-                <option value="10" {{ request()->grade == '10' ? 'selected' : '' }}>Khối 10</option>
-                <option value="11" {{ request()->grade == '11' ? 'selected' : '' }}>Khối 11</option>
-                <option value="12" {{ request()->grade == '12' ? 'selected' : '' }}>Khối 12</option>
-            </select>
+            <x-form-input-grade name="grade" selected_id="{{ request()->grade }}" autoSubmit="1" />
         </div>
         <div class="col">
             <label class="form-label fw-bold">Phân môn</label>

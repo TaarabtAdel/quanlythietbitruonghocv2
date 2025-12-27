@@ -11,90 +11,96 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 
 class CurriculumImport implements ToCollection
 {
-    protected $school_year;
-    protected $department_id;
-    protected $subject_type;
-    protected $grade;
+    // Thuộc tính này sẽ được gán giá trị từ bên ngoài trước khi thực hiện Import
+    public $request_data = [
+        'school_year' => '',
+        'department_id' => '',
+        'subject_type' => '',
+        'grade' => '',
+    ];
 
-    public function __construct($school_year = null, $department_id = null, $subject_type = null, $grade = null)
+    public $rules = [
+        'school_year' => 'required|string',
+        'subject_type' => 'required|string',
+        'department_id' => 'required|exists:departments,id',
+        'grade' => 'required|string',
+    ];
+
+    public $messages = [
+        'school_year.required' => 'Vui lòng chọn năm học',
+        'subject_type.required' => 'Vui lòng chọn phân môn',
+        'department_id.required' => 'Vui lòng chọn bộ môn',
+        'grade.required' => 'Vui lòng chọn khối',
+    ];
+
+    /**
+     * Khởi tạo không tham số theo yêu cầu
+     */
+    public function __construct()
     {
-        $this->school_year = $school_year;
-        $this->department_id = $department_id;
-        $this->subject_type = $subject_type;
-        $this->grade = $grade;
+        // Constructor trống
     }
 
     public function collection(Collection $rows)
     {
-        // Bỏ qua dòng đầu tiên (header)
+        // 1. Bỏ qua dòng đầu tiên (header)
         $rows->shift();
         
-        // Lọc các dòng rỗng
-        foreach( $rows as $key => $row ){
-            if (empty($row[0])) {
-                unset($rows[$key]);
-            }
-        }
+        // 2. Lọc các dòng rỗng
+        $rows = $rows->filter(function ($row) {
+            return !empty($row[2]);
+        });
 
-        // Validation - cột thứ ba là tên bài học (lesson_name)
+        // 3. Validation dữ liệu Excel
         Validator::make($rows->toArray(), [
-            '*.2' => 'required', // Tên bài học là bắt buộc (cột C)
+            '*.2' => 'required',
         ],[
             '*.2.required' => 'Tên bài học ở hàng :attribute là bắt buộc.',
         ])->validate();
 
         DB::beginTransaction();
         try {
-            // Tạo hoặc tìm curriculum dựa trên academic_year, department_id, grade, subject_type
-            // Format Excel: Cột A = week, Cột B = lesson_number, Cột C = lesson_name, Cột D = note
-            
-            if (empty($this->department_id)) {
+            // Lấy dữ liệu từ thuộc tính công khai $request_data
+            $schoolYear   = $this->request_data['school_year'] ?? null;
+            $departmentId = $this->request_data['department_id'] ?? null;
+            $grade        = $this->request_data['grade'] ?? null;
+            $subjectType  = $this->request_data['subject_type'] ?? null;
+
+            if (empty($departmentId)) {
                 throw new \Exception('Vui lòng chọn bộ môn');
             }
 
-            // Tìm hoặc tạo curriculum
-            $curriculum = Curriculum::where('academic_year', $this->school_year)
-                ->where('department_id', $this->department_id)
-                ->where('grade', $this->grade)
-                ->where('subject_type', $this->subject_type)
-                ->first();
+            // 4. Tìm hoặc tạo curriculum
+            $curriculum = Curriculum::firstOrCreate([
+                'academic_year' => $schoolYear,
+                'department_id' => $departmentId,
+                'grade'         => $grade,
+                'subject_type'  => $subjectType,
+            ]);
 
-            if (!$curriculum) {
-                $curriculum = Curriculum::create([
-                    'academic_year' => $this->school_year,
-                    'department_id' => $this->department_id,
-                    'grade' => $this->grade,
-                    'subject_type' => $this->subject_type,
-                ]);
-            }
-
-            // Xóa các chi tiết cũ nếu đang cập nhật (hoặc có thể giữ lại)
-            // CurriculumDetail::where('curriculum_id', $curriculum->id)->delete();
-
-            // Thêm các chi tiết mới
+            // 5. Chuẩn bị dữ liệu chi tiết
             $details = [];
-            
             foreach ($rows as $row) {
-                foreach( $row as $k => $v ){
-                    $row[$k] = trim($v ?? '');
-                }
-                
-                // Bỏ qua dòng không có tên bài học
-                if (empty($row[2])) {
-                    continue;
-                }
+                // Trim dữ liệu từng ô
+                $c0 = isset($row[0]) ? trim($row[0]) : null; // Week
+                $c1 = isset($row[1]) ? trim($row[1]) : null; // Lesson Number
+                $c2 = isset($row[2]) ? trim($row[2]) : null; // Lesson Name
+                $c3 = isset($row[3]) ? trim($row[3]) : null; // Note
+
+                if (empty($c2)) continue;
 
                 $details[] = [
                     'curriculum_id' => $curriculum->id,
-                    'week' => !empty($row[0]) ? (int)$row[0] : null, // Tuần (cột A)
-                    'lesson_number' => !empty($row[1]) ? (int)$row[1] : null, // Số tiết (cột B)
-                    'lesson_name' => $row[2] ?? null, // Tên bài học (cột C)
-                    'note' => $row[3] ?? null, // Ghi chú (cột D)
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'week'          => $c0 !== '' ? (int)$c0 : null,
+                    'lesson_number' => $c1 !== '' ? (int)$c1 : null,
+                    'lesson_name'   => $c2,
+                    'note'          => $c3,
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
                 ];
             }
 
+            // 6. Lưu vào DB
             if (!empty($details)) {
                 CurriculumDetail::insert($details);
             }

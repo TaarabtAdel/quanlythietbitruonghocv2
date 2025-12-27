@@ -143,7 +143,7 @@
                         @if (Auth::check() && Auth::user()->hasPermission('Curriculum'))
                         <li>
                             <a href="{{ route('admin.curricula.index') }}">
-                                <span class="material-symbols-outlined">arrow_right</span>Phân Phối Chương Trình
+                                <span class="material-symbols-outlined">arrow_right</span>Phân Phối C.Trình
                             </a>
                         </li>
                         @endif

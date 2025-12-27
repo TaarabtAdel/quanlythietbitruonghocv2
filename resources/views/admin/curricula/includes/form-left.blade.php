@@ -16,12 +16,7 @@
             <div class="col-lg-6">
                 <div class="mb-4">
                     <label class="mb-3">Khối <span class="text-danger">(*)</span></label>
-                    <select name="grade" class="form-control">
-                        <option value="">--- Chọn khối ---</option>
-                        @for($i = 1; $i <= 12; $i++)
-                            <option value="{{ $i }}" {{ ($item->grade ?? old('grade')) == $i ? 'selected' : '' }}>Khối {{ $i }}</option>
-                        @endfor
-                    </select>
+                    <x-form-input-grade name="grade" selected_id="{{ request()->grade }}" autoSubmit="0" />
                     <x-form-input-error field="grade"/>
                 </div>
                 <div class="mb-4">

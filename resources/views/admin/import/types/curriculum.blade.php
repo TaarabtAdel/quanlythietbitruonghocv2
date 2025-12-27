@@ -21,13 +21,7 @@
 
         <div class="form-group mb-4">
             <label class="form-label fw-bold">Khối <span class="text-danger">(*)</span></label>
-            <select name="grade" class="form-control" required>
-                <option value="">--- Chọn khối ---</option>
-                <!-- Từ 1 -> 12 -->
-                @for($i = 1; $i <= 12; $i++)
-                    <option value="{{ $i }}" {{ old('grade') == $i ? 'selected' : '' }}>Khối {{ $i }}</option>
-                @endfor
-            </select>
+            <x-form-input-grade name="grade" selected_id="{{ request()->grade }}" autoSubmit="0" />
             <x-form-input-error field="grade" />
         </div>
 
@@ -54,8 +48,8 @@
                 <h6 class="card-title">Hướng dẫn nhập dữ liệu</h6>
                 <ul class="mb-0">
                     <li>File Excel phải có định dạng .xls hoặc .xlsx</li>
-                    <li>Cột đầu tiên (A): Tuần</li>
-                    <li>Cột thứ hai (B): Số tiết</li>
+                    <li>Cột đầu tiên (A): Tuần PPCT</li>
+                    <li>Cột thứ hai (B): Tiết PPCT <strong>(bắt buộc)</strong></li>
                     <li>Cột thứ ba (C): Tên bài học <strong>(bắt buộc)</strong></li>
                     <li>Cột thứ tư (D): Ghi chú</li>
                     <li>Dòng đầu tiên là tiêu đề, sẽ được bỏ qua</li>
