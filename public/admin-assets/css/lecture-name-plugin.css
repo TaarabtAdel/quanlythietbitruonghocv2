@@ -1,0 +1,61 @@
+/* Bao ngoài để định vị */
+.curriculum-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* Khung Dropdown ẩn mặc định */
+.curriculum-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    min-width: 400px; /* Độ rộng tối thiểu để chứa 4 ô select */
+    background: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    padding: 10px;
+    margin-top: 2px;
+}
+
+/* Lưới các ô select bên trong dropdown */
+.dropdown-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Chia 2 cột */
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Danh sách kết quả */
+.list-items {
+    max-height: 250px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+}
+
+.list-items .list-group-item {
+    cursor: pointer;
+    font-size: 14px;
+    border-left: none;
+    border-right: none;
+}
+
+.list-items .list-group-item:hover {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+}
+
+/* Tùy chỉnh thanh cuộn cho đẹp */
+.list-items::-webkit-scrollbar {
+    width: 6px;
+}
+.list-items::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 10px;
+}

@@ -31,15 +31,17 @@ class CurriculumController extends Controller
             $query->where('grade', $request->grade);
         }
 
-        $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
+        if ($request->filled('subject_type')) {
+            $query->where('subject_type', $request->subject_type);
+        }
 
+        $items = $query->paginate(20)->appends($request->except(['_token', '_method']));
         $params = [
             'route_prefix'  => $this->route_prefix,
             'model'         => $this->model,
             'view_path'     => $this->view_path,
             'items'         => $items,
         ];
-
         return view($this->view_path.'.index', $params);
     }
 
@@ -58,6 +60,31 @@ class CurriculumController extends Controller
         ];
 
         return view($this->view_path.'.show', $params);
+    }
+
+    public function getLessonsByFilters(Request $request)
+    {
+        // 1. Tìm bản ghi Curriculum thỏa mãn các điều kiện
+        $curriculum = $this->model::where([
+            ['academic_year', '=', $request->academic_year],
+            ['grade',         '=', $request->grade],
+            ['department_id', '=', $request->department_id],
+            ['subject_type',  '=', $request->subject_type],
+        ])->first();
+
+        // 2. Nếu không tìm thấy, trả về mảng rỗng
+        if (!$curriculum) {
+            return response()->json([]);
+        }
+
+        // 3. Lấy danh sách chi tiết bài học (CurriculumDetail)
+        // Sắp xếp theo tuần và số tiết để giáo viên dễ chọn
+        $lessons = $curriculum->details()
+            ->orderBy('week', 'asc')
+            ->orderBy('lesson_number', 'asc')
+            ->get(['lesson_name', 'week', 'lesson_number']);
+
+        return response()->json($lessons);
     }
 }
 

@@ -143,6 +143,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('postProfileEdit', [TeacherUserController::class, 'postProfileEdit'])->name('users.postProfileEdit');
 
     // Chương trình đào tạo
+    Route::get('curricula/get-lessons', [TeacherCurriculumController::class, 'getLessonsByFilters'])->name('curricula.get_lessons');
     Route::get('curricula', [TeacherCurriculumController::class, 'index'])->name('curricula.index');
     Route::get('curricula/{id}', [TeacherCurriculumController::class, 'show'])->name('curricula.show');
 });

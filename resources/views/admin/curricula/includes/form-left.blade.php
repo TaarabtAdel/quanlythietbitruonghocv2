@@ -16,7 +16,7 @@
             <div class="col-lg-6">
                 <div class="mb-4">
                     <label class="mb-3">Khối <span class="text-danger">(*)</span></label>
-                    <x-form-input-grade name="grade" selected_id="{{ request()->grade }}" autoSubmit="0" />
+                    <x-form-input-grade name="grade" selected_id="{{ $item->grade ?? old('grade') }}" autoSubmit="0" />
                     <x-form-input-error field="grade"/>
                 </div>
                 <div class="mb-4">
