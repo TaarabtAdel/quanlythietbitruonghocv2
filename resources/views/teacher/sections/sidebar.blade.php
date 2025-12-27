@@ -57,6 +57,14 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('curricula.index') }}">
+                    <div class="parent-icon">
+                        <span class="material-symbols-outlined">book</span>
+                    </div>
+                    <div class="menu-title">Phân Phối C.Trình</div>
+                </a>
+            </li>
+            <li>
                 <a class="has-arrow" href="javascript:;">
                     <div class="parent-icon">
                         <span class="material-symbols-outlined">home</span>

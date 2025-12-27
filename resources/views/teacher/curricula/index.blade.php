@@ -1,8 +1,8 @@
 @extends('teacher.layouts.master')
-@section('title','Danh sách chương trình đào tạo')
+@section('title','Danh sách phân phối chương trình')
 @section('content')
     @include('globals.breadcrumb',[
-        'page_title' => 'Danh sách chương trình đào tạo',
+        'page_title' => 'Danh sách phân phối chương trình',
     ])
 <!-- Item actions -->
 <form action="{{ route($route_prefix.'index') }}" method="get">

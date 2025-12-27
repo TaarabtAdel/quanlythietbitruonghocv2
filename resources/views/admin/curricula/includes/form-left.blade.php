@@ -1,36 +1,39 @@
 <div class="card">
     <div class="card-body">
-        <div class="mb-4">
-            <label class="mb-3">Năm học <span class="text-danger">(*)</span></label>
-            <x-form-input-school-years name="academic_year" selected_id="{{ $item->academic_year ?? old('academic_year') }}" />
-            <x-form-input-error field="academic_year"/>
-        </div>
-
-        <div class="mb-4">
-            <label class="mb-3">Bộ môn <span class="text-danger">(*)</span></label>
-            <x-form-input-departments name="department_id" selected_id="{{ $item->department_id ?? old('department_id') }}" />
-            <x-form-input-error field="department_id"/>
-        </div>
-
-        <div class="mb-4">
-            <label class="mb-3">Khối</label>
-            <select name="grade" class="form-control">
-                <option value="">--- Chọn khối ---</option>
-                @for($i = 1; $i <= 12; $i++)
-                    <option value="{{ $i }}" {{ ($item->grade ?? old('grade')) == $i ? 'selected' : '' }}>Khối {{ $i }}</option>
-                @endfor
-            </select>
-            <x-form-input-error field="grade"/>
-        </div>
-
-        <div class="mb-4">
-            <label class="mb-3">Phân môn</label>
-            <select name="subject_type" class="form-control">
-                <option value="">--- Chọn phân môn ---</option>
-                <option value="mon_chinh" {{ ($item->subject_type ?? old('subject_type')) == 'mon_chinh' ? 'selected' : '' }}>Môn chính</option>
-                <option value="chuyen_de" {{ ($item->subject_type ?? old('subject_type')) == 'chuyen_de' ? 'selected' : '' }}>Chuyên đề</option>
-            </select>
-            <x-form-input-error field="subject_type"/>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="mb-4">
+                    <label class="mb-3">Năm học <span class="text-danger">(*)</span></label>
+                    <x-form-input-school-years name="academic_year" selected_id="{{ $item->academic_year ?? old('academic_year') }}" />
+                    <x-form-input-error field="academic_year"/>
+                </div>
+                <div class="mb-4">
+                    <label class="mb-3">Bộ môn <span class="text-danger">(*)</span></label>
+                    <x-form-input-departments name="department_id" selected_id="{{ $item->department_id ?? old('department_id') }}" />
+                    <x-form-input-error field="department_id"/>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="mb-4">
+                    <label class="mb-3">Khối <span class="text-danger">(*)</span></label>
+                    <select name="grade" class="form-control">
+                        <option value="">--- Chọn khối ---</option>
+                        @for($i = 1; $i <= 12; $i++)
+                            <option value="{{ $i }}" {{ ($item->grade ?? old('grade')) == $i ? 'selected' : '' }}>Khối {{ $i }}</option>
+                        @endfor
+                    </select>
+                    <x-form-input-error field="grade"/>
+                </div>
+                <div class="mb-4">
+                    <label class="mb-3">Phân môn</label>
+                    <select name="subject_type" class="form-control">
+                        <option value="">--- Chọn phân môn ---</option>
+                        <option value="mon_chinh" {{ ($item->subject_type ?? old('subject_type')) == 'mon_chinh' ? 'selected' : '' }}>Môn chính</option>
+                        <option value="chuyen_de" {{ ($item->subject_type ?? old('subject_type')) == 'chuyen_de' ? 'selected' : '' }}>Chuyên đề</option>
+                    </select>
+                    <x-form-input-error field="subject_type"/>
+                </div>
+            </div>
         </div>
 
         <div class="mb-4">
@@ -42,6 +45,7 @@
         <div class="card mt-4">
             <div class="card-header">
                 <h5 class="card-title mb-0">Chi tiết phân phối chương trình</h5>
+                <p class="text-muted text-sucess mt-1">Di chuyển chuột vào các số của cột STT sau đó kéo lên xuống để sắp xếp thứ tự bài học</p>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

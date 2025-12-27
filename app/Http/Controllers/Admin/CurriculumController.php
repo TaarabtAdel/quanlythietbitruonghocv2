@@ -177,7 +177,6 @@ class CurriculumController extends Controller
                     if (!empty($detail['lesson_name'])) {
                         $details[] = [
                             'curriculum_id' => $id,
-                            'sub_subject_type' => $detail['sub_subject_type'] ?? null,
                             'week' => !empty($detail['week']) ? (int)$detail['week'] : null,
                             'lesson_number' => !empty($detail['lesson_number']) ? (int)$detail['lesson_number'] : null,
                             'lesson_name' => $detail['lesson_name'],
