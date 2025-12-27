@@ -15,11 +15,12 @@ class FormInputLectureName extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct($name = 'lecture_name',$value = null,$tiet = 0)
+    public function __construct($name = 'lecture_name',$value = null,$tiet = 0,$target = '')
     {
         $this->name = $name;
         $this->value = $value;
         $this->tiet = $tiet;
+        $this->target = $target;
     }
 
     /**
@@ -93,7 +94,7 @@ class FormInputLectureName extends Component
 
         $schoolYears = $this->getSchoolYears();
         $grades  = $this->getGrades();
-        $subjects = \App\Models\Department::all();
+        $subjects = \App\Models\Department::orderBy('name', 'ASC')->get();
         $subjectTypes = [
             'mon_chinh' => 'Môn chính',
             'chuyen_de' => 'Chuyên đề',
@@ -111,6 +112,7 @@ class FormInputLectureName extends Component
             'grades' => $grades,
             'subjects' => $subjects,
             'subjectTypes' => $subjectTypes,
+            'target' => $this->target,
         ];
         return view('components.form-input-lecture_name',$params);
     }

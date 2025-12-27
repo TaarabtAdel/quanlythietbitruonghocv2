@@ -45,8 +45,11 @@ $(document).ready(function() {
                 success: function(res) {
                     let html = '';
                     if (res.length > 0) {
+                        let prefix = (params.subject_type === 'chuyen_de') ? 'CD' : '';
                         res.forEach(item => {
-                            html += `<li class="list-group-item item-select" data-value="${item.lesson_name}">
+                            let displayLessonNumber = prefix + item.lesson_number;
+
+                            html += `<li class="list-group-item item-select" data-lesson_number="${displayLessonNumber}" data-lesson_name="${item.lesson_name}">
                                         <strong>T${item.week}:</strong> ${item.lesson_name}
                                      </li>`;
                         });
@@ -64,10 +67,13 @@ $(document).ready(function() {
 
     // 4. Khi chọn bài học từ danh sách
     $(document).on('click', '.item-select', function() {
-        let val = $(this).data('value');
+        let lesson_name = $(this).data('lesson_name');
+        let lesson_number = $(this).data('lesson_number');
         let $wrapper = $(this).closest('.curriculum-select-wrapper');
-        
-        $wrapper.find('.curriculum-input').val(val); // Gán giá trị vào input
+
+        let targetName = $wrapper.find('.curriculum-input').data('target');
+        $('#'+targetName).val(lesson_name); // Gán giá trị vào input
+        $wrapper.find('.curriculum-input').val(lesson_number); // Gán giá trị vào input
         $wrapper.find('.curriculum-dropdown').hide(); // Đóng dropdown
     });
 });

@@ -5,6 +5,7 @@
         data-name="name_1" 
         name="devices[{{ $tiet }}][{{ $name }}]"
         value="{{ $value }}"
+        data-target="{{ $target }}"
         placeholder="Nhấn để chọn bài học..."
         autocomplete="off"
     >
