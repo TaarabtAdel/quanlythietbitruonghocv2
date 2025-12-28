@@ -25,7 +25,7 @@ class FormInputDepartments extends Component
      */
     public function render(): View|string
     {
-        $items = \App\Models\Department::all();
+        $items = \App\Models\Department::orderBy('name')->get();
         $params = [
             'selected_id'   => $this->selected_id,
             'name'          => $this->name,
