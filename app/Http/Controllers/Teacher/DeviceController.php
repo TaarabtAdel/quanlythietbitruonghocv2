@@ -18,7 +18,7 @@ class DeviceController extends Controller
         $device_types = DeviceType::all();
         $departments = Department::all();
         $limit = $request->limit ? $request->limit : 20;
-        $query = $this->model::orderBy('name','ASC');
+        $query = $this->model::orderBy('name','ASC')->whereNull('deleted_at');
         if($request->name){
             $query->where('name','LIKE','%'.$request->name.'%');
         }

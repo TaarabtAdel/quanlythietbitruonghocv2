@@ -147,7 +147,10 @@ class DeviceController extends Controller
     {
         $item = $this->model::findOrFail($id);
         if($item->deleted_at){
-            $item->delete();
+            // $item->delete();
+            return redirect()
+            ->route($this->route_prefix.'index', ['page' => $request->page])
+            ->with('error', 'Không cho phép xóa vĩnh viễn.');
         }else{
             $item->deleted_at = now();
             $item->save();
@@ -184,8 +187,9 @@ class DeviceController extends Controller
             }
             elseif ($action === 'force_delete') {
                 // Nếu bạn muốn xóa vĩnh viễn khỏi Database
-                $this->model::whereIn('id', $ids)->delete();
+                // $this->model::whereIn('id', $ids)->delete();
                 $message = 'Đã xóa vĩnh viễn các mục đã chọn.';
+                $message = 'Không cho phép xóa vĩnh viễn';
             }
             return response()->json([
                 'success' => true,
