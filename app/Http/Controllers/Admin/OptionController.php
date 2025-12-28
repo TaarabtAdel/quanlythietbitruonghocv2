@@ -18,7 +18,6 @@ class OptionController extends Controller
         'general' => 'Cấu hình chung',
         'borrow_device' => 'Mượn thiết bị',
         'borrow_lab' => 'Mượn phòng',
-        'mail' => 'Cấu hình gửi mail',
     ];
     protected $allOptions = [
         'general' => [
@@ -98,38 +97,6 @@ class OptionController extends Controller
                 'option_label' => 'Kiểm tra trùng lặp phòng',
                 'option_value' => 1,
                 'type' => 'checkbox'
-            ]
-        ],
-        'mail' => [
-            [
-                'option_name' => 'mail_mailer',
-                'option_label' => 'Nhà cung cấp',
-                'option_value' => 'smtp',
-            ],
-            [
-                'option_name' => 'mail_host',
-                'option_label' => 'Host',
-                'option_value' => 'smtp.gmail.com',
-            ],
-            [
-                'option_name' => 'mail_encryption',
-                'option_label' => 'Encryption',
-                'option_value' => 'tls',
-            ],
-            [
-                'option_name' => 'mail_port',
-                'option_label' => 'Port',
-                'option_value' => '587',
-            ],
-            [
-                'option_name' => 'mail_username',
-                'option_label' => 'Tài khoản',
-                'option_value' => '',
-            ],
-            [
-                'option_name' => 'mail_password',
-                'option_label' => 'Mật khẩu',
-                'option_value' => '',
             ]
         ]
     ];

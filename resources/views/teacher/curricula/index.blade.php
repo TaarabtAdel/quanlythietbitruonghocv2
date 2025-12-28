@@ -18,12 +18,14 @@
         <div class="col">
             <label class="form-label fw-bold">Khối</label>
             <x-form-input-grade name="grade" selected_id="{{ request()->grade }}" autoSubmit="1" />
-            <!-- <select name="grade" class="form-control" onchange="this.form.submit()">
+        </div>
+        <div class="col">
+            <label class="form-label fw-bold">Phân môn</label>
+            <select name="subject_type" class="form-control" onchange="this.form.submit()">
                 <option value="">--- Tất cả ---</option>
-                @for($i = 1; $i <= 12; $i++)
-                    <option value="{{ $i }}" {{ request()->grade == $i ? 'selected' : '' }}>Khối {{ $i }}</option>
-                @endfor
-            </select> -->
+                <option value="mon_chinh" {{ request()->subject_type == 'mon_chinh' ? 'selected' : '' }}>Môn chính</option>
+                <option value="chuyen_de" {{ request()->subject_type == 'chuyen_de' ? 'selected' : '' }}>Chuyên đề</option>
+            </select>
         </div>
     </div>
 </form>
@@ -39,6 +41,7 @@
                             <th>Năm học</th>
                             <th>Bộ môn</th>
                             <th>Khối</th>
+                            <th>Phân môn</th>
                             <th>Số bài học</th>
                             <th>Hành động</th>
                         </tr>
@@ -51,6 +54,15 @@
                             <td>{{ $item->academic_year }}</td>
                             <td>{{ $item->department->name ?? '-' }}</td>
                             <td>{{ $item->grade_name }}</td>
+                            <td>
+                                @php
+                                    $typeNames = [
+                                        'mon_chinh' => 'Môn chính',
+                                        'chuyen_de' => 'Chuyên đề',
+                                    ];
+                                @endphp
+                                {{ $typeNames[$item->subject_type] ?? $item->subject_type ?? '-' }}
+                            </td>
                             <td>{{ $item->details_count }}</td>
                             <td>
                                 <a href="{{ route($route_prefix.'show', $item->id) }}" class="btn btn-sm btn-primary">

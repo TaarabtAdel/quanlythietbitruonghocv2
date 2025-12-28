@@ -52,7 +52,11 @@
                         @foreach( $items as $key => $item )
                         <tr>
                             <td>{{ ($items->currentPage() - 1) * $items->perPage() + ($key + 1) }}</td>
-                            <td>{{ $item->name }}</td>
+                            <td>
+                                <a href="{{ route($route_prefix.'show',$item->id) }}" >
+                                    {{ $item->name }}
+                                </a>
+                            </td>
                             <td>{!! $item->status_fm !!}</td>
                             <td>
                                 <div class="dropdown">
@@ -66,6 +70,14 @@
                                                 <a class="dropdown-item"
                                                     href="{{ route($route_prefix.'edit',$item->id) }}?page={{ request()->page }}">
                                                     {{ __('sys.edit') }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_viewAny'))
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route($route_prefix.'show',$item->id) }}?page={{ request()->page }}">
+                                                    {{ __('sys.show') }}
                                                 </a>
                                             </li>
                                         @endif
