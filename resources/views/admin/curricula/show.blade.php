@@ -6,38 +6,57 @@
 ])
 
 <div class="row">
-    <div class="col-12 col-lg-8">
+    <div class="col-12 col-lg-12">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title mb-4">Thông tin phân phối chương trình</h5>
                 
-                <div class="mb-3">
-                    <label class="fw-bold">Năm học:</label>
-                    <p>{{ $item->academic_year }}</p>
-                </div>
-
-                <div class="mb-3">
-                    <label class="fw-bold">Bộ môn:</label>
-                    <p>{{ $item->department->name ?? '-' }}</p>
-                </div>
-
-                <div class="mb-3">
-                    <label class="fw-bold">Khối:</label>
-                    <p>{{ $item->grade_name }}</p>
-                </div>
-
-                <div class="mb-3">
-                    <label class="fw-bold">Phân môn:</label>
-                    <p>
-                        @php
-                            $typeNames = [
-                                'mon_chinh' => 'Môn chính',
-                                'chuyen_de' => 'Chuyên đề',
-                            ];
-                        @endphp
-                        {{ $typeNames[$item->subject_type] ?? $item->subject_type ?? '-' }}
-                    </p>
-                </div>
+               <div class="row">
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Năm học:</label>
+                            <p>{{ $item->academic_year }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Bộ môn:</label>
+                            <p>{{ $item->department->name ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Khối:</label>
+                            <p>{{ $item->grade_name }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Phân môn:</label>
+                            <p>
+                                @php
+                                    $typeNames = [
+                                        'mon_chinh' => 'Môn chính',
+                                        'chuyen_de' => 'Chuyên đề',
+                                    ];
+                                @endphp
+                                {{ $typeNames[$item->subject_type] ?? $item->subject_type ?? '-' }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Ngày tạo:</label>
+                            <p>{{ date('d/m/Y H:i', strtotime($item->created_at)) }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Ngày cập nhật:</label>
+                            <p>{{ date('d/m/Y H:i', strtotime($item->updated_at)) }}</p>
+                        </div>
+                    </div>
+                </div>  
 
                 @if($item->note)
                 <div class="mb-3">
@@ -46,10 +65,7 @@
                 </div>
                 @endif
 
-                <div class="mb-3">
-                    <label class="fw-bold">Ngày tạo:</label>
-                    <p>{{ date('d/m/Y H:i', strtotime($item->created_at)) }}</p>
-                </div>
+                
             </div>
         </div>
 

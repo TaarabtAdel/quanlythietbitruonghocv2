@@ -32,6 +32,7 @@
     <link href="/admin-assets/css/main.css" rel="stylesheet">
     <link href="/admin-assets/css/dark-theme.css" rel="stylesheet">
     <link href="/admin-assets/css/school-week-plugin.css" rel="stylesheet">
+    <link href="/admin-assets/css/lecture-name-plugin.css" rel="stylesheet">
     <script src="/admin-assets/js/jquery.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -69,7 +70,7 @@
     </script>
     <script src="/admin-assets/plugins/select2/js/select2.min.js"></script>
     <script src="/admin-assets/js/school-week-plugin.js"></script>
-
+    <script src="/admin-assets/js/lecture-name-plugin.js"></script>
 
     <!--BS Scripts-->
     <script src="/admin-assets/js/bootstrap.bundle.min.js"></script>
