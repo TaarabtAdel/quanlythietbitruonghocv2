@@ -81,7 +81,10 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('assets', AssetController::class);
     Route::resource('borrow-purposes', BorrowPurposeController::class);
     Route::resource('departments', DepartmentController::class);
+
+    Route::post('bulkAction',[DeviceController::class,'bulkAction'])->name('devices.bulkAction');
     Route::resource('devices', DeviceController::class);
+
     Route::resource('device-types', DeviceTypeController::class);
     Route::resource('documents', DocumentController::class);
     

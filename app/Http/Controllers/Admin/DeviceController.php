@@ -156,4 +156,48 @@ class DeviceController extends Controller
             ->route($this->route_prefix.'index', ['page' => $request->page])
             ->with('success', 'Thiết bị đã được xóa.');
     }
+    // bulkDelete
+    public function bulkAction(Request $request)
+    {
+        $ids = $request->ids;
+        $action = $request->action; // 'delete' hoặc 'restore'
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng chọn ít nhất một mục.'
+            ], 400);
+        }
+        try {
+            if ($action === 'delete') {
+                $this->model::whereIn('id', $ids)
+                    ->whereNull('deleted_at')
+                    ->update(['deleted_at' => now()]);
+                
+                $message = 'Đã chuyển ' . count($ids) . ' mục vào thùng rác.';
+            } 
+            elseif ($action === 'restore') {
+                $this->model::whereIn('id', $ids)
+                    ->whereNotNull('deleted_at')
+                    ->update(['deleted_at' => null]);
+                
+                $message = 'Đã khôi phục ' . count($ids) . ' mục thành công.';
+            }
+            elseif ($action === 'force_delete') {
+                // Nếu bạn muốn xóa vĩnh viễn khỏi Database
+                $this->model::whereIn('id', $ids)->delete();
+                $message = 'Đã xóa vĩnh viễn các mục đã chọn.';
+            }
+            return response()->json([
+                'success' => true,
+                'reload'  => true,
+                'message' => $message
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lỗi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

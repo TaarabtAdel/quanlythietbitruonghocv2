@@ -18,26 +18,34 @@
 <!-- Item actions -->
 <form action="{{ route($route_prefix.'index') }}" method="get">
     <input type="hidden" name="type" value="{{ request()->type }}">
-    <div class="row">
-        <div class="col">
+    <div class="row g-3"> 
+        
+        <div class="col-12 col-md-3">
             <label class="form-label fw-bold">Tên Thiết Bị</label>
-            <input class="form-control" name="name" type="text" placeholder="Nhập tên sau đó nhấn enter để tìm"
+            <input class="form-control" name="name" type="text" placeholder="Tìm kiếm..."
                 value="{{ request()->name }}">
         </div>
-        <div class="col">
+
+        <div class="col-12 col-sm-6 col-md-3">
             <label class="form-label fw-bold">Loại Thiết Bị</label>
             <x-form-input-device-types name="device_type_id" selected_id="{{ request()->device_type_id }}"
                 autoSubmit="1" />
         </div>
-        <div class="col">
+
+        <div class="col-12 col-sm-6 col-md-3">
             <label class="form-label fw-bold">Môn Học</label>
             <x-form-input-departments name="department_id" selected_id="{{ request()->department_id }}"
                 autoSubmit="1" />
         </div>
-        <div class="col col-lg-2">
+
+        <div class="col-12 col-md-3">
             <label class="form-label fw-bold">Trạng Thái</label>
             <x-form-input-status name="status" status="{{ request()->status }}"
                 autoSubmit="1" />
+        </div>
+        
+        <div class="col-12 d-md-none">
+            <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
         </div>
     </div>
 </form>
@@ -49,6 +57,7 @@
                 <table class="table align-middle">
                     <thead class="table-light">
                         <tr>
+                            <th><input type="checkbox" id="checkAll"></th>
                             <th>STT</th>
                             <th>Tên</th>
                             <th>Số lượng</th>
@@ -62,6 +71,7 @@
                         @if( count( $items ) )
                         @foreach( $items as $key => $item )
                         <tr>
+                            <td> <input type="checkbox" name="ids[]" class="check-item" value="{{ $item->id }}"> </td>
                             <td>{{ ($items->currentPage() - 1) * $items->perPage() + ($key + 1) }}</td>
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->quantity }}</td>
