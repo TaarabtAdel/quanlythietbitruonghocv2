@@ -4,7 +4,7 @@
             <span class="material-symbols-outlined">menu</span>
         </div>
         <div class="d-lg-block d-none search-bar" style="width:80%">
-            <marquee behavior="" direction=""><marquee behavior="" direction="">{{ env('TEACHER_WELLCOME', 'Chào mừng bạn đến với phần mềm quản lý thiết bị trường học!') }}</marquee></marquee>
+            <marquee behavior="" direction="">{{ env('TEACHER_WELLCOME', 'Chào mừng bạn đến với phần mềm quản lý thiết bị trường học!') }}</marquee>
         </div>
         <ul class="navbar-nav top-right-menu gap-2">
             <li class="nav-item d-lg-none d-block" data-bs-toggle="modal" data-bs-target="#exampleModal">
