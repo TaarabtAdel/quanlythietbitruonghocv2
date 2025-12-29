@@ -17,7 +17,9 @@ class CurriculumController extends Controller
      */
     public function index(Request $request)
     {
-        $query = $this->model::with('department')->withCount('details')->orderBy('created_at','DESC');
+        $query = $this->model::with('department')->withCount('details')
+        ->where('status', 1)
+        ->orderBy('created_at','DESC');
 
         if ($request->filled('academic_year')) {
             $query->where('academic_year', $request->academic_year);
@@ -66,6 +68,7 @@ class CurriculumController extends Controller
     {
         // 1. Tìm bản ghi Curriculum thỏa mãn các điều kiện
         $curriculum = $this->model::where([
+            ['status',        '=', 1],
             ['academic_year', '=', $request->academic_year],
             ['grade',         '=', $request->grade],
             ['department_id', '=', $request->department_id],

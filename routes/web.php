@@ -98,6 +98,8 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('nests', NestController::class);
     Route::resource('rooms', RoomController::class);
     Route::resource('users', UserController::class);
+
+    Route::get('curricula/{id}/copy', [CurriculumController::class, 'copy'])->name('curricula.copy');
     Route::resource('curricula', CurriculumController::class);
 
     Route::get('/system/update', [UpdateController::class, 'index'])->name('system.update');

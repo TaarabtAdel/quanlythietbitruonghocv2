@@ -74,6 +74,7 @@ class CurriculumController extends Controller
             'grade'        => 'nullable|string',
             'subject_type' => 'nullable|string',
             'note'         => 'nullable|string',
+            'status'       => 'required|in:'.Curriculum::ACTIVE.','.Curriculum::INACTIVE,
         ]);
 
         DB::beginTransaction();
@@ -161,6 +162,7 @@ class CurriculumController extends Controller
             'grade'        => 'nullable|string',
             'subject_type' => 'nullable|string',
             'note'         => 'nullable|string',
+            'status'       => 'required|in:'.Curriculum::ACTIVE.','.Curriculum::INACTIVE,
         ]);
 
         DB::beginTransaction();
@@ -214,5 +216,12 @@ class CurriculumController extends Controller
         return redirect()
             ->route($this->route_prefix.'index', ['page' => $request->page])
             ->with('success', 'Chương trình đào tạo đã được xóa.');
+    }
+
+    public function copy(Request $request, string $id)
+    {
+        $item = $this->model::findOrFail($id);
+        $this->model::copyItem($id);
+        return redirect()->route($this->route_prefix.'index')->with('success', __('sys.copy_item_success'));
     }
 }

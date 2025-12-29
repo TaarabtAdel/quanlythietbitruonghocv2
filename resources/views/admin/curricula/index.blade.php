@@ -54,6 +54,7 @@
                             <th>Khối</th>
                             <th>Phân môn</th>
                             <th>Số bài học</th>
+                            <th>Trạng thái</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -75,6 +76,7 @@
                                 {{ $typeNames[$item->subject_type] ?? $item->subject_type ?? '-' }}
                             </td>
                             <td>{{ $item->details_count }}</td>
+                            <td>{!! $item->status_fm !!}</td>
                             <td>
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-light border dropdown-toggle dropdown-toggle-nocaret"
@@ -95,6 +97,14 @@
                                                 <a class="dropdown-item"
                                                     href="{{ route($route_prefix.'show',$item->id) }}">
                                                     {{ __('sys.view') }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_cppy'))
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route($route_prefix.'copy',$item->id) }}">
+                                                    {{ __('sys.copy') }}
                                                 </a>
                                             </li>
                                         @endif

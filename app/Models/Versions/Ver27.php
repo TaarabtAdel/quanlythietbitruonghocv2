@@ -31,6 +31,8 @@ class Ver27 extends Model
                 $table->text('note')->nullable(); // Ghi chú
                 $table->timestamps();
                 $table->softDeletes();
+                // status
+                $table->integer('status')->default(1);
                 $table->foreign('department_id')->references('id')->on('departments')->nullOnDelete();
             });
         }
