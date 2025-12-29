@@ -2,15 +2,14 @@
 @section('content')
 @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_create'))
     @include('globals.breadcrumb',[
-        'page_title' => 'Danh sách thiết bị',
+        'page_title' => 'Danh sách phân phối chương trình',
         'actions' => [
             'add_new' => route($route_prefix.'create',['type'=>request()->type]),
-            //'export' => route($route_prefix.'export'),
         ]
     ])
 @else
     @include('globals.breadcrumb',[
-        'page_title' => 'Danh sách thiết bị',
+        'page_title' => 'Danh sách phân phối chương trình',
     ])
 @endif
 
@@ -18,34 +17,26 @@
 <!-- Item actions -->
 <form action="{{ route($route_prefix.'index') }}" method="get">
     <input type="hidden" name="type" value="{{ request()->type }}">
-    <div class="row g-3"> 
-        
-        <div class="col-12 col-md-3">
-            <label class="form-label fw-bold">Tên Thiết Bị</label>
-            <input class="form-control" name="name" type="text" placeholder="Tìm kiếm..."
-                value="{{ request()->name }}">
+    <div class="row">
+        <div class="col">
+            <label class="form-label fw-bold">Bộ môn</label>
+            <x-form-input-departments name="department_id" selected_id="{{ request()->department_id }}" autoSubmit="1" />
         </div>
-
-        <div class="col-12 col-sm-6 col-md-3">
-            <label class="form-label fw-bold">Loại Thiết Bị</label>
-            <x-form-input-device-types name="device_type_id" selected_id="{{ request()->device_type_id }}"
-                autoSubmit="1" />
+        <div class="col">
+            <label class="form-label fw-bold">Năm học</label>
+            <x-form-input-school-years name="academic_year" selected_id="{{ request()->academic_year }}" autoSubmit="1" />
         </div>
-
-        <div class="col-12 col-sm-6 col-md-3">
-            <label class="form-label fw-bold">Môn Học</label>
-            <x-form-input-departments name="department_id" selected_id="{{ request()->department_id }}"
-                autoSubmit="1" />
+        <div class="col">
+            <label class="form-label fw-bold">Khối</label>
+            <x-form-input-grade name="grade" selected_id="{{ request()->grade }}" autoSubmit="1" />
         </div>
-
-        <div class="col-12 col-md-3">
-            <label class="form-label fw-bold">Trạng Thái</label>
-            <x-form-input-status name="status" status="{{ request()->status }}"
-                autoSubmit="1" />
-        </div>
-        
-        <div class="col-12 d-md-none">
-            <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+        <div class="col">
+            <label class="form-label fw-bold">Phân môn</label>
+            <select name="subject_type" class="form-control" onchange="this.form.submit()">
+                <option value="">--- Tất cả ---</option>
+                <option value="mon_chinh" {{ request()->subject_type == 'mon_chinh' ? 'selected' : '' }}>Môn chính</option>
+                <option value="chuyen_de" {{ request()->subject_type == 'chuyen_de' ? 'selected' : '' }}>Chuyên đề</option>
+            </select>
         </div>
     </div>
 </form>
@@ -57,12 +48,12 @@
                 <table class="table align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th><input type="checkbox" id="checkAll"></th>
                             <th>STT</th>
-                            <th>Tên</th>
-                            <th>Số lượng</th>
-                            <th>Loại thiết bị</th>
+                            <th>Năm học</th>
                             <th>Bộ môn</th>
+                            <th>Khối</th>
+                            <th>Phân môn</th>
+                            <th>Số bài học</th>
                             <th>Trạng thái</th>
                             <th></th>
                         </tr>
@@ -71,12 +62,20 @@
                         @if( count( $items ) )
                         @foreach( $items as $key => $item )
                         <tr>
-                            <td> <input type="checkbox" name="ids[]" class="check-item" value="{{ $item->id }}"> </td>
                             <td>{{ ($items->currentPage() - 1) * $items->perPage() + ($key + 1) }}</td>
-                            <td>{{ $item->name }}</td>
-                            <td>{{ $item->quantity }}</td>
-                            <td>{{ $item->devicetype->name ?? '' }}</td>
-                            <td>{{ $item->department->name ?? '' }}</td>
+                            <td>{{ $item->academic_year }}</td>
+                            <td>{{ $item->department->name ?? '-' }}</td>
+                            <td>{{ $item->grade_name }}</td>
+                            <td>
+                                @php
+                                    $typeNames = [
+                                        'mon_chinh' => 'Môn chính',
+                                        'chuyen_de' => 'Chuyên đề',
+                                    ];
+                                @endphp
+                                {{ $typeNames[$item->subject_type] ?? $item->subject_type ?? '-' }}
+                            </td>
+                            <td>{{ $item->details_count }}</td>
                             <td>{!! $item->status_fm !!}</td>
                             <td>
                                 <div class="dropdown">
@@ -93,6 +92,22 @@
                                                 </a>
                                             </li>
                                         @endif
+                                        @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_view'))
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route($route_prefix.'show',$item->id) }}">
+                                                    {{ __('sys.view') }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_cppy'))
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="{{ route($route_prefix.'copy',$item->id) }}">
+                                                    {{ __('sys.copy') }}
+                                                </a>
+                                            </li>
+                                        @endif
                                         @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_delete'))
                                             <li>
                                                 <form
@@ -102,7 +117,7 @@
                                                     @method('DELETE')
                                                     <button onclick=" return confirm('{{ __('sys.confirm_delete') }}') "
                                                         class="dropdown-item">
-                                                        {{ $item->deleted_at ? __('sys.force_delete') : __('sys.delete') }}
+                                                        {{ __('sys.delete') }}
                                                     </button>
                                                 </form>
                                             </li>
@@ -114,7 +129,7 @@
                         @endforeach
                         @else
                         <tr>
-                            <td colspan="5" class="text-center">{{ __('sys.no_item_found') }}</td>
+                            <td colspan="7" class="text-center">{{ __('sys.no_item_found') }}</td>
                         </tr>
                         @endif
                     </tbody>

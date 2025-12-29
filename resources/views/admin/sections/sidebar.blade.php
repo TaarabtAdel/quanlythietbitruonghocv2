@@ -139,6 +139,16 @@
                         @endif
                     @endif
 
+                    @if(\App\Models\Option::get_option_name('app_verison') >= '2.7')
+                        @if (Auth::check() && Auth::user()->hasPermission('Curriculum'))
+                        <li>
+                            <a href="{{ route('admin.curricula.index') }}">
+                                <span class="material-symbols-outlined">arrow_right</span>Phân Phối C.Trình
+                            </a>
+                        </li>
+                        @endif
+                    @endif
+
                 </ul>
             </li>
             @endif
@@ -229,6 +239,13 @@
                     <li>
                         <a href="{{ route('admin.import.index', ['type' => 'Device']) }}">
                             <span class="material-symbols-outlined">arrow_right</span>Thiết Bị
+                        </a>
+                    </li>
+                    @endif
+                    @if (Auth::check() && Auth::user()->hasPermission('Import_Curriculum'))
+                    <li>
+                        <a href="{{ route('admin.import.index', ['type' => 'Curriculum']) }}">
+                            <span class="material-symbols-outlined">arrow_right</span>Phân Phối C.Trình
                         </a>
                     </li>
                     @endif

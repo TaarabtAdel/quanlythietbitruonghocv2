@@ -23,30 +23,29 @@ class FormInputSchoolWeek extends Component
         $this->defaultYear = $defaultYear;
     }
 
-    /**
-     * Hàm giả lập/truy vấn cấu hình tuần học chi tiết từ Database/Cache.
-     * Cấu trúc MỚI: [Năm Học] => ['startWeek1' => 'YYYY-MM-DD', 'numberWeek' => int]
-     */
     private function getSchoolYearConfig(): array
     {
-        // --- CẤU TRÚC ĐÃ ĐƯỢC CẬP NHẬT THEO YÊU CẦU ---
-        return [
-            '2024-2025' => [
-                'startWeek1' => '2024-09-05', // YYYY-MM-DD
-                'numberWeek' => 38
-            ], 
-            '2025-2026' => [
-                'startWeek1' => '2025-09-05',
-                'numberWeek' => 38
-            ],
-            '2026-2027' => [
-                'startWeek1' => '2026-09-05',
-                'numberWeek' => 38
-            ], 
-        ];
-        // ------------------------------------------------
+        $firstBorrow = \Illuminate\Support\Facades\Cache::remember('first_borrow_record', 1440, function () {
+            return \App\Models\Borrow::orderBy('created_at', 'ASC')->first();
+        });
+
+        $startYear = $firstBorrow ? (int)date('Y', strtotime($firstBorrow->created_at)) : (int)date('Y');
+        
+        $currentYear = (int)date('Y');
+        $configs = [];
+
+        for ($i = $startYear; $i <= $currentYear; $i++) {
+            $yearKey = $i . '-' . ($i + 1);
+            
+            $configs[$yearKey] = [
+                'startWeek1' => "{$i}-09-05", // Mặc định khai giảng 05/09 hàng năm
+                'numberWeek' => 38            // Số tuần mặc định
+            ];
+        }
+
+        return $configs;
     }
-    
+        
     /**
      * Lấy năm học hiện tại theo quy tắc: YYYY-YYYY+1
      */

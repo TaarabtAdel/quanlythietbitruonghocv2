@@ -20,11 +20,9 @@ class ImportController extends Controller
         $type_slug = strtolower($type);
         $params = [
             'route_prefix'  => $this->route_prefix,
+            'view_path'     => $this->view_path,
             'templateFile'  => $type_slug.'.xlsx',
         ];
-        // if($type){
-        //     return view($this->view_path.'types.'.$type_slug, $params);
-        // }
         return view($this->view_path.'index', $params);
     }
     /**
@@ -34,7 +32,10 @@ class ImportController extends Controller
     {
         $type = $request->type ?? '';
         $modelClass = '\App\Imports\\' . $type.'Import';
+        
         $import = new $modelClass();
+        $import->request_data = $request->all();
+
         $rules = $import->rules ?? [];
         $messages = $import->messages ?? [];
         $rules = array_merge($rules,[
@@ -54,6 +55,7 @@ class ImportController extends Controller
                     ->withInput();
             }
         }
+        
         try {
             $file = $request->file('file');
 
@@ -71,10 +73,9 @@ class ImportController extends Controller
             // xong thì xóa file tạm
             unlink($path->getPathname());
 
-            // Excel::import($import, $request->file('file'));
             return redirect()->back()->with('success', 'Nhập dữ liệu thành công');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Nhập dữ liệu thất bại');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Nhập dữ liệu thất bại: ' . $e->getMessage());
         }
     }
 }

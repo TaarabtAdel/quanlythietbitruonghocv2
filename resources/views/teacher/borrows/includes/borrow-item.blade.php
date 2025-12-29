@@ -50,13 +50,12 @@
                     </div>
                     <div class="col col-lg-2 col-12 input-devices-{{ $tiet }}-lecture_name">
                         <label class="form-label">Tiết PPCT</label>
-                        <input type="text" class="form-control" id="devices_{{ $tiet }}_lecture_name"
-                            data-name="lecture_name" name="devices[{{ $tiet }}][lecture_name]" value="{{ $borrow['lecture_name'] }}">
-                            <span class="input-error text-danger"></span>
+                        <x-form-input-lecture_name tiet="{{ $tiet }}" name="lecture_name" value="{{ $borrow['lecture_name'] }}" target="devices_{{ $tiet }}_lesson_name" />
+                        <span class="input-error text-danger"></span>
                     </div>
                     <div class="col col-lg-3 col-12 input-devices-{{ $tiet }}-lesson_name">
                         <label class="form-label">Tên bài dạy</label>
-                        <input type="text" class="form-control" id="devices_{{ $tiet }}_lesson_name"
+                        <input type="text" class="form-control curriculum-lesson_name" id="devices_{{ $tiet }}_lesson_name"
                             data-name="lesson_name" name="devices[{{ $tiet }}][lesson_name]" value="{{ $borrow['lesson_name'] }}">
                         <span class="input-error text-danger"></span>
                     </div>

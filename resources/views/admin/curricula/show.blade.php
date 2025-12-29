@@ -1,0 +1,125 @@
+@extends('admin.layouts.master')
+@section('title','Chi tiết phân phối chương trình #'. $item->id)
+@section('content')
+@include('globals.breadcrumb',[
+    'page_title' => 'Chi tiết phân phối chương trình #'.$item->id,
+])
+
+<div class="row">
+    <div class="col-12 col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Thông tin phân phối chương trình</h5>
+                
+               <div class="row">
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Năm học:</label>
+                            <p>{{ $item->academic_year }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Bộ môn:</label>
+                            <p>{{ $item->department->name ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Khối:</label>
+                            <p>{{ $item->grade_name }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Phân môn:</label>
+                            <p>
+                                @php
+                                    $typeNames = [
+                                        'mon_chinh' => 'Môn chính',
+                                        'chuyen_de' => 'Chuyên đề',
+                                    ];
+                                @endphp
+                                {{ $typeNames[$item->subject_type] ?? $item->subject_type ?? '-' }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Ngày tạo:</label>
+                            <p>{{ date('d/m/Y H:i', strtotime($item->created_at)) }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6">
+                        <div class="mb-3">
+                            <label class="fw-bold">Ngày cập nhật:</label>
+                            <p>{{ date('d/m/Y H:i', strtotime($item->updated_at)) }}</p>
+                        </div>
+                    </div>
+                </div>  
+
+                @if($item->note)
+                <div class="mb-3">
+                    <label class="fw-bold">Ghi chú:</label>
+                    <p>{{ $item->note }}</p>
+                </div>
+                @endif
+
+                
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Chi tiết các bài học</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="50" class="text-center">STT</th>
+                                <th width="100" class="text-center">Tuần PPCT</th>
+                                <th width="100" class="text-center">Tiết PPCT</th>
+                                <th>Tên bài học</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(count($item->details))
+                                @foreach($item->details as $index => $detail)
+                                <tr>
+                                    <td class="text-center">{{ $index + 1 }}</td>
+                                    <td class="text-center">{{ $detail->week ?? '-' }}</td>
+                                    <td class="text-center">{{ $detail->lesson_number ?? '-' }}</td>
+                                    <td>{{ $detail->lesson_name }}</td>
+                                </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="5" class="text-center">Chưa có bài học nào</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-end gap-2">
+            <a href="{{ route($route_prefix.'index') }}" class="btn btn-secondary px-4">
+                <i class='bx bx-arrow-back'></i> Quay lại
+            </a>
+            @if (Auth::check() && Auth::user()->hasPermission(request()->type.'_update'))
+                <a href="{{ route($route_prefix.'edit', $item->id) }}" class="btn btn-primary px-4">
+                    <i class='bx bx-edit'></i> Chỉnh sửa
+                </a>
+            @endif
+        </div>
+    </div>
+</div>
+
+@endsection

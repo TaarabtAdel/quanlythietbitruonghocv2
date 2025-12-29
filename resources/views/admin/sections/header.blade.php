@@ -4,9 +4,7 @@
             <span class="material-symbols-outlined">menu</span>
         </div>
         <div class="d-lg-block d-none search-bar" style="width:80%">
-            <marquee behavior="" direction="">Thông báo: Các thầy cô có thể lựa chọn MỤC ĐÍCH tại phiếu báo mượn để tiện
-                thống kê sau này, Quản Trị Viên có thể cập nhật ghi chú, trạng thái đã trả hay chưa để tiện theo dõi
-            </marquee>
+            <marquee behavior="" direction="">{{ env('ADMIN_WELLCOME', 'Chào mừng bạn đến với hệ thống quản trị!') }}</marquee>
         </div>
         <ul class="navbar-nav top-right-menu gap-2">
             <li class="nav-item d-lg-none d-block" data-bs-toggle="modal" data-bs-target="#exampleModal">

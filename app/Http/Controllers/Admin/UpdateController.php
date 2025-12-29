@@ -34,7 +34,7 @@ class UpdateController extends Controller
             '2.5' => \App\Models\Versions\Ver25::class,
             '2.6' => \App\Models\Versions\Ver26::class,
             // Thêm các phiên bản tiếp theo ở đây
-            // '2.7' => \App\Models\Versions\Ver27::class,
+            '2.7' => \App\Models\Versions\Ver27::class,
             // '3.0' => \App\Models\Versions\Ver30::class,
         ];
 

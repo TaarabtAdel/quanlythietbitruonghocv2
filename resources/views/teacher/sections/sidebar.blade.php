@@ -56,6 +56,16 @@
                     <div class="menu-title">Văn Bản Thiết Bị</div>
                 </a>
             </li>
+            @if(\App\Models\Option::get_option_name('app_verison') >= '2.7')
+            <li>
+                <a href="{{ route('curricula.index') }}">
+                    <div class="parent-icon">
+                        <span class="material-symbols-outlined">book</span>
+                    </div>
+                    <div class="menu-title">Phân Phối C.Trình</div>
+                </a>
+            </li>
+            @endif
             <li>
                 <a class="has-arrow" href="javascript:;">
                     <div class="parent-icon">

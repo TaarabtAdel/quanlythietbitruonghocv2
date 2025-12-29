@@ -30,6 +30,11 @@ class Device extends MainModel
         $query->orderBy('name','ASC');
         return $query;
     }
+    public function delete(){
+        return $this->update([
+            'deleted_at' => now()
+        ]);
+    }
 
     public function borrows()
     {

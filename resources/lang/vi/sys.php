@@ -26,6 +26,7 @@ return [
     'update' => 'Cập nhật',
     'edit' => 'Sửa',
     'delete' => 'Xóa',
+    'view' => 'Xem',
     'force_delete' => 'Xóa vĩnh viễn',
     'confirm_delete' => 'Bạn có chắc chắn?',
     'all_statues' => 'Tất cả trạng thái',
