@@ -64,10 +64,10 @@ jQuery(document).ready(function($) {
             <tr class="detail-row">
                 <td class="text-center align-middle" style="cursor: move;"><i class="bi bi-grip-vertical me-1"></i> <span></span></td>
                 <td>
-                    <input type="number" name="details[${detailCount}][week]" class="form-control form-control-sm text-center" placeholder="Tuần" min="1">
+                    <input type="text" name="details[${detailCount}][week]" class="form-control form-control-sm text-center" placeholder="Tuần" min="1">
                 </td>
                 <td>
-                    <input type="number" name="details[${detailCount}][lesson_number]" class="form-control form-control-sm text-center" placeholder="Tiết" min="1">
+                    <input type="text" name="details[${detailCount}][lesson_number]" class="form-control form-control-sm text-center" placeholder="Tiết" min="1">
                 </td>
                 <td>
                     <input type="text" name="details[${detailCount}][lesson_name]" class="form-control form-control-sm" placeholder="Tên bài học" required>

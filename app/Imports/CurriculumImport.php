@@ -91,8 +91,8 @@ class CurriculumImport implements ToCollection
 
                 $details[] = [
                     'curriculum_id' => $curriculum->id,
-                    'week'          => $c0 !== '' ? (int)$c0 : null,
-                    'lesson_number' => $c1 !== '' ? (int)$c1 : null,
+                    'week'          => $c0 !== '' ? $c0 : null,
+                    'lesson_number' => $c1 !== '' ? $c1 : null,
                     'lesson_name'   => $c2,
                     'note'          => $c3,
                     'created_at'    => now(),
