@@ -89,8 +89,8 @@ class CurriculumController extends Controller
                     if (!empty($detail['lesson_name'])) {
                         $details[] = [
                             'curriculum_id' => $curriculum->id,
-                            'week' => !empty($detail['week']) ? (int)$detail['week'] : null,
-                            'lesson_number' => !empty($detail['lesson_number']) ? (int)$detail['lesson_number'] : null,
+                            'week' => !empty($detail['week']) ? $detail['week'] : null,
+                            'lesson_number' => !empty($detail['lesson_number']) ? $detail['lesson_number'] : null,
                             'lesson_name' => $detail['lesson_name'],
                             'note' => $detail['note'] ?? null,
                             'created_at' => now(),
@@ -179,8 +179,8 @@ class CurriculumController extends Controller
                     if (!empty($detail['lesson_name'])) {
                         $details[] = [
                             'curriculum_id' => $id,
-                            'week' => !empty($detail['week']) ? (int)$detail['week'] : null,
-                            'lesson_number' => !empty($detail['lesson_number']) ? (int)$detail['lesson_number'] : null,
+                            'week' => !empty($detail['week']) ? $detail['week'] : null,
+                            'lesson_number' => !empty($detail['lesson_number']) ? $detail['lesson_number'] : null,
                             'lesson_name' => $detail['lesson_name'],
                             'note' => $detail['note'] ?? null,
                             'created_at' => now(),

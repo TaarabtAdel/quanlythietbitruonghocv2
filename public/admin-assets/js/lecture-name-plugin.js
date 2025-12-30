@@ -50,7 +50,7 @@ $(document).ready(function() {
                             let displayLessonNumber = prefix + item.lesson_number;
 
                             html += `<li class="list-group-item item-select" data-lesson_number="${displayLessonNumber}" data-lesson_name="${item.lesson_name}">
-                                        <strong>T${item.week}:</strong> ${item.lesson_name}
+                                        <strong>${(params.subject_type === 'chuyen_de') ? 'CD' : 'T'}${item.lesson_number}:</strong> ${item.lesson_name}
                                      </li>`;
                         });
                     } else {

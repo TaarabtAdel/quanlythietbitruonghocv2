@@ -45,6 +45,7 @@ class Curriculum extends Model
         $data['created_at'] = now();
         $data['updated_at'] = now();
         $data['deleted_at'] = null;
+        $data['status'] = self::INACTIVE;
         $item = self::create($data);
         $item->details()->createMany($originalItem->details->map(function ($detail) use ($item) {
             return [

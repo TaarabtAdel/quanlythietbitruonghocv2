@@ -28,7 +28,6 @@
         <div class="form-group mb-4">
             <label class="form-label fw-bold">Loại phân môn</label>
             <select name="subject_type" class="form-control">
-                <option value="">--- Chọn loại phân môn ---</option>
                 <option value="mon_chinh" {{ old('subject_type') == 'mon_chinh' ? 'selected' : '' }}>Môn chính</option>
                 <option value="chuyen_de" {{ old('subject_type') == 'chuyen_de' ? 'selected' : '' }}>Chuyên đề</option>
             </select>

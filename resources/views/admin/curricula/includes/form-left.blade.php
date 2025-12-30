@@ -60,10 +60,10 @@
                                 <tr class="detail-row" data-index="{{ $index }}">
                                     <td class="text-center align-middle">{{ $index + 1 }}</td>
                                     <td>
-                                        <input type="number" name="details[{{ $index }}][week]" class="form-control form-control-sm text-center" value="{{ $detail->week }}" placeholder="Tuần" min="1">
+                                        <input type="text" name="details[{{ $index }}][week]" class="form-control form-control-sm text-center" value="{{ $detail->week }}" placeholder="Tuần" min="1">
                                     </td>
                                     <td>
-                                        <input type="number" name="details[{{ $index }}][lesson_number]" class="form-control form-control-sm text-center" value="{{ $detail->lesson_number }}" placeholder="Số tiết" min="1">
+                                        <input type="text" name="details[{{ $index }}][lesson_number]" class="form-control form-control-sm text-center" value="{{ $detail->lesson_number }}" placeholder="Số tiết" min="1">
                                     </td>
                                     <td>
                                         <input type="text" name="details[{{ $index }}][lesson_name]" class="form-control form-control-sm" value="{{ $detail->lesson_name }}" placeholder="Tên bài học" required>
@@ -79,10 +79,10 @@
                                 <tr class="detail-row" data-index="0">
                                     <td class="text-center align-middle">1</td>
                                     <td>
-                                        <input type="number" name="details[0][week]" class="form-control form-control-sm text-center" placeholder="Tuần PPCT" min="1">
+                                        <input type="text" name="details[0][week]" class="form-control form-control-sm text-center" placeholder="Tuần PPCT" min="1">
                                     </td>
                                     <td>
-                                        <input type="number" name="details[0][lesson_number]" class="form-control form-control-sm text-center" placeholder="Tiết PPCT" min="1">
+                                        <input type="text" name="details[0][lesson_number]" class="form-control form-control-sm text-center" placeholder="Tiết PPCT" min="1">
                                     </td>
                                     <td>
                                         <input type="text" name="details[0][lesson_name]" class="form-control form-control-sm" placeholder="Tên bài học" required>
