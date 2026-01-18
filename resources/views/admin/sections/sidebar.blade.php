@@ -313,6 +313,14 @@
                     </li>
                     @endif
 
+                    @if (Auth::check() && Auth::user()->hasPermission('WeeklyPlan'))
+                    <li>
+                        <a href="{{ route('admin.export.index', ['type' => 'WeeklyPlan']) }}">
+                            <span class="material-symbols-outlined">arrow_right</span>Kế hoạch tuần
+                        </a>
+                    </li>
+                    @endif
+
                    
                     @if (Auth::check() && Auth::user()->hasPermission('Export_Device'))
                     <li>
