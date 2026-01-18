@@ -69,7 +69,7 @@
                             <th>Ngày dạy</th>
                             <th>Thiết bị</th>
                             <th>Phòng bộ môn</th>
-                            <th>Mục đích</th>
+                            <th>Buổi/Tiết</th>
                             <th>Trạng thái</th>
                             <th></th>
                         </tr>
@@ -86,7 +86,7 @@
                             <td>{{ $item->borrow_date_fm }}</td>
                             <td>{!! $item->device_names !!} {!! $item->fake_device_names !!}</td>
                             <td>{!! $item->lab_names !!}</td>
-                            <td>{{  isset(App\Models\Borrow::get_borrow_purposes()[$item->borrow_purpose]) ?  App\Models\Borrow::get_borrow_purposes()[$item->borrow_purpose] : $item->borrow_purpose }}</td>
+                            <td>{!! $item->borrow_infos !!}</td>
                             <td>{!! $item->status_fm !!}</td>
                             <td>
                                 <div class="dropdown">

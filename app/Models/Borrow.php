@@ -401,16 +401,17 @@ class Borrow extends MainModel
         }
         return $names;
     }
-    // public function getDeviceNamesAttribute(){
-    //     $device_ids = $this->borrow_devices->pluck('device_id','device_id');
-    //     $names = '';
-    //     if($device_ids){
-    //         $device_ids = $device_ids->toArray();
-    //         $labs = \App\Models\Device::whereIn('id',$device_ids)->pluck('name')->toArray();
-    //         $names = implode('<br>',$labs);
-    //     }
-    //     return $names;
-    // }
+    public function getBorrowInfosAttribute(){
+        $infoList = [];
+        if ($this->borrow_devices && $this->borrow_devices->count()) {
+            // Lấy thông tin phiếu mượn: buổi, tiết
+            $infoList = $this->borrow_devices->map(function ($borrowDevice) {
+                return 'Buổi: <strong>' . $borrowDevice->session . '</strong>, Tiết: <strong>' . $borrowDevice->lecture_number . '</strong>';
+            })->unique()->toArray();
+        }
+        $infos = implode('<br>', $infoList);
+        return $infos;
+    }
     public function getDeviceNamesAttribute()
     {
         $names = '';

@@ -71,7 +71,7 @@
                                 <th width="12%">Ngày dạy</th>
                                 <th>Thiết bị</th>
                                 <th width="20%">Phòng bộ môn</th>
-                                <th width="10%">Mục đích</th>
+                                <th width="10%">Buổi/Tiết</th>
                                 <th width="10%"></th>
                                 <th></th>
                             </tr>
@@ -88,7 +88,7 @@
                                         <td>{{ $item->borrow_date_fm }}</td>
                                         <td>{!! $item->device_names !!} {!! $item->fake_device_names !!}</td>
                                         <td>{!! $item->lab_names !!}</td>
-                                        <td>{{ isset($borrow_purposes[$item->borrow_purpose]) ? $borrow_purposes[$item->borrow_purpose] : '' }}</td>
+                                        <td>{!! $item->borrow_infos !!}</td>
                                         <td>{!! $item->status_fm !!}</td>
                                         @if (Auth::check() && ( ( Auth::user()->hasPermission( 'Borrow_delete' )) || ( Auth::user()->hasPermission( 'Borrow_update' ))  || ( Auth::user()->hasPermission( 'Borrow_view' ) )))
                                         <td>
