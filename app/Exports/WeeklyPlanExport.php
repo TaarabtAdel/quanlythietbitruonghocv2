@@ -107,9 +107,10 @@ class WeeklyPlanExport {
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
                 'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                 'wrapText'   => true,
-                'indent'     => 1, // Thêm một chút khoảng trống ở lề trái cho đẹp
             ]);
-            $sheet->getRowDimension($index)->setRowHeight(-1);
+            $lineCount = substr_count($device_name, "\n") + 1;
+            $customHeight = $lineCount * 20 + 10; // Mỗi dòng ~20pt, cộng thêm 10pt đệm
+            $sheet->getRowDimension($index)->setRowHeight($customHeight);
 
             // Copy style từ A11 cho cả dòng mới
             for ($col = 'A'; $col <= 'A'; $col++) { 
