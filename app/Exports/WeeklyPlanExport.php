@@ -109,7 +109,7 @@ class WeeklyPlanExport {
                 'wrapText'   => true,
             ]);
             $lineCount = substr_count($device_name, "\n") + 1;
-            $customHeight = $lineCount * 20; // Mỗi dòng ~20pt, cộng thêm 10pt đệm
+            $customHeight = $lineCount * 17; // Mỗi dòng ~20pt, cộng thêm 10pt đệm
             $sheet->getRowDimension($index)->setRowHeight($customHeight);
 
             // Copy style từ A11 cho cả dòng mới
