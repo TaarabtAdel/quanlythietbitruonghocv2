@@ -87,18 +87,25 @@ class WeeklyPlanExport {
         $stt = 1; // Khởi tạo biến STT
         foreach ($items as $item) {
             $session_name = $item['session'] == 'Sáng' ? 'S' : 'C';
+            $device_name = $item['device_name'];
+            $device_name = str_replace("<br>", "\n", $device_name);
+
             // Ngày dạy
             $sheet->setCellValue('A' . $index, $item['borrow_date']);
             // Giaos viên
             $sheet->setCellValue('B' . $index, $item['user_name']);
             // Thiet bị
-            $sheet->setCellValue('C' . $index, $item['device_name']);
+            $sheet->setCellValue('C' . $index, $device_name);
             // Phong bo mon
             $sheet->setCellValue('E' . $index, $item['lab_name']);
             // Tiet day
             $sheet->setCellValue('F' . $index, $item['lecture_number'] . $session_name);
             // Lop
             $sheet->setCellValue('G' . $index, $item['room_name']);
+
+            $sheet->getStyle('C' . $index)->getAlignment()->setWrapText(true);
+            $sheet->getRowDimension($index)->setRowHeight(-1);
+
             // Copy style từ A11 cho cả dòng mới
             for ($col = 'A'; $col <= 'A'; $col++) { 
                 $sheet->duplicateStyle($styleMau, $col . $index); 
