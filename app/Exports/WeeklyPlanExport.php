@@ -103,7 +103,12 @@ class WeeklyPlanExport {
             // Lop
             $sheet->setCellValue('G' . $index, $item['room_name']);
 
-            $sheet->getStyle('C' . $index)->getAlignment()->setWrapText(true);
+            $sheet->getStyle('C' . $index)->getAlignment()->applyFromArray([
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+                'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                'wrapText'   => true,
+                'indent'     => 1, // Thêm một chút khoảng trống ở lề trái cho đẹp
+            ]);
             $sheet->getRowDimension($index)->setRowHeight(-1);
 
             // Copy style từ A11 cho cả dòng mới
