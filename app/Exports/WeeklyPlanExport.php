@@ -86,7 +86,7 @@ class WeeklyPlanExport {
         $index = 10; // Bắt đầu từ hàng 10
         $stt = 1; // Khởi tạo biến STT
         foreach ($items as $item) {
-            $session_name = $item['session_name'] == 'Sáng' ? 'S' : 'C';
+            $session_name = $item['session'] == 'Sáng' ? 'S' : 'C';
             // Ngày dạy
             $sheet->setCellValue('A' . $index, $item['borrow_date']);
             // Giaos viên
