@@ -87,38 +87,35 @@ class WeeklyPlanExport {
         $stt = 1; // Khởi tạo biến STT
         foreach ($items as $item) {
             $session_name = $item['session'] == 'Sáng' ? 'S' : 'C';
-            $device_name = $item['device_name'];
-            $device_name = str_replace("<br>", "\n", $device_name);
+            $device_name = str_replace("<br>", "\n", $item['device_name']);
 
-            // Ngày dạy
+            // 1. Gộp cột C và D
+            $sheet->mergeCells("C{$index}:D{$index}");
+
+            // 2. Đổ dữ liệu vào các ô
             $sheet->setCellValue('A' . $index, $item['borrow_date']);
-            // Giaos viên
             $sheet->setCellValue('B' . $index, $item['user_name']);
-            // Thiet bị
-            $sheet->setCellValue('C' . $index, $device_name);
-            // Phong bo mon
+            $sheet->setCellValue('C' . $index, $device_name); // Dữ liệu cột C sẽ tràn sang D sau khi merge
             $sheet->setCellValue('E' . $index, $item['lab_name']);
-            // Tiet day
             $sheet->setCellValue('F' . $index, $item['lecture_number'] . $session_name);
-            // Lop
             $sheet->setCellValue('G' . $index, $item['room_name']);
 
-            $sheet->getStyle('C' . $index)->getAlignment()->applyFromArray([
+            // 3. Sao chép Style từ dòng mẫu (A10:G10)
+            $sheet->duplicateStyle($sheet->getStyle('A10:G10'), "A{$index}:G{$index}");
+
+            // 4. Định dạng riêng cho vùng Merge C-D (Canh trái, xuống dòng, chiều cao)
+            $sheet->getStyle("C{$index}:D{$index}")->getAlignment()->applyFromArray([
                 'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
                 'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
                 'wrapText'   => true,
             ]);
-            $lineCount = substr_count($device_name, "\n") + 1;
-            $customHeight = $lineCount * 17; // Mỗi dòng ~20pt, cộng thêm 10pt đệm
-            $sheet->getRowDimension($index)->setRowHeight($customHeight);
 
-            // Copy style từ A11 cho cả dòng mới
-            for ($col = 'A'; $col <= 'A'; $col++) { 
-                $sheet->duplicateStyle($styleMau, $col . $index); 
-            } 
-            for ($colMerge = 'B'; $colMerge <= 'G'; $colMerge++) { 
-                $sheet->duplicateStyle($styleMauMerge, $colMerge . $index); 
-            }
+            // Tính toán chiều cao dòng dựa trên nội dung cột C
+            $lineCount = substr_count($device_name, "\n") + 1;
+            $sheet->getRowDimension($index)->setRowHeight($lineCount * 13);
+
+            // 5. FIX CỨNG BORDER: Đảm bảo toàn bộ dòng từ A đến G đều có khung, không mất cột G
+            $sheet->getStyle("A{$index}:G{$index}")->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
             $index++;
             $stt++;

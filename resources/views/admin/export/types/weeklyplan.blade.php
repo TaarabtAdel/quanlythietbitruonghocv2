@@ -10,7 +10,7 @@
     </div>
     <div class="col-lg-6">
         <div id="preview-demo-img">
-            <img class="img-fluid" src="/system/export/preview/room.png" alt="">
+            <img class="img-fluid" src="/system/export/preview/weeklyplan.png" alt="">
         </div>
     </div>
 </div>
