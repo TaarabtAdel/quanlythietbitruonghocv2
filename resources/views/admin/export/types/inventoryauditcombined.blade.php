@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-4">
         <style>
         .select2-container {
             z-index: 99999;
@@ -35,7 +35,7 @@
         @endfor
     </div>
 
-    <div class="col-lg-6">
+    <div class="col-lg-8">
         <div id="preview-demo-img">
             <img class="img-fluid" src="/system/export/preview/inventoryauditcombined.png" alt="">
         </div>

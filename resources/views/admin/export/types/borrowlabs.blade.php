@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-4">
         <div class="form-group mb-4">
             <label class="form-label fw-bold">Chọn năm học : <span class="text-danger">(*)</span></label>
             <x-form-input-school-years name="year" selected_id="{{ request()->year }}" id="year" />
@@ -32,7 +32,7 @@
             <x-form-input-error field="export_by" />
         </div>
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
         <div id="preview-demo-img">
             <img class="img-fluid" src="/system/export/preview/borrowlabs.png" alt="">
         </div>

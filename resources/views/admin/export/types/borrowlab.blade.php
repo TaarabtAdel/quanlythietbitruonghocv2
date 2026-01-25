@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-4">
         <div class="form-group mb-4">
             <label class="form-label fw-bold">Tuần : <span class="text-danger">(*)</span></label>
             <!-- <input type="week" min="2022-W01" max="{{ date('Y') }}-W99" name="week" class="form-control"
@@ -27,7 +27,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
         <div id="preview-demo-img"></div>
     </div>
 </div>
