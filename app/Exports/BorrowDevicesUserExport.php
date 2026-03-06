@@ -84,12 +84,14 @@ class BorrowDevicesUserExport {
             $stt = 1; // Khởi tạo biến STT
             foreach ($borrows as $borrow) {
                 foreach ($borrow->the_devices as $device) {
+                    $lab_name = $device->lab->name ?? '';
+                    $device_name = $device->device->name ?? '';
                     $sheet->setCellValue('A' . $index, $stt);
                     $sheet->setCellValue('B' . $index, date('d/m/Y',strtotime($device->borrow_date)));
                     $sheet->setCellValue('C' . $index, date('d/m/Y',strtotime($device->borrow_date)));
                     $sheet->setCellValue('D' . $index, $borrow->id);
                     $sheet->setCellValue('E' . $index, date('d/m/Y',strtotime($device->created_at)));
-                    $sheet->setCellValue('F' . $index, $device->device->name ?? '');
+                    $sheet->setCellValue('F' . $index, $device_name ? $device_name : $lab_name);
                     $sheet->setCellValue('G' . $index, $device->quantity);
                     $sheet->setCellValue('H' . $index, $device['session'] == 'Chiều' ? 'C:'.$device['lecture_number'] : 'S:'.$device['lecture_number'] );
                     $sheet->setCellValue('I' . $index, $device->lesson_name);
