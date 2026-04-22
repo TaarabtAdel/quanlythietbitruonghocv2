@@ -34,6 +34,8 @@
                                 <th>STT</th>
                                 <th width="300px">Tên thiết bị</th>
                                 <th>Số lượng</th>
+                                <th>Tiêu hao</th>
+                                <th>Còn SD</th>
                                 <th>Loại thiết bị</th>
                                 <th>Bộ môn</th>
                             </tr>
@@ -44,6 +46,8 @@
                                 <td>{{ $key + 1 }}</td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->broken ?? '' }}</td>
+                                <td>{{ max(0, (int)($item->quantity ?? 0) - (int)($item->broken ?? 0)) }}</td>
                                 <td>{{ $item->device_type_name }}</td>
                                 <td>{{ $item->department_name }}</td>
                             </tr>
