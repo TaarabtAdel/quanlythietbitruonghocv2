@@ -38,6 +38,7 @@
                 <th>STT</th>
                 <th width="300px">Tên thiết bị</th>
                 <th>Số lượng</th>
+                <th>Tiêu hao</th>
                 <th>Loại thiết bị</th>
                 <th>Bộ môn</th>
                 <th>Hành động</th>
@@ -58,6 +59,7 @@
                 <td>{{ $key + 1 }}</td>
                 <td>{{ $item->name }}</td>
                 <td>{{ $item->quantity }} {{ $item->unit }}</td>
+                <td>{{ $item->broken ?? '' }}</td>
                 <td>{{ $item->device_type_name }}</td>
                 <td>{{ $item->department_name }}</td>
                 <td> 
