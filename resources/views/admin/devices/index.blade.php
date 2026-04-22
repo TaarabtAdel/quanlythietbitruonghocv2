@@ -61,6 +61,7 @@
                             <th>STT</th>
                             <th>Tên</th>
                             <th>Số lượng</th>
+                            <th>Tiêu hao</th>
                             <th>Loại thiết bị</th>
                             <th>Bộ môn</th>
                             <th>Trạng thái</th>
@@ -75,6 +76,7 @@
                             <td>{{ ($items->currentPage() - 1) * $items->perPage() + ($key + 1) }}</td>
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->quantity }}</td>
+                            <td>{{ $item->broken ?? '' }}</td>
                             <td>{{ $item->devicetype->name ?? '' }}</td>
                             <td>{{ $item->department->name ?? '' }}</td>
                             <td>{!! $item->status_fm !!}</td>
@@ -114,7 +116,7 @@
                         @endforeach
                         @else
                         <tr>
-                            <td colspan="5" class="text-center">{{ __('sys.no_item_found') }}</td>
+                            <td colspan="9" class="text-center">{{ __('sys.no_item_found') }}</td>
                         </tr>
                         @endif
                     </tbody>

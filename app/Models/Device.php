@@ -15,6 +15,7 @@ class Device extends MainModel
         'device_type_id',
         'name',
         'quantity',
+        'broken',
         'image',
         'department_id',
         'price',

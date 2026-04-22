@@ -41,6 +41,13 @@
             </div>
             <div class="col-lg-6">
                 <div class="mb-4">
+                    <label class="mb-3">Tiêu hao</label>
+                    <input type="number" class="form-control" name="broken" value="{{ $item->broken ?? old('broken') }}" min="0">
+                    <x-form-input-error field="broken"/>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="mb-4">
                     <label class="mb-3">Đơn vị</label>
                     <input type="text" class="form-control" name="unit" value="{{ $item->unit ?? old('unit') }}">
                     <x-form-input-error field="unit"/>
