@@ -120,10 +120,15 @@ class BorrowDevice extends Model
                 }
             }
             $device_names = implode('<br>', $device_names);
+
+            // Ngày tạo phiếu lấy ngày dạy -1 ngày
+            $borrow_date = strtotime($item[0]->borrow->borrow_date);
+            $borrow_date_yesterday = strtotime("-1 day", $borrow_date);
+
             $items[] = [
                 'borrow_date' => $item[0]->borrow ? date('d/m/Y',strtotime($item[0]->borrow->borrow_date)) : '',
                 'return_date' => $item[0]->return_date ? date('d/m/Y',strtotime($item[0]->return_date)) : '',
-                'created_at' => $item[0]->created_at ? date('d/m/Y',strtotime($item[0]->created_at)) : '',
+                'created_at' => $item[0]->created_at ? date('d/m/Y',$borrow_date_yesterday) : '',
                 'device_name' => $device_names,
                 'quantity' => $item[0]->quantity,
                 'session' => $item[0]->session,
