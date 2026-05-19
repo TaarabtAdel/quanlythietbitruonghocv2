@@ -25,11 +25,11 @@ class FormInputSchoolYears extends Component
         $items = [];
 
         // Cache 1 ngày (1440 phút), có thể chỉnh theo nhu cầu
-        $first_borrow = Cache::remember('first_borrow_record', 1440, function () {
-            return \App\Models\Borrow::orderBy('created_at', 'ASC')->first();
+        $first_borrow = Cache::remember('first_borrow_record_v1', 1440, function () {
+            return \App\Models\Borrow::orderBy('borrow_date', 'ASC')->first();
         });
 
-        $start_year = $first_borrow ? date('Y', strtotime($first_borrow->created_at)) : date('Y');
+        $start_year = $first_borrow ? date('Y', strtotime($first_borrow->borrow_date)) : date('Y');
 
         for ($i = $start_year; $i <= date('Y'); $i++) {
             $school_year = $i . '-' . ($i + 1);
