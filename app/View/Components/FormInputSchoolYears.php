@@ -2,17 +2,19 @@
 
 namespace App\View\Components;
 
+use App\Support\Api\SchoolCalendar;
 use Illuminate\View\Component;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Cache;
 
 class FormInputSchoolYears extends Component
 {
     protected $selected_id;
+
     protected $name;
+
     protected $autoSubmit;
 
-    public function __construct($name = 'school_year', $selectedId = '', $autoSubmit = '',$id = '')
+    public function __construct($name = 'school_year', $selectedId = '', $autoSubmit = '', $id = '')
     {
         $this->name = $name;
         $this->selected_id = $selectedId;
@@ -22,32 +24,20 @@ class FormInputSchoolYears extends Component
 
     public function render(): View|string
     {
-        $items = [];
+        $items = array_map(function (array $row) {
+            $item = new \stdClass;
+            $item->id = $row['id'];
+            $item->name = $row['name'];
 
-        // Cache 1 ngày (1440 phút), có thể chỉnh theo nhu cầu
-        $first_borrow = Cache::remember('first_borrow_record_v1', 1440, function () {
-            return \App\Models\Borrow::orderBy('borrow_date', 'ASC')->first();
-        });
+            return $item;
+        }, SchoolCalendar::schoolYears());
 
-        $start_year = $first_borrow ? date('Y', strtotime($first_borrow->borrow_date)) : date('Y');
-
-        for ($i = $start_year; $i <= date('Y'); $i++) {
-            $school_year = $i . '-' . ($i + 1);
-            $school_year_obj = new \stdClass;
-            $school_year_obj->id = $school_year;
-            $school_year_obj->name = $school_year;
-            $items[] = $school_year_obj;
-        }
-
-        $params = [
-            'selected_id'   => $this->selected_id,
-            'name'          => $this->name,
-            'autoSubmit'    => $this->autoSubmit,
-            'id'            => $this->id,
-            'items'         => $items,
-        ];
-
-        return view('components.form-input-select2', $params);
+        return view('components.form-input-select2', [
+            'selected_id' => $this->selected_id,
+            'name' => $this->name,
+            'autoSubmit' => $this->autoSubmit,
+            'id' => $this->id,
+            'items' => $items,
+        ]);
     }
 }
-

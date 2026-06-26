@@ -334,7 +334,7 @@ class Borrow extends MainModel
         $dataBorrow = [
             "user_id" => $item->user_id,
             "status" =>  self::DRAFT,
-            "borrow_date" =>  Carbon::now()->format('y-m-d'),
+            "borrow_date" =>  Carbon::now()->format('Y-m-d'),
             "borrow_note" =>  $item->borrow_note,
         ];
         $borrow = self::create($dataBorrow);
@@ -344,8 +344,8 @@ class Borrow extends MainModel
                 "device_id" => $device->device_id,
                 "room_id" => $device->room_id,
                 "quantity" => $device->quantity,
-                "borrow_date" => Carbon::now()->format('y-m-d'),
-                "return_date" => Carbon::now()->format('y-m-d'),
+                "borrow_date" => Carbon::now()->format('Y-m-d'),
+                "return_date" => Carbon::now()->format('Y-m-d'),
                 "lecture_name" => $device->lecture_name,
                 "lesson_name" => $device->lesson_name,
                 "session" => $device->session,
