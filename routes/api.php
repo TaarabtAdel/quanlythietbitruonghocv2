@@ -23,6 +23,8 @@ use App\Http\Controllers\Api\Federation\UserController as FederationUserControll
 use App\Http\Controllers\Api\Federation\InventoryAuditController as FederationInventoryAuditController;
 use App\Http\Controllers\Api\Federation\NestController as FederationNestController;
 use App\Http\Controllers\Api\Federation\BorrowDeviceController as FederationBorrowDeviceController;
+use App\Http\Controllers\Api\Federation\DocumentController as FederationDocumentController;
+use App\Http\Controllers\Api\Federation\CurriculumController as FederationCurriculumController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('federation')->middleware(AuthenticateFederationApi::class)->group(function () {
@@ -40,6 +42,10 @@ Route::prefix('federation')->middleware(AuthenticateFederationApi::class)->group
     Route::get('borrow-devices/filters', [FederationBorrowDeviceController::class, 'filters']);
     Route::get('inventory-audits', [FederationInventoryAuditController::class, 'index']);
     Route::get('inventory-audits/{id}', [FederationInventoryAuditController::class, 'show'])->whereNumber('id');
+    Route::get('documents', [FederationDocumentController::class, 'index']);
+    Route::get('documents/{id}', [FederationDocumentController::class, 'show'])->whereNumber('id');
+    Route::get('curricula', [FederationCurriculumController::class, 'index']);
+    Route::get('curricula/{id}', [FederationCurriculumController::class, 'show'])->whereNumber('id');
 });
 
 Route::prefix('teacher')->group(function () {
