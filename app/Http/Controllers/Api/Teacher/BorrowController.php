@@ -70,7 +70,8 @@ class BorrowController extends Controller
             $borrow = Borrow::create([
                 'user_id' => Auth::id(),
                 'borrow_date' => date('Y-m-d', strtotime('+1 day')),
-                'status' => Borrow::DRAFT,
+                'status' => Borrow::DRAFT,  
+                'borrow_purpose' => array_key_first(Borrow::get_borrow_purposes()),
             ]);
 
             return $this->success(

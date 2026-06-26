@@ -85,7 +85,8 @@ class BorrowController extends Controller
             $saved = $this->model::create([
                 'user_id' => Auth::id(),
                 'borrow_date' => date('Y-m-d',strtotime('+1day')),
-                'status' => $this->model::DRAFT
+                'status' => $this->model::DRAFT,
+                'borrow_purpose' => array_key_first($this->model::get_borrow_purposes()),
             ]);
             return redirect()->route($this->route_prefix.'edit',$saved->id)->with('success', __('sys.store_item_success'));
         } catch (QueryException $e) {
