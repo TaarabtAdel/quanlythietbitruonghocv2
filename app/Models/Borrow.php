@@ -142,7 +142,7 @@ class Borrow extends MainModel
             }
         }
         // Chọn phòng bộ môn
-        if( $request->devices && in_array($request->task,['add-lab','show-labs']) ){
+        if( $request->devices && in_array($request->task,['add-lab','show-labs','show-devices']) ){
             foreach( $request->devices as $tiet => $device ){
                 $borrow_devices = $item->borrow_devices()->where('tiet',$tiet);
                 // Nếu có phòng thì cập nhật phòng, không thì tạo mới thiết bị rỗng
