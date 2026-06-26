@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class UpdateController extends Controller
 {
     public function __construct(){
-        $this->lastVersion = env('SYSTEM_VERSION',2.2);
+        $this->lastVersion = env('SYSTEM_VERSION', 2.9);
     }
     public function index()
     {
@@ -36,7 +36,7 @@ class UpdateController extends Controller
             // Thêm các phiên bản tiếp theo ở đây
             '2.7' => \App\Models\Versions\Ver27::class,
             '2.8' => \App\Models\Versions\Ver28::class,
-            // '3.0' => \App\Models\Versions\Ver30::class,
+            '2.9' => \App\Models\Versions\Ver29::class,
         ];
 
         // Lấy ra danh sách các key (số phiên bản) và sắp xếp chúng theo thứ tự tăng dần

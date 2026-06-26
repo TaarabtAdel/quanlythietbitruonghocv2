@@ -17,16 +17,10 @@ trait UploadFileTrait
             $extension = $requestFile->getClientOriginalExtension();
             $fullFileName = $fileName . "." . $extension;
 
-            // Lấy subdomain hiện tại
-            $host = request()->getHost();
-            $parts = explode('.', $host);
-            
-            // Xử lý đường dẫn upload
             $uploadPath = $folder;
-            
-            // Nếu có subdomain
-            if (count($parts) > 2) {
-                $subdomain = $parts[0];
+
+            $subdomain = \App\Support\TenantContext::subdomain();
+            if ($subdomain) {
                 $uploadPath .= "/{$subdomain}";
             }
             // Tạo thư mục nếu chưa tồn tại
