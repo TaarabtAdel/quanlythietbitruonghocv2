@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
+use App\Support\TenantDatabase;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
@@ -39,13 +39,6 @@ class RouteServiceProvider extends ServiceProvider
 
     public function checkDatabaseExist(string $databaseName): bool
     {
-        try {
-            $connection = DB::connection('mysql')->getPdo();
-            $databases = $connection->query('SHOW DATABASES')->fetchAll(\PDO::FETCH_COLUMN);
-
-            return in_array($databaseName, $databases, true);
-        } catch (\Throwable) {
-            return false;
-        }
+        return TenantDatabase::exists($databaseName);
     }
 }

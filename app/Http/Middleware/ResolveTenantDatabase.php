@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Support\TenantContext;
+use App\Support\TenantDatabase;
 use App\Support\TenantHostResolver;
 use Closure;
 use Illuminate\Http\Request;
@@ -36,8 +37,11 @@ class ResolveTenantDatabase
 
         $databaseName = config('tenant.database_prefix').$subdomain;
 
-        if (! $this->databaseExists($databaseName)) {
-            abort(403, 'Cơ sở dữ liệu trường không tồn tại.');
+        if (! TenantDatabase::exists($databaseName)) {
+            abort(
+                403,
+                'Cơ sở dữ liệu trường không tồn tại hoặc tài khoản MySQL chưa có quyền truy cập: '.$databaseName
+            );
         }
 
         config(['database.connections.mysql.database' => $databaseName]);
@@ -47,17 +51,5 @@ class ResolveTenantDatabase
         TenantContext::set($subdomain, $databaseName);
 
         return $next($request);
-    }
-
-    protected function databaseExists(string $databaseName): bool
-    {
-        try {
-            $connection = DB::connection('mysql')->getPdo();
-            $databases = $connection->query('SHOW DATABASES')->fetchAll(\PDO::FETCH_COLUMN);
-
-            return in_array($databaseName, $databases, true);
-        } catch (\Throwable) {
-            return false;
-        }
     }
 }

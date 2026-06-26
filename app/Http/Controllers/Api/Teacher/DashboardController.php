@@ -13,14 +13,13 @@ class DashboardController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $currentMonth = Carbon::now()->format('m');
-        $currentYear = Carbon::now()->format('Y');
+        [$month, $year] = $this->resolveMonthYear($request);
         $userId = Auth::id();
 
         $baseQuery = Borrow::query(true)
             ->where('user_id', $userId)
-            ->whereMonth('borrow_date', $currentMonth)
-            ->whereYear('borrow_date', $currentYear);
+            ->whereMonth('borrow_date', $month)
+            ->whereYear('borrow_date', $year);
 
         $totalBorrow = (clone $baseQuery)
             ->whereIn('status', [Borrow::ACTIVE, Borrow::INACTIVE])
@@ -34,9 +33,11 @@ class DashboardController extends Controller
             ->where('status', Borrow::INACTIVE)
             ->count();
 
-        $events = $this->calendarEvents();
+        $events = $this->calendarEvents($year, $month);
 
         return $this->success([
+            'month' => $month,
+            'year' => $year,
             'total_borrow' => $totalBorrow,
             'total_borrow_active' => $totalBorrowActive,
             'total_borrow_inactive' => $totalBorrowInactive,
@@ -44,13 +45,25 @@ class DashboardController extends Controller
         ]);
     }
 
-    protected function calendarEvents(): array
+    /**
+     * @return array{0: int, 1: int}
+     */
+    protected function resolveMonthYear(Request $request): array
     {
-        $currentMonth = Carbon::now()->month;
-        $currentYear = Carbon::now()->year;
+        $month = $request->integer('month', (int) Carbon::now()->format('m'));
+        $year = $request->integer('year', (int) Carbon::now()->format('Y'));
+
+        $month = max(1, min(12, $month));
+        $year = max(2000, min(2100, $year));
+
+        return [$month, $year];
+    }
+
+    protected function calendarEvents(int $year, int $month): array
+    {
         $userId = Auth::id();
 
-        $startOfMonth = Carbon::create($currentYear, $currentMonth, 1);
+        $startOfMonth = Carbon::create($year, $month, 1);
         $endOfMonth = $startOfMonth->copy()->endOfMonth();
         $startDate = $startOfMonth->copy()->subDays(7);
         $endDate = $endOfMonth->copy()->addDays(7);
