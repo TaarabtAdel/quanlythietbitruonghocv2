@@ -24,7 +24,7 @@
             <div class="col-lg-3">
                 <div class="form-group input-borrow_date">
                     <label class="form-label" for="borrow_date">Mục Đích</label>
-                    <p class="form-control-static fw-bold">{{ App\Models\Borrow::get_borrow_purposes()[$item->borrow_purpose] }}</p>
+                    <p class="form-control-static fw-bold">{{ App\Models\Borrow::get_borrow_purposes()[$item->borrow_purpose] ?? '' }}</p>
                 </div>
             </div>
         </div>

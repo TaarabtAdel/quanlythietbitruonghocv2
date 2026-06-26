@@ -726,7 +726,6 @@ class Borrow extends MainModel
         if($currentVersion >= '2.3'){
             // Từ phiên bản 2.3 trở lên đã thay thế trong admin bảng borrow_purposes
             $borrow_purposes = \App\Models\BorrowPurpose::query()->whereNull('deleted_at')->pluck('name','slug')->toArray();
-            $borrow_purposes['sd_tbth'] = 'ĐK Sử Dụng TB Thực Hành';
             return $borrow_purposes ?? self::PURPOSE;
         }
         return self::PURPOSE;
