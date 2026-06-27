@@ -16,7 +16,7 @@ class DocumentController extends Controller
             ->orderBy('created_at', 'DESC');
 
         if ($request->filled('name')) {
-            $query->where('name', 'LIKE', '%' . $request->name . '%');
+            $query->where('name', 'LIKE', '%'.$request->name.'%');
         }
 
         $items = $query->paginate($request->integer('limit', 20));

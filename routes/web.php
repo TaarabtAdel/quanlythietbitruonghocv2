@@ -86,6 +86,7 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('devices', DeviceController::class);
 
     Route::resource('device-types', DeviceTypeController::class);
+    Route::get('documents/sgd/{sgdDocument}', [DocumentController::class, 'sgdShow'])->name('documents.sgd-show')->whereNumber('sgdDocument');
     Route::resource('documents', DocumentController::class);
     
     // export

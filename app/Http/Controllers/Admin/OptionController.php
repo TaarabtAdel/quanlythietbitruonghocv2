@@ -45,7 +45,22 @@ class OptionController extends Controller
                 'option_name' => 'company_address',
                 'option_label' => 'Địa chỉ',
                 'option_value' => '',
-            ]
+            ],
+            [
+                'option_name' => 'company_sgd_code',
+                'option_label' => 'Mã Sở (subdomain, vd: quangtri)',
+                'option_value' => '',
+            ],
+            [
+                'option_name' => 'sgd_portal_url',
+                'option_label' => 'URL portal Sở (vd: https://quangtri.quanlythietbitruonghoc.com)',
+                'option_value' => '',
+            ],
+            [
+                'option_name' => 'sgd_api_key',
+                'option_label' => 'API key kết nối Sở (X-SGD-Key)',
+                'option_value' => '',
+            ],
         ],
         'borrow_device' => [
             [
