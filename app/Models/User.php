@@ -69,6 +69,20 @@ class User extends Authenticatable
         return true;
     }
 
+    /**
+     * Sắp theo tên gọi (từ cuối), rồi full name — "Nguyễn Văn An" → "An".
+     * MySQL: SUBSTRING_INDEX(name, ' ', -1).
+     */
+    public function scopeOrderByGivenName($query, string $direction = 'asc')
+    {
+        $direction = strtolower($direction) === 'desc' ? 'desc' : 'asc';
+        $sqlDir = $direction === 'desc' ? 'DESC' : 'ASC';
+
+        return $query
+            ->orderByRaw("SUBSTRING_INDEX(name, ' ', -1) {$sqlDir}")
+            ->orderBy('name', $direction);
+    }
+
     public function nest()
     {
         return $this->belongsTo(Nest::class);

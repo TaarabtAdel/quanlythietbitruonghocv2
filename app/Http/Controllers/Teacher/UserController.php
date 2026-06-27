@@ -14,7 +14,7 @@ class UserController extends Controller
     protected $model        = User::class;
     public function index(Request $request)
     {
-        $query = $this->model::whereNull('deleted_at')->orderBy('name','asc');
+        $query = $this->model::whereNull('deleted_at')->orderByGivenName();
         if($request->name){
             $query->where('name','LIKE','%'.$request->name.'%');
         }

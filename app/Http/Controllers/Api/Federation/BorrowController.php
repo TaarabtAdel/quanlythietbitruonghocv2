@@ -63,7 +63,7 @@ class BorrowController extends Controller
     {
         return $this->success([
             'nests' => Nest::query()->orderBy('name')->get(['id', 'name']),
-            'users' => User::query()->whereNull('deleted_at')->orderBy('name')->limit(500)->get(['id', 'name']),
+            'users' => User::query()->whereNull('deleted_at')->orderByGivenName()->limit(500)->get(['id', 'name']),
         ]);
     }
 }

@@ -16,7 +16,7 @@ class UserController extends Controller
         $query = User::query()
             ->with(['nest', 'group'])
             ->whereNull('deleted_at')
-            ->orderBy('name');
+            ->orderByGivenName();
 
         if ($request->filled('name')) {
             $query->where('name', 'LIKE', '%'.$request->name.'%');

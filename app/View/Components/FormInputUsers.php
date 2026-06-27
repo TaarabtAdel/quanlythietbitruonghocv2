@@ -25,7 +25,7 @@ class FormInputUsers extends Component
      */
     public function render(): View|string
     {
-        $items = \App\Models\User::orderBy('name')->get();
+        $items = \App\Models\User::orderByGivenName()->get();
         $params = [
             'selected_id'   => $this->selected_id,
             'name'          => $this->name,

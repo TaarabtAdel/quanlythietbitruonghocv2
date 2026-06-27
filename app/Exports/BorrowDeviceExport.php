@@ -41,8 +41,7 @@ class BorrowDeviceExport {
         try {
             $type = request()->type;
             $exportBy = request()->export_by;
-            $query = User::query(true)->with(['nest'])->orderByRaw("SUBSTRING_INDEX(name, ' ', -1) ASC")
-            ->orderBy('name', 'ASC');
+            $query = User::query(true)->with(['nest'])->orderByGivenName();
             
             $startDate = request()->start_date;
             $endDate = request()->end_date;
