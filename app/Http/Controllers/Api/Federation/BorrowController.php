@@ -19,6 +19,7 @@ class BorrowController extends Controller
         $query = Borrow::query(true)
             ->with(['user'])
             ->whereNull('deleted_at')
+            ->orderByRaw('CASE WHEN status = 1 THEN 0 WHEN status = 0 THEN 1 WHEN status = -1 THEN 2 ELSE 3 END')
             ->orderByDesc('borrow_date')
             ->orderByDesc('id');
 
