@@ -25,11 +25,14 @@ use App\Http\Controllers\Api\Federation\NestController as FederationNestControll
 use App\Http\Controllers\Api\Federation\BorrowDeviceController as FederationBorrowDeviceController;
 use App\Http\Controllers\Api\Federation\DocumentController as FederationDocumentController;
 use App\Http\Controllers\Api\Federation\CurriculumController as FederationCurriculumController;
+use App\Http\Controllers\Api\Federation\UpdateController as FederationUpdateController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('federation')->middleware(AuthenticateFederationApi::class)->group(function () {
     Route::get('meta', [FederationMetaController::class, 'index']);
     Route::get('stats', [FederationMetaController::class, 'stats']);
+    Route::get('system/update/status', [FederationUpdateController::class, 'status']);
+    Route::post('system/update', [FederationUpdateController::class, 'update']);
     Route::get('devices', [FederationDeviceController::class, 'index']);
     Route::get('borrows', [FederationBorrowController::class, 'index']);
     Route::get('borrows/filters', [FederationBorrowController::class, 'filters']);

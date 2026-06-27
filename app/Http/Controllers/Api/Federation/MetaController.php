@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Controller;
 use App\Models\Borrow;
 use App\Models\Device;
 use App\Models\Option;
+use App\Services\SystemUpdateService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Schema;
 
@@ -20,6 +21,8 @@ class MetaController extends Controller
                 'company_sgd_code' => Option::get_option('general', 'company_sgd_code'),
                 'company_address' => Option::get_option('general', 'company_address'),
                 'app_version' => Option::get_option_name('app_verison', '1.0'),
+                'target_version' => SystemUpdateService::targetVersion(),
+                'needs_update' => SystemUpdateService::needsUpdate(),
             ],
             'stats' => $this->buildStats(),
             'synced_at' => now()->toIso8601String(),
