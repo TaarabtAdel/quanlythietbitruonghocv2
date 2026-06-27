@@ -34,6 +34,12 @@ class BorrowController extends Controller
         if ($request->filled('nest_id')) {
             $query->whereHas('user', fn ($q) => $q->where('nest_id', $request->nest_id));
         }
+        if ($request->filled('school_years')) {
+            $range = Borrow::getStartEndDateFromYear($request->school_years);
+            if ($range['startDate'] && $range['endDate']) {
+                $query->whereBetween('borrow_date', [$range['startDate'], $range['endDate']]);
+            }
+        }
         if ($request->filled('week')) {
             $week = $request->week;
             $year = substr($week, 0, 4);
