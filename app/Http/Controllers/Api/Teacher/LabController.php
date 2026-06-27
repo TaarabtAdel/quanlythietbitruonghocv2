@@ -19,24 +19,28 @@ class LabController extends Controller
         $borrowLabIds = [];
 
         if ($request->filled('item_id') && $request->has('tiet')) {
+            $borrowDate = $request->input('borrow_date');
+            $session = $request->input('session');
+            $lectureNumber = $request->input('lecture_number');
+
             $borrowDevice = BorrowDevice::query()
                 ->where('borrow_id', $request->item_id)
                 ->where('tiet', $request->tiet)
                 ->first();
 
             if ($borrowDevice) {
-                $request->merge([
-                    'borrow_date' => $borrowDevice->borrow_date,
-                    'session' => $borrowDevice->session,
-                    'lecture_number' => $borrowDevice->lecture_number,
-                ]);
+                $borrowDate = $borrowDate ?: $borrowDevice->borrow_date;
+                $session = $session ?: $borrowDevice->session;
+                $lectureNumber = $lectureNumber ?: $borrowDevice->lecture_number;
+            }
 
+            if ($borrowDate && $session && $lectureNumber) {
                 $borrowed = BorrowDevice::query()
                     ->where('lab_id', '>', 0)
                     ->whereHas('borrow', fn ($q) => $q->where('status', '>=', 0))
-                    ->where('borrow_date', $borrowDevice->borrow_date)
-                    ->where('session', $borrowDevice->session)
-                    ->where('lecture_number', $borrowDevice->lecture_number)
+                    ->where('borrow_date', $borrowDate)
+                    ->where('session', $session)
+                    ->where('lecture_number', $lectureNumber)
                     ->with('borrow.user')
                     ->get();
 
