@@ -26,7 +26,7 @@ class DocumentController extends Controller
             'id' => $item->id,
             'name' => $item->name,
             'slug' => $item->slug,
-            'image' => $item->image,
+            'image' => $this->resolveImageUrl($item->image),
             'description' => $item->description,
             'created_at' => $item->created_at?->toIso8601String(),
             'created_at_formatted' => $item->created_at?->format('d/m/Y H:i'),
@@ -45,11 +45,24 @@ class DocumentController extends Controller
             'id' => $item->id,
             'name' => $item->name,
             'slug' => $item->slug,
-            'image' => $item->image,
+            'image' => $this->resolveImageUrl($item->image),
             'description' => $item->description,
             'created_at' => $item->created_at?->toIso8601String(),
             'created_at_formatted' => $item->created_at?->format('d/m/Y H:i'),
             'updated_at_formatted' => $item->updated_at?->format('d/m/Y H:i'),
         ]);
+    }
+
+    protected function resolveImageUrl(?string $image): ?string
+    {
+        if (! $image) {
+            return null;
+        }
+
+        if (str_starts_with($image, 'http://') || str_starts_with($image, 'https://')) {
+            return $image;
+        }
+
+        return asset(ltrim($image, '/'));
     }
 }
