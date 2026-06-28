@@ -25,7 +25,7 @@ class DocumentController extends Controller
             'id' => $item->id,
             'name' => $item->name,
             'slug' => $item->slug,
-            'image' => $item->image,
+            'image' => Document::resolveImageUrl($item->image),
             'description' => $item->description,
             'created_at' => $item->created_at?->toIso8601String(),
         ]);
@@ -40,7 +40,7 @@ class DocumentController extends Controller
                 'id' => $item->id,
                 'name' => $item->name,
                 'slug' => $item->slug,
-                'image' => $item->image,
+                'image' => Document::resolveImageUrl($item->image),
                 'description' => $item->description,
                 'created_at' => $item->created_at?->toIso8601String(),
             ]);

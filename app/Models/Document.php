@@ -16,4 +16,17 @@ class Document extends AdminModel
         $query->orderBy('name','ASC');
         return $query;
     }
+
+    public static function resolveImageUrl(?string $image): ?string
+    {
+        if (! $image) {
+            return null;
+        }
+
+        if (str_starts_with($image, 'http://') || str_starts_with($image, 'https://')) {
+            return $image;
+        }
+
+        return asset(ltrim($image, '/'));
+    }
 }
