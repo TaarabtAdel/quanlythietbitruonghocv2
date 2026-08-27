@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'system_version' => env('SYSTEM_VERSION', '3.1'),
+
 ];

@@ -36,4 +36,28 @@ class TenantDatabase
             DB::purge($probeConnection);
         }
     }
+
+    public static function connect(string $databaseName): void
+    {
+        if ($databaseName === '') {
+            return;
+        }
+
+        config(['database.connections.mysql.database' => $databaseName]);
+        DB::purge('mysql');
+        DB::reconnect('mysql');
+    }
+
+    public static function configureMain(string $databaseName): void
+    {
+        $mysql = config('database.connections.mysql');
+
+        config([
+            'database.connections.school_main' => array_merge($mysql, [
+                'database' => $databaseName,
+            ]),
+        ]);
+
+        DB::purge('school_main');
+    }
 }

@@ -3,6 +3,7 @@
     <div class="sidebar-header">
         <div class="logo-name flex-grow-1">
             <h5 class="mb-0">{{ config('app.name') }}</h5>
+            <small class="text-muted">{{ $currentCampusName ?: 'Cơ sở chính' }}</small>
         </div>
         <div class="sidebar-close ">
             <span class="material-symbols-outlined">close</span>

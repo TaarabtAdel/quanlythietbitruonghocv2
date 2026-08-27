@@ -3,7 +3,40 @@
         <div class="btn-toggle-menu">
             <span class="material-symbols-outlined">menu</span>
         </div>
-        <div class="d-lg-block d-none search-bar" style="width:80%">
+        @php $campusLabel = $currentCampusName ?: 'Cơ sở chính'; @endphp
+        @if (!empty($canBrowseCampuses) && !empty($campusList))
+        <div class="dropdown ms-2">
+            <a class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 px-2 py-1" href="#" role="button" data-bs-toggle="dropdown" title="Cơ sở hiện tại">
+                <span class="material-symbols-outlined" style="font-size:18px">apartment</span>
+                <span class="fw-semibold text-truncate" style="max-width: min(42vw, 280px);">{{ $campusLabel }}</span>
+            </a>
+            <ul class="dropdown-menu">
+                @foreach ($campusList as $campus)
+                <li>
+                    <form action="{{ route('admin.campuses.switch') }}" method="post">
+                        @csrf
+                        <input type="hidden" name="campus_key" value="{{ $campus['key'] }}">
+                        <button type="submit" class="dropdown-item {{ ($currentCampusKey ?? '') == $campus['key'] ? 'active' : '' }}">
+                            {{ $campus['name'] }}{{ $campus['is_main'] ? ' (chính)' : '' }}
+                        </button>
+                    </form>
+                </li>
+                @endforeach
+                @if (!empty($canManageCampuses))
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" href="{{ route('admin.campuses.index') }}">Quản lý cơ sở</a>
+                </li>
+                @endif
+            </ul>
+        </div>
+        @else
+        <div class="ms-2 d-inline-flex align-items-center gap-1 px-2 py-1 rounded bg-primary-subtle text-primary" title="Cơ sở hiện tại">
+            <span class="material-symbols-outlined" style="font-size:18px">apartment</span>
+            <span class="fw-semibold text-truncate" style="max-width: min(42vw, 280px);">{{ $campusLabel }}</span>
+        </div>
+        @endif
+        <div class="d-lg-block d-none search-bar flex-grow-1">
             <marquee behavior="" direction="">{{ env('ADMIN_WELLCOME', 'Chào mừng bạn đến với hệ thống quản trị!') }}</marquee>
         </div>
         <ul class="navbar-nav top-right-menu gap-2">

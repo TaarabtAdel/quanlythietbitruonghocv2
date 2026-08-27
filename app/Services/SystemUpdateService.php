@@ -9,7 +9,7 @@ class SystemUpdateService
     /** @return array<string, mixed> */
     public static function run(?string $targetVersion = null): array
     {
-        $targetVersion = (string) ($targetVersion ?? env('SYSTEM_VERSION', '3.0'));
+        $targetVersion = (string) ($targetVersion ?? config('app.system_version', '3.1'));
         $currentVersion = (string) Option::get_option_name('app_verison', '1.0');
         $versionToUpdate = null;
         $updated = true;
@@ -21,6 +21,7 @@ class SystemUpdateService
             '2.8' => \App\Models\Versions\Ver28::class,
             '2.9' => \App\Models\Versions\Ver29::class,
             '3.0' => \App\Models\Versions\Ver30::class,
+            '3.1' => \App\Models\Versions\Ver31::class,
         ];
 
         $updateVersions = array_keys($allAvailableUpdates);
@@ -88,7 +89,7 @@ class SystemUpdateService
 
     public static function targetVersion(): string
     {
-        return (string) env('SYSTEM_VERSION', '3.0');
+        return (string) config('app.system_version', '3.1');
     }
 
     public static function currentVersion(): string

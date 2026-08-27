@@ -3,6 +3,7 @@
     <div class="sidebar-header">
         <div class="logo-name flex-grow-1">
             <h5 class="mb-0">{{ config('app.name') }}</h5>
+            <small class="text-muted">{{ $currentCampusName ?: 'Cơ sở chính' }}</small>
         </div>
         <div class="sidebar-close ">
             <span class="material-symbols-outlined">close</span>
@@ -119,7 +120,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(version_compare(env('SYSTEM_VERSION', '1.0'), '2.4', '>='))
+                    @if(version_compare(config('app.system_version', '1.0'), '2.4', '>='))
                         @if (Auth::check() && Auth::user()->hasPermission('Document_viewAny'))
                         <li>
                             <a href="{{ route('admin.documents.index', ['type' => 'Document']) }}">
@@ -386,6 +387,13 @@
                     <li>
                         <a href="{{ route('admin.options.index', ['type' => 'general']) }}">
                             <span class="material-symbols-outlined">arrow_right</span>Cấu Hình
+                        </a>
+                    </li>
+                    @endif
+                    @if (!empty($canManageCampuses))
+                    <li>
+                        <a href="{{ route('admin.campuses.index') }}">
+                            <span class="material-symbols-outlined">arrow_right</span>Cơ sở trực thuộc
                         </a>
                     </li>
                     @endif

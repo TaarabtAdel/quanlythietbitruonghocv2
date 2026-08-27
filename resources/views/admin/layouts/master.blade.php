@@ -51,6 +51,16 @@
     <!--end sidebar-->
 
     <main class="page-content">
+        @if (!empty($canBrowseCampuses) && empty($isMainCampus))
+            <div class="alert alert-info d-flex justify-content-between align-items-center">
+                <span>Đang xem dữ liệu cơ sở <strong>{{ $currentCampusName }}</strong> (tài khoản cơ sở chính).</span>
+                <form action="{{ route('admin.campuses.switch') }}" method="post" class="mb-0">
+                    @csrf
+                    <input type="hidden" name="campus_key" value="main">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Về cơ sở chính</button>
+                </form>
+            </div>
+        @endif
         @yield('content')
     </main>
 

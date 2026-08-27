@@ -15,9 +15,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(prepend: [
             \App\Http\Middleware\ResolveTenantDatabase::class,
         ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\ApplyCampusDatabase::class,
+        ]);
 
         $middleware->api(prepend: [
             \App\Http\Middleware\ResolveTenantDatabase::class,
+        ]);
+        $middleware->api(append: [
+            \App\Http\Middleware\ApplyCampusDatabase::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

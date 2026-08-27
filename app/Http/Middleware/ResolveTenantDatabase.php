@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\CampusService;
 use App\Support\TenantContext;
 use App\Support\TenantDatabase;
 use App\Support\TenantHostResolver;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class ResolveTenantDatabase
@@ -17,18 +17,14 @@ class ResolveTenantDatabase
         $baseDomain = config('tenant.base_domain');
 
         if (! config('tenant.tenant_resolve')) {
-            // Local: DB cố định trong .env; slug lấy từ domain nếu có (vd. thptabc.test)
             $subdomain = TenantHostResolver::resolve($request, $baseDomain) ?? 'local';
+            $databaseName = (string) config('database.connections.mysql.database');
 
-            TenantContext::set(
-                $subdomain,
-                (string) config('database.connections.mysql.database')
-            );
+            $this->rememberMain($subdomain, $databaseName);
 
             return $next($request);
         }
 
-        // Live: mỗi request tự nhận tenant từ subdomain — không dùng TENANT_SUBDOMAIN
         $subdomain = TenantHostResolver::resolve($request, $baseDomain);
 
         if ($subdomain === null) {
@@ -44,12 +40,16 @@ class ResolveTenantDatabase
             );
         }
 
-        config(['database.connections.mysql.database' => $databaseName]);
-        DB::purge('mysql');
-        DB::reconnect('mysql');
-
-        TenantContext::set($subdomain, $databaseName);
+        TenantDatabase::connect($databaseName);
+        $this->rememberMain($subdomain, $databaseName);
 
         return $next($request);
+    }
+
+    protected function rememberMain(string $subdomain, string $databaseName): void
+    {
+        TenantContext::set($subdomain, $databaseName);
+        TenantContext::setMainDatabase($databaseName);
+        TenantDatabase::configureMain($databaseName);
     }
 }

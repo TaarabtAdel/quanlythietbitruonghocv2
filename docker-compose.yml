@@ -1,0 +1,88 @@
+# docker compose up --build
+# App:        http://localhost:8080
+# phpMyAdmin: http://localhost:8081  (root / secret)
+
+services:
+  app:
+    build: .
+    container_name: qltb_app
+    restart: unless-stopped
+    environment:
+      APP_URL: http://localhost:8080
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-quanlythietbitruonghocv2}
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+      SYSTEM_VERSION: ${SYSTEM_VERSION:-3.1}
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/local.ini:ro
+      - ./docker/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.0
+    container_name: qltb_mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-quanlythietbitruonghocv2}
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_allowed_packet=256M
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-psecret"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: qltb_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      UPLOAD_LIMIT: 256M
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  queue:
+    build: .
+    container_name: qltb_queue
+    restart: unless-stopped
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--timeout=90"]
+    environment:
+      APP_URL: http://localhost:8080
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE:-quanlythietbitruonghocv2}
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+      SYSTEM_VERSION: ${SYSTEM_VERSION:-3.1}
+    volumes:
+      - .:/var/www/html
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/local.ini:ro
+      - ./docker/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+      app:
+        condition: service_started
+
+volumes:
+  mysql_data:

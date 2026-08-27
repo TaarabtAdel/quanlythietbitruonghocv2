@@ -36,6 +36,22 @@
                                         {{ session('error') }}
                                     </div> 
                                 @endif
+                                @if (!empty($showCampusSelect))
+                                <div class="col-12">
+                                    <label for="campus_key" class="form-label">Cơ sở <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="campus_key" name="campus_key" required>
+                                        <option value="">-- Chọn cơ sở --</option>
+                                        @foreach ($campuses as $campus)
+                                            <option value="{{ $campus['key'] }}" @selected(old('campus_key', count($campuses) === 1 ? 'main' : '') == $campus['key'])>
+                                                {{ $campus['name'] }}{{ $campus['is_main'] ? ' (Cơ sở chính)' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('campus_key')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                @endif
                                 <div class="col-12">
                                     <label for="email" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="email" name="email"

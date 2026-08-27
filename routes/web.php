@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\OptionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CampusController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ExportController;
@@ -43,6 +44,7 @@ use App\Http\Controllers\Teacher\LabController as TeacherLabController;
 use App\Http\Controllers\Teacher\NestController as TeacherNestController;
 use App\Http\Controllers\Teacher\RoomController as TeacherRoomController;
 use App\Http\Controllers\Teacher\UserController as TeacherUserController;
+use App\Http\Controllers\Teacher\CampusController as TeacherCampusController;
 use App\Http\Controllers\Teacher\HomeController as TeacherHomeController;
 use App\Http\Controllers\Teacher\BorrowLabController as TeacherBorrowLabController;
 use App\Http\Controllers\Teacher\CurriculumController as TeacherCurriculumController;
@@ -56,6 +58,11 @@ Route::post('/admin/logout', [App\Http\Controllers\Admin\AuthController::class, 
 Route::get('/login', [App\Http\Controllers\Teacher\AuthController::class, 'login'])->name('login');
 Route::post('/teacher/login', [App\Http\Controllers\Teacher\AuthController::class, 'authenticate'])->name('auth.postLogin');
 Route::get('/teacher/logout', [App\Http\Controllers\Teacher\AuthController::class, 'logout'])->name('auth.logout');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chon-co-so', [TeacherCampusController::class, 'select'])->name('campuses.select');
+    Route::post('/chon-co-so', [TeacherCampusController::class, 'choose'])->name('campuses.choose');
+});
 
 Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     // Trang chủ quản trị viên
@@ -77,6 +84,8 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     // Cấu hình
     Route::get('/options', [OptionController::class, 'index'])->name('options.index');
     Route::post('/options/update', [OptionController::class, 'update'])->name('options.update');
+    Route::post('campuses/switch', [CampusController::class, 'switch'])->name('campuses.switch');
+    Route::resource('campuses', CampusController::class)->except(['show']);
 
     Route::resource('assets', AssetController::class);
     Route::resource('borrow-purposes', BorrowPurposeController::class);
