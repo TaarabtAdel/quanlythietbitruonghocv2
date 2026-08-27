@@ -373,7 +373,7 @@ class CampusService
             DB::statement("CREATE TABLE IF NOT EXISTS `{$safe}`.`{$table}` LIKE `{$main}`.`{$table}`");
         }
 
-        foreach (['options', 'groups', 'roles', 'groups_roles', 'nests', 'borrow_purposes'] as $table) {
+        foreach (['options', 'groups', 'roles', 'groups_roles', 'borrow_purposes'] as $table) {
             try {
                 $count = DB::select("SELECT COUNT(*) AS c FROM `{$safe}`.`{$table}`");
                 if ((int) ($count[0]->c ?? 0) > 0) {
@@ -385,6 +385,7 @@ class CampusService
         }
 
         self::copyAdminUsers($safe, $main);
+        self::copyNestsForCopiedUsers($safe, $main);
 
         if ($campusName) {
             try {
@@ -433,6 +434,49 @@ class CampusService
                 SELECT * FROM `{$main}`.`users`
                 WHERE `id` = ?
             ", [$authId]);
+        } catch (\Throwable) {
+        }
+    }
+
+    protected static function copyNestsForCopiedUsers(string $safe, string $main): void
+    {
+        try {
+            $rows = DB::select("SELECT DISTINCT `nest_id` FROM `{$safe}`.`users` WHERE `nest_id` IS NOT NULL AND `nest_id` > 0");
+        } catch (\Throwable) {
+            return;
+        }
+
+        $nestIds = [];
+        foreach ($rows as $row) {
+            $id = (int) ($row->nest_id ?? 0);
+            if ($id > 0) {
+                $nestIds[$id] = $id;
+            }
+        }
+
+        if ($nestIds === []) {
+            return;
+        }
+
+        try {
+            $existing = DB::select('SELECT `id` FROM `'.$safe.'`.`nests` WHERE `id` IN ('.implode(',', $nestIds).')');
+            foreach ($existing as $row) {
+                unset($nestIds[(int) $row->id]);
+            }
+        } catch (\Throwable) {
+            return;
+        }
+
+        if ($nestIds === []) {
+            return;
+        }
+
+        try {
+            DB::statement('
+                INSERT INTO `'.$safe.'`.`nests`
+                SELECT * FROM `'.$main.'`.`nests`
+                WHERE `id` IN ('.implode(',', $nestIds).')
+            ');
         } catch (\Throwable) {
         }
     }
