@@ -43,14 +43,20 @@ class AuthController extends Controller
             return back()->with('error', $error)->onlyInput('email', 'campus_key');
         }
 
-        $login_type = filter_var($request->input('email'), FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+        $login = trim((string) $credentials['email']);
+        $password = $credentials['password'];
+        $remember = $request->boolean('remember');
 
-        $attempt = [
-            $login_type => $credentials['email'],
-            'password' => $credentials['password'],
-        ];
+        $ok = false;
+        if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+            $ok = auth()->attempt(['email' => $login, 'password' => $password], $remember);
+        } else {
+            $phone = preg_replace('/\D+/', '', $login) ?: $login;
+            $ok = auth()->attempt(['phone' => $login, 'password' => $password], $remember)
+                || ($phone !== $login && auth()->attempt(['phone' => $phone, 'password' => $password], $remember));
+        }
 
-        if (auth()->attempt($attempt, $request->boolean('remember'))) {
+        if ($ok) {
             $request->session()->regenerate();
             CampusService::putSessionKey($campusKey);
             CampusService::markMainAdmin($campusKey === CampusService::MAIN_KEY);

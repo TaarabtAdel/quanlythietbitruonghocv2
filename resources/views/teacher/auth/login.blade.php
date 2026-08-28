@@ -53,9 +53,12 @@
                                 </div>
                                 @endif
                                 <div class="col-12">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        placeholder="jhon@example.com">
+                                    <label for="email" class="form-label">Email hoặc số điện thoại</label>
+                                    <input type="text" class="form-control" id="email" name="email"
+                                        value="{{ old('email') }}"
+                                        autocomplete="username"
+                                        placeholder="Email hoặc số điện thoại"
+                                        inputmode="email">
                                     @error('email')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
