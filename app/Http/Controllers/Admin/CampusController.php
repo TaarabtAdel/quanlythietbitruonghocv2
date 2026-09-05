@@ -68,9 +68,10 @@ class CampusController extends Controller
         try {
             CampusService::provisionDatabase($validated['database_name'], $validated['name']);
         } catch (\Throwable $e) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
-                'database_name' => $e->getMessage(),
-            ]);
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage())
+                ->withErrors(['database_name' => $e->getMessage()]);
         }
 
         $data = $validated;

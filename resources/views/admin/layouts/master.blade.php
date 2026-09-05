@@ -89,7 +89,7 @@
     @if (session('success'))
         <script>
             jQuery(document).ready( function(){
-                let msg = "{{ session('success') }}";
+                let msg = @json(session('success'));
                 showAlertSuccess(msg)
             })
         </script>
@@ -97,7 +97,7 @@
     @if (session('error'))
         <script>
             jQuery(document).ready( function(){
-                let msg = "{{ session('error') }}";
+                let msg = @json(session('error'));
                 showAlertError(msg)
             })
         </script>

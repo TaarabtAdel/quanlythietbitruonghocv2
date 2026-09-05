@@ -60,4 +60,22 @@ class TenantDatabase
 
         DB::purge('school_main');
     }
+
+    /**
+     * Kết nối tới một database bằng cùng user MySQL hiện tại (không dùng SQL cross-database).
+     */
+    public static function using(string $connectionName, string $databaseName)
+    {
+        $base = config('database.connections.mysql');
+
+        config([
+            "database.connections.{$connectionName}" => array_merge($base, [
+                'database' => $databaseName,
+            ]),
+        ]);
+
+        DB::purge($connectionName);
+
+        return DB::connection($connectionName);
+    }
 }

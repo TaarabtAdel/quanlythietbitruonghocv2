@@ -5,6 +5,16 @@
     'page_title' => isset($item) && $item->id ? 'Cập nhật cơ sở' : 'Thêm cơ sở trực thuộc',
 ])
 
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
 <form action="{{ isset($item) && $item->id
         ? route($route_prefix.'update', $item->id)
         : route($route_prefix.'store') }}"

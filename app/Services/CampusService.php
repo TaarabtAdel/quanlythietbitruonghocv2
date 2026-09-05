@@ -341,6 +341,8 @@ class CampusService
 
     public static function provisionDatabase(string $databaseName, ?string $campusName = null): void
     {
+        @set_time_limit(180);
+
         $safe = preg_replace('/[^A-Za-z0-9_]/', '', $databaseName);
         $main = TenantContext::mainDatabase();
 
@@ -351,133 +353,200 @@ class CampusService
         try {
             DB::statement("CREATE DATABASE IF NOT EXISTS `{$safe}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
         } catch (\Throwable) {
-            // Shared hosting / cPanel thường không cho CREATE DATABASE bằng SQL.
+            // cPanel thường không cho CREATE DATABASE bằng SQL — DB phải tạo sẵn.
         }
 
         if (! TenantDatabase::exists($safe)) {
             throw new \RuntimeException(
-                'Không tạo/kết nối được database `'.$safe.'`. '
-                .'Trên cPanel vào MySQL Databases: tạo database đúng tên này, gán user MySQL của website (ALL PRIVILEGES) vào database đó, rồi thêm lại cơ sở.'
+                'Không kết nối được database `'.$safe.'`. '
+                .'Trên cPanel: MySQL Databases → tạo đúng tên này → Add User To Database (ALL PRIVILEGES) với user của website, rồi thử lại.'
             );
         }
 
-        $tables = DB::select('SHOW TABLES FROM `'.$main.'`');
-        $column = 'Tables_in_'.$main;
+        $source = DB::connection('school_main');
+        $target = TenantDatabase::using('campus_provision', $safe);
 
-        foreach ($tables as $row) {
-            $table = $row->{$column} ?? null;
+        try {
+            $target->getPdo();
+        } catch (\Throwable $e) {
+            throw new \RuntimeException(
+                'User MySQL chưa được gán vào database `'.$safe.'`. '.$e->getMessage()
+            );
+        }
+
+        try {
+            $target->statement('SET FOREIGN_KEY_CHECKS=0');
+            $cloned = self::cloneTableStructures($source, $target);
+
+            if ($cloned === 0) {
+                throw new \RuntimeException(
+                    'Không clone được bảng nào sang `'.$safe.'`. Kiểm tra quyền CREATE của user MySQL trên database này.'
+                );
+            }
+
+            foreach (['options', 'groups', 'roles', 'groups_roles', 'borrow_purposes'] as $table) {
+                self::copyTableRows($source, $target, $table);
+            }
+
+            self::copyAdminUsers($source, $target);
+            self::copyNestsForCopiedUsers($source, $target);
+
+            if ($campusName) {
+                $target->table('options')
+                    ->where('option_group', 'general')
+                    ->where('option_name', 'company_name')
+                    ->update(['option_value' => $campusName]);
+            }
+
+            $target->statement('SET FOREIGN_KEY_CHECKS=1');
+        } finally {
+            DB::purge('campus_provision');
+        }
+    }
+
+    protected static function cloneTableStructures($source, $target): int
+    {
+        try {
+            $rows = $source->select("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'");
+        } catch (\Throwable) {
+            try {
+                $rows = $source->select('SHOW TABLES');
+            } catch (\Throwable $e) {
+                throw new \RuntimeException('Không đọc được danh sách bảng cơ sở chính. '.$e->getMessage());
+            }
+        }
+
+        $cloned = 0;
+
+        foreach ($rows as $row) {
+            $table = self::tableNameFromShowRow($row);
             if (! $table || $table === 'campuses') {
                 continue;
             }
 
-            DB::statement("CREATE TABLE IF NOT EXISTS `{$safe}`.`{$table}` LIKE `{$main}`.`{$table}`");
-        }
-
-        foreach (['options', 'groups', 'roles', 'groups_roles', 'borrow_purposes'] as $table) {
             try {
-                $count = DB::select("SELECT COUNT(*) AS c FROM `{$safe}`.`{$table}`");
-                if ((int) ($count[0]->c ?? 0) > 0) {
-                    continue;
+                $create = $source->select('SHOW CREATE TABLE `'.$table.'`');
+                $sql = ((array) $create[0])['Create Table'] ?? null;
+                if (! is_string($sql) || $sql === '') {
+                    throw new \RuntimeException('Không lấy được cấu trúc bảng.');
                 }
-                DB::statement("INSERT INTO `{$safe}`.`{$table}` SELECT * FROM `{$main}`.`{$table}`");
-            } catch (\Throwable) {
+
+                $sql = preg_replace('/^CREATE TABLE/i', 'CREATE TABLE IF NOT EXISTS', $sql, 1);
+                $sql = preg_replace('/AUTO_INCREMENT=\d+\s*/i', '', $sql);
+                $target->unprepared($sql);
+                $cloned++;
+            } catch (\Throwable $e) {
+                throw new \RuntimeException('Không clone được bảng `'.$table.'`: '.$e->getMessage());
             }
         }
 
-        self::copyAdminUsers($safe, $main);
-        self::copyNestsForCopiedUsers($safe, $main);
-
-        if ($campusName) {
-            try {
-                DB::update(
-                    "UPDATE `{$safe}`.`options` SET option_value = ? WHERE option_group = 'general' AND option_name = 'company_name'",
-                    [$campusName]
-                );
-            } catch (\Throwable) {
-            }
-        }
+        return $cloned;
     }
 
-    protected static function copyAdminUsers(string $safe, string $main): void
+    protected static function tableNameFromShowRow(object $row): ?string
+    {
+        foreach ((array) $row as $key => $value) {
+            if (strcasecmp((string) $key, 'Table_type') === 0) {
+                continue;
+            }
+
+            return is_string($value) && $value !== '' ? $value : null;
+        }
+
+        return null;
+    }
+
+    protected static function copyTableRows($source, $target, string $table): void
     {
         try {
-            $count = DB::select("SELECT COUNT(*) AS c FROM `{$safe}`.`users`");
-            if ((int) ($count[0]->c ?? 0) > 0) {
+            if ($target->table($table)->count() > 0) {
                 return;
             }
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            throw new \RuntimeException('Không đọc được bảng `'.$table.'` trên cơ sở mới: '.$e->getMessage());
+        }
+
+        try {
+            $rows = $source->table($table)->get();
+        } catch (\Throwable $e) {
+            throw new \RuntimeException('Không đọc được bảng `'.$table.'` từ cơ sở chính: '.$e->getMessage());
+        }
+
+        if ($rows->isEmpty()) {
             return;
         }
 
         try {
-            DB::statement("
-                INSERT INTO `{$safe}`.`users`
-                SELECT * FROM `{$main}`.`users`
-                WHERE `group_id` = 1 AND `deleted_at` IS NULL
-            ");
-        } catch (\Throwable) {
+            foreach ($rows->chunk(50) as $chunk) {
+                $target->table($table)->insert($chunk->map(fn ($row) => (array) $row)->all());
+            }
+        } catch (\Throwable $e) {
+            throw new \RuntimeException('Không copy được dữ liệu bảng `'.$table.'`: '.$e->getMessage());
         }
+    }
+
+    protected static function copyAdminUsers($source, $target): void
+    {
+        if ($target->table('users')->count() > 0) {
+            return;
+        }
+
+        $admins = $source->table('users')
+            ->where('group_id', 1)
+            ->whereNull('deleted_at')
+            ->get();
 
         $authId = auth()->id();
-        if (! $authId) {
-            return;
+        if ($authId && $admins->where('id', $authId)->isEmpty()) {
+            $current = $source->table('users')->where('id', $authId)->first();
+            if ($current) {
+                $admins->push($current);
+            }
+        }
+
+        if ($admins->isEmpty()) {
+            throw new \RuntimeException('Không tìm thấy tài khoản admin (group_id = 1) để copy sang cơ sở mới.');
         }
 
         try {
-            $exists = DB::select("SELECT COUNT(*) AS c FROM `{$safe}`.`users` WHERE `id` = ?", [$authId]);
-            if ((int) ($exists[0]->c ?? 0) > 0) {
-                return;
-            }
-
-            DB::statement("
-                INSERT INTO `{$safe}`.`users`
-                SELECT * FROM `{$main}`.`users`
-                WHERE `id` = ?
-            ", [$authId]);
-        } catch (\Throwable) {
+            $target->table('users')->insert($admins->map(fn ($row) => (array) $row)->all());
+        } catch (\Throwable $e) {
+            throw new \RuntimeException('Không copy được tài khoản admin: '.$e->getMessage());
         }
     }
 
-    protected static function copyNestsForCopiedUsers(string $safe, string $main): void
+    protected static function copyNestsForCopiedUsers($source, $target): void
     {
-        try {
-            $rows = DB::select("SELECT DISTINCT `nest_id` FROM `{$safe}`.`users` WHERE `nest_id` IS NOT NULL AND `nest_id` > 0");
-        } catch (\Throwable) {
+        $nestIds = $target->table('users')
+            ->whereNotNull('nest_id')
+            ->where('nest_id', '>', 0)
+            ->distinct()
+            ->pluck('nest_id')
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($nestIds->isEmpty()) {
             return;
         }
 
-        $nestIds = [];
-        foreach ($rows as $row) {
-            $id = (int) ($row->nest_id ?? 0);
-            if ($id > 0) {
-                $nestIds[$id] = $id;
-            }
-        }
+        $existing = $target->table('nests')->whereIn('id', $nestIds)->pluck('id')->map(fn ($id) => (int) $id);
+        $missing = $nestIds->diff($existing)->values();
 
-        if ($nestIds === []) {
+        if ($missing->isEmpty()) {
             return;
         }
 
-        try {
-            $existing = DB::select('SELECT `id` FROM `'.$safe.'`.`nests` WHERE `id` IN ('.implode(',', $nestIds).')');
-            foreach ($existing as $row) {
-                unset($nestIds[(int) $row->id]);
-            }
-        } catch (\Throwable) {
-            return;
-        }
-
-        if ($nestIds === []) {
+        $nests = $source->table('nests')->whereIn('id', $missing)->get();
+        if ($nests->isEmpty()) {
             return;
         }
 
         try {
-            DB::statement('
-                INSERT INTO `'.$safe.'`.`nests`
-                SELECT * FROM `'.$main.'`.`nests`
-                WHERE `id` IN ('.implode(',', $nestIds).')
-            ');
-        } catch (\Throwable) {
+            $target->table('nests')->insert($nests->map(fn ($row) => (array) $row)->all());
+        } catch (\Throwable $e) {
+            throw new \RuntimeException('Không copy được tổ (nests): '.$e->getMessage());
         }
     }
 
