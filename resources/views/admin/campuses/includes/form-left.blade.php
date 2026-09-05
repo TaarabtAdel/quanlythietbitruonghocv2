@@ -11,11 +11,11 @@
                 <span class="input-group-text">{{ $dbPrefix }}</span>
                 <input type="text" class="form-control" name="database_name"
                     value="{{ old('database_name', $item->database_name ? \App\Services\CampusService::unqualifyDatabaseName($item->database_name) : '') }}"
-                    placeholder="{{ \App\Support\TenantContext::schoolSlug() ?: 'cs' }}_ten_co_so">
+                    placeholder="thpt-vinhdinh-quangtri-phan_hieu">
             </div>
             <div class="form-text">
-                Chỉ điền phần sau prefix, ví dụ <code>{{ \App\Support\TenantContext::schoolSlug() ?: 'cs' }}_ten_co_so</code>
-                (hệ thống tự gán <code>{{ $dbPrefix }}</code>).
+                Chỉ điền phần sau prefix, ví dụ <code>thpt-vinhdinh-quangtri-phan_hieu</code>
+                (được gạch ngang <code>-</code> và gạch dưới <code>_</code>; hệ thống tự gán <code>{{ $dbPrefix }}</code>).
                 Local/VPS: để trống hoặc nhập tên, hệ thống tự <code>CREATE DATABASE</code> rồi clone bảng.
                 cPanel: thường phải tạo DB sẵn trong <strong>MySQL Databases</strong>, gán user website vào DB, rồi thêm cơ sở — hệ thống sẽ clone bảng vào DB đó.
             </div>

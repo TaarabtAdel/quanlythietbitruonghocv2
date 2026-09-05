@@ -343,7 +343,7 @@ class CampusService
     {
         @set_time_limit(180);
 
-        $safe = preg_replace('/[^A-Za-z0-9_]/', '', $databaseName);
+        $safe = preg_replace('/[^A-Za-z0-9_-]/', '', $databaseName);
         $main = TenantContext::mainDatabase();
 
         if ($safe === '' || ! $main) {

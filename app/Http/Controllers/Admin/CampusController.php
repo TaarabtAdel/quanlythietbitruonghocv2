@@ -172,12 +172,12 @@ class CampusController extends Controller
                 'nullable',
                 'string',
                 'max:64',
-                'regex:/^[A-Za-z0-9_]+$/',
+                'regex:/^[A-Za-z0-9][A-Za-z0-9_-]*$/',
             ],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ], [
             'name.required' => 'Nhập tên cơ sở.',
-            'database_name.regex' => 'Tên database chỉ gồm chữ, số và gạch dưới.',
+            'database_name.regex' => 'Tên database gồm chữ, số, gạch dưới (_) hoặc gạch ngang (-), ví dụ thpt-vinhdinh-quangtri-phan_hieu.',
         ]);
 
         $data['database_name'] = trim((string) ($data['database_name'] ?? ''));
