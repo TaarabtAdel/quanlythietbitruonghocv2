@@ -75,11 +75,12 @@ class DeviceImport implements ToCollection
                 'note'=>$row[7],
                 'device_type_id'=>$this->getDeviceType($row[8]),
                 'department_id'=>$this->getDepartmant($row[9]),
+                'deleted_at' => null,
             ];
-            $item = Device::where('name',$data['name'])->first();
+            $item = Device::where('name', $data['name'])->first();
             if ($item) {
                 $item->update($data);
-            }else {
+            } else {
                 Device::create($data);
             }
         }
