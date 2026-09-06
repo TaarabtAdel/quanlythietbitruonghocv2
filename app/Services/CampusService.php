@@ -290,8 +290,14 @@ class CampusService
 
     public static function bindMainAdminAuth(): void
     {
-        if (self::isMainAdmin() && ! TenantContext::isMainCampus()) {
-            app()->instance('campus.auth_on_main', true);
+        if (! self::isMainAdmin() || TenantContext::isMainCampus()) {
+            return;
+        }
+
+        config(['auth.providers.users.model' => \App\Models\AuthUser::class]);
+
+        if (method_exists(Auth::getFacadeRoot(), 'forgetGuards')) {
+            Auth::forgetGuards();
         }
     }
 

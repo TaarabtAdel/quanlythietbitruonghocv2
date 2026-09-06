@@ -60,14 +60,6 @@ class User extends Authenticatable
         return true;
     }
 
-    public function getConnectionName()
-    {
-        if (app()->bound('campus.auth_on_main') && app('campus.auth_on_main')) {
-            return 'school_main';
-        }
-
-        return parent::getConnectionName();
-    }
     public function CanManagerSchool(){
         return true;
     }
