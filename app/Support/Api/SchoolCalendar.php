@@ -16,11 +16,12 @@ class SchoolCalendar
 
     public static function schoolYears(): array
     {
-        $startYear = self::earliestBorrowYear();
-        $currentYear = (int) date('Y');
+        $currentStart = (int) explode('-', self::currentSchoolYear())[0];
+        $startYear = min(self::earliestBorrowYear(), $currentStart);
+        $endYear = max((int) date('Y'), $currentStart);
         $items = [];
 
-        for ($year = $startYear; $year <= $currentYear; $year++) {
+        for ($year = $startYear; $year <= $endYear; $year++) {
             $value = self::formatSchoolYear($year);
             $items[] = ['id' => $value, 'name' => $value];
         }
@@ -50,7 +51,8 @@ class SchoolCalendar
         $month = (int) date('n');
         $year = (int) date('Y');
 
-        if ($month >= 9) {
+        // Năm học: 01/08 → 01/07 năm sau. Hết tháng 7 thì sang 01/08 năm kế tiếp.
+        if ($month >= 8) {
             return self::formatSchoolYear($year);
         }
 

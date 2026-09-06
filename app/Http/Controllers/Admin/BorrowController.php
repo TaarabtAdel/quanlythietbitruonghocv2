@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use App\Models\Borrow;
 use App\Models\Notification;
 use App\Policies\BorrowPolicy;
+use App\Support\Api\SchoolCalendar;
 
 
 class BorrowController extends Controller
@@ -58,6 +59,16 @@ class BorrowController extends Controller
             }
 
             $startDateEndDate = [];
+            $hasOtherDateFilter = $request->filled('borrow_date')
+                || $request->filled('week')
+                || ($request->filled('sw_start_week') && $request->filled('sw_end_week'));
+
+            if (! $request->has('school_years') && ! $hasOtherDateFilter) {
+                $request->merge([
+                    'school_years' => SchoolCalendar::currentSchoolYear(),
+                ]);
+            }
+
             if( $request->week ){
                 $startDateEndDate = $this->model::getStartEndDateFromWeek($request->week);
                 $query->whereBetween('borrow_date', $startDateEndDate);

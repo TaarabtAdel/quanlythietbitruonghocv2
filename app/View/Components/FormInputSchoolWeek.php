@@ -45,31 +45,14 @@ class FormInputSchoolWeek extends Component
 
         return $configs;
     }
-        
-    /**
-     * Lấy năm học hiện tại theo quy tắc: YYYY-YYYY+1
-     */
-    private function getCurrentSchoolYear(): string
-    {
-        $currentMonth = date('n'); 
-        $currentYear = date('Y');
-        
-        // Sau tháng 8 (hoặc tháng 9), năm học là YYYY-YYYY+1
-        if ($currentMonth >= 9) { 
-            return $currentYear . '-' . ($currentYear + 1);
-        }
-        // Đầu năm (trước tháng 9), năm học là YYYY-1-YYYY
-        return ($currentYear - 1) . '-' . $currentYear;
-    }
-
 
     public function render(): View|string
     {
         $schoolConfig = $this->getSchoolYearConfig();
         
-        $defaultYear = $this->defaultYear 
-            ? $this->defaultYear 
-            : $this->getCurrentSchoolYear();
+        $defaultYear = $this->defaultYear
+            ? $this->defaultYear
+            : \App\Support\Api\SchoolCalendar::currentSchoolYear();
             
         if (!array_key_exists($defaultYear, $schoolConfig) && !empty($schoolConfig)) {
             $defaultYear = array_key_first($schoolConfig);
