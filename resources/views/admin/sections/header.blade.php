@@ -4,6 +4,8 @@
             <span class="material-symbols-outlined">menu</span>
         </div>
         @php $campusLabel = $currentCampusName ?: 'Cơ sở chính'; @endphp
+        {{-- Tạm tắt chọn cơ sở trên header: đăng nhập cơ sở nào thì làm việc cơ sở đó --}}
+        {{--
         @if (!empty($canBrowseCampuses) && !empty($campusList))
         <div class="dropdown ms-2">
             <a class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 px-2 py-1" href="#" role="button" data-bs-toggle="dropdown" title="Cơ sở hiện tại">
@@ -31,11 +33,12 @@
             </ul>
         </div>
         @else
+        @endif
+        --}}
         <div class="ms-2 d-inline-flex align-items-center gap-1 px-2 py-1 rounded bg-primary-subtle text-primary" title="Cơ sở hiện tại">
             <span class="material-symbols-outlined" style="font-size:18px">apartment</span>
             <span class="fw-semibold text-truncate" style="max-width: min(42vw, 280px);">{{ $campusLabel }}</span>
         </div>
-        @endif
         <div class="d-lg-block d-none search-bar flex-grow-1">
             <marquee behavior="" direction="">{{ env('ADMIN_WELLCOME', 'Chào mừng bạn đến với hệ thống quản trị!') }}</marquee>
         </div>

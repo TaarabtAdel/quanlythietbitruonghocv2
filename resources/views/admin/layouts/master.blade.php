@@ -51,6 +51,8 @@
     <!--end sidebar-->
 
     <main class="page-content">
+        {{-- Tạm tắt banner chuyển cơ sở --}}
+        {{--
         @if (!empty($canBrowseCampuses) && empty($isMainCampus))
             <div class="alert alert-info d-flex justify-content-between align-items-center">
                 <span>Đang xem dữ liệu cơ sở <strong>{{ $currentCampusName }}</strong> (tài khoản cơ sở chính).</span>
@@ -61,6 +63,7 @@
                 </form>
             </div>
         @endif
+        --}}
         @yield('content')
     </main>
 

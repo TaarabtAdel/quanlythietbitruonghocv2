@@ -4,17 +4,20 @@
             <span class="material-symbols-outlined">menu</span>
         </div>
         @php $campusLabel = $currentCampusName ?: 'Cơ sở chính'; @endphp
+        {{-- Tạm tắt đổi cơ sở trên header --}}
+        {{--
         @if (!empty($hasMultipleCampuses))
         <a class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 px-2 py-1 ms-2" href="{{ route('campuses.select') }}" title="Đổi cơ sở">
             <span class="material-symbols-outlined" style="font-size:18px">apartment</span>
             <span class="fw-semibold text-truncate" style="max-width: min(42vw, 280px);">{{ $campusLabel }}</span>
         </a>
         @else
+        @endif
+        --}}
         <div class="ms-2 d-inline-flex align-items-center gap-1 px-2 py-1 rounded bg-primary-subtle text-primary" title="Cơ sở hiện tại">
             <span class="material-symbols-outlined" style="font-size:18px">apartment</span>
             <span class="fw-semibold text-truncate" style="max-width: min(42vw, 280px);">{{ $campusLabel }}</span>
         </div>
-        @endif
         <div class="d-lg-block d-none search-bar flex-grow-1">
             <marquee behavior="" direction="">{{ env('TEACHER_WELLCOME', 'Chào mừng bạn đến với phần mềm quản lý thiết bị trường học!') }}</marquee>
         </div>

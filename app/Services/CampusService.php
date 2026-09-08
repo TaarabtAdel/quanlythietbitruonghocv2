@@ -138,7 +138,8 @@ class CampusService
         TenantDatabase::connect($target['database']);
         TenantContext::setCampus($target['key'], $target['name'], $target['database']);
 
-        self::bindMainAdminAuth();
+        // Tạm tắt: không gắn auth về cơ sở chính khi đang xem cơ sở khác
+        // self::bindMainAdminAuth();
     }
 
     /**
@@ -169,7 +170,8 @@ class CampusService
 
         TenantDatabase::connect($target['database']);
         TenantContext::setCampus($target['key'], $target['name'], $target['database']);
-        self::bindMainAdminAuth();
+        // Tạm tắt chuyển cơ sở trên header — auth theo DB đã đăng nhập
+        // self::bindMainAdminAuth();
 
         return null;
     }
