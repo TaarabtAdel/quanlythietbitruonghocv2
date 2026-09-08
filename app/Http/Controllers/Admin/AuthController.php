@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\CampusService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -34,10 +35,13 @@ class AuthController extends Controller
             $request->validate([
                 'campus_key' => ['required', 'string'],
             ]);
-            $error = CampusService::connectTo($request->input('campus_key'));
+            $campusKey = $request->input('campus_key');
+            CampusService::markMainAdmin($campusKey === CampusService::MAIN_KEY);
+            $error = CampusService::connectTo($campusKey);
             if ($error) {
                 return back()->with('error', $error)->onlyInput('email', 'campus_key');
             }
+            Auth::guard('web')->forgetUser();
         }
 
         if (auth()->attempt($credentials)) {

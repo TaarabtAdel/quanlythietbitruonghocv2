@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\ApplyCampusDatabase::class,
         ]);
+        $middleware->appendToPriorityList(
+            \Illuminate\Session\Middleware\StartSession::class,
+            \App\Http\Middleware\ApplyCampusDatabase::class
+        );
 
         $middleware->api(prepend: [
             \App\Http\Middleware\ResolveTenantDatabase::class,

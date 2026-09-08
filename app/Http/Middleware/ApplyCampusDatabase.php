@@ -21,6 +21,7 @@ class ApplyCampusDatabase
         }
 
         CampusService::applySelected($request->header('X-Campus-Id'));
+        CampusService::refreshAuthenticatedUser();
 
         if (auth()->check()) {
             CampusService::rememberLogin(auth()->user());

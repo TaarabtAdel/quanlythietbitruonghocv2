@@ -137,9 +137,7 @@ class CampusService
 
         TenantDatabase::connect($target['database']);
         TenantContext::setCampus($target['key'], $target['name'], $target['database']);
-
-        // Tạm tắt: không gắn auth về cơ sở chính khi đang xem cơ sở khác
-        // self::bindMainAdminAuth();
+        self::refreshAuthenticatedUser();
     }
 
     /**
@@ -170,8 +168,7 @@ class CampusService
 
         TenantDatabase::connect($target['database']);
         TenantContext::setCampus($target['key'], $target['name'], $target['database']);
-        // Tạm tắt chuyển cơ sở trên header — auth theo DB đã đăng nhập
-        // self::bindMainAdminAuth();
+        self::refreshAuthenticatedUser();
 
         return null;
     }
@@ -290,17 +287,54 @@ class CampusService
         return self::isMainAdmin();
     }
 
-    public static function bindMainAdminAuth(): void
+    /**
+     * Session lưu user id. Sau khi đổi DB phải load lại user từ kết nối hiện tại,
+     * nếu không sidebar vẫn hiện tên user cùng id ở trường chính.
+     */
+    public static function refreshAuthenticatedUser(): void
     {
-        if (! self::isMainAdmin() || TenantContext::isMainCampus()) {
+        if (! request()->hasSession()) {
             return;
         }
 
-        config(['auth.providers.users.model' => \App\Models\AuthUser::class]);
+        $id = self::sessionAuthId();
 
-        if (method_exists(Auth::getFacadeRoot(), 'forgetGuards')) {
-            Auth::forgetGuards();
+        config(['auth.providers.users.model' => User::class]);
+
+        Auth::guard('web')->forgetUser();
+
+        if (! $id) {
+            return;
         }
+
+        $user = User::on('mysql')->find($id);
+        if ($user) {
+            Auth::guard('web')->setUser($user);
+        }
+    }
+
+    protected static function sessionAuthId(): ?int
+    {
+        $session = request()->session();
+        $key = 'login_web_'.sha1(\Illuminate\Auth\SessionGuard::class);
+        $value = $session->get($key);
+
+        if (is_numeric($value)) {
+            return (int) $value;
+        }
+
+        foreach ($session->all() as $sessionKey => $sessionValue) {
+            if (is_string($sessionKey) && str_starts_with($sessionKey, 'login_web_') && is_numeric($sessionValue)) {
+                return (int) $sessionValue;
+            }
+        }
+
+        return null;
+    }
+
+    public static function bindMainAdminAuth(): void
+    {
+        self::refreshAuthenticatedUser();
     }
 
     public static function databasePrefix(): string
@@ -517,7 +551,14 @@ class CampusService
         }
 
         try {
-            $target->table('users')->insert($admins->map(fn ($row) => (array) $row)->all());
+            $target->table('users')->insert(
+                $admins->map(function ($row) {
+                    $data = (array) $row;
+                    $data['remember_token'] = null;
+
+                    return $data;
+                })->all()
+            );
         } catch (\Throwable $e) {
             throw new \RuntimeException('Không copy được tài khoản admin: '.$e->getMessage());
         }
