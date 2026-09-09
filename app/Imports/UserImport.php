@@ -48,12 +48,44 @@ class UserImport implements ToCollection
 
     public function collection(Collection $rows)
     {
+        $this->importRows($rows);
+    }
+
+    public function importFromPath(string $path): void
+    {
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
+
+        try {
+            foreach ($spreadsheet->getAllSheets() as $worksheet) {
+                $rows = collect($worksheet->toArray(null, true, true, false));
+                $this->importRows($rows);
+            }
+        } finally {
+            $spreadsheet->disconnectWorksheets();
+            unset($spreadsheet);
+        }
+    }
+
+    protected function importRows(Collection $rows): void
+    {
+        if ($rows->isEmpty()) {
+            return;
+        }
+
+        $rows = $rows->values();
         $rows->shift();
-        foreach( $rows as $key => $row ){
+
+        foreach ($rows as $key => $row) {
             if (empty($row[1])) {
                 unset($rows[$key]);
             }
         }
+
+        $rows = $rows->values();
+        if ($rows->isEmpty()) {
+            return;
+        }
+
         Validator::make($rows->toArray(), [
             '*.1' => 'required',
             '*.2' => 'required',
@@ -62,7 +94,7 @@ class UserImport implements ToCollection
             '*.5' => 'required',
             '*.8' => 'required',
             '*.9' => 'required',
-        ],[
+        ], [
             '*.1.required' => 'Tên người dùng :attribute là bắt buộc.',
             '*.2.required' => 'Email người dùng :attribute là bắt buộc.',
             '*.3.required' => 'Mật khẩu người dùng :attribute là bắt buộc.',
@@ -73,28 +105,28 @@ class UserImport implements ToCollection
         ])->validate();
 
         foreach ($rows as $row) {
-            foreach( $row as $k => $v ){
-                $row[$k] = trim($v);
+            foreach ($row as $k => $v) {
+                $row[$k] = is_scalar($v) ? trim((string) $v) : $v;
             }
             if (empty($row[1])) {
                 continue;
             }
             $data = [
-                'name'=>$row[1],
-                'email'=>$row[2], 
-                'password'=>Hash::make($row[3]),
-                'address'=>$row[4], 
-                'phone'=>$row[5], 
-                'gender'=>$row[6], 
-                'birthday' => date('Y-m-d', strtotime($row[7])),
-                'group_id'=>$this->getGroup($row[8]), 
-                'nest_id'=>$this->getNest($row[9]), 
-                'deleted_at'=> NULL, 
+                'name' => $row[1],
+                'email' => $row[2],
+                'password' => Hash::make($row[3]),
+                'address' => $row[4],
+                'phone' => $row[5],
+                'gender' => $row[6] ?? null,
+                'birthday' => ! empty($row[7]) ? date('Y-m-d', strtotime($row[7])) : null,
+                'group_id' => $this->getGroup($row[8]),
+                'nest_id' => $this->getNest($row[9]),
+                'deleted_at' => null,
             ];
-            $item = User::where('email',$data['email'])->first();
+            $item = User::where('email', $data['email'])->first();
             if ($item) {
                 $item->update($data);
-            }else {
+            } else {
                 User::create($data);
             }
         }

@@ -17,6 +17,9 @@
                     <div class="mb-4">
                         <h5 class="mb-4">Bạn đang chuẩn bị nhập dữ liệu vào: {{ __(request()->type) }}</h5>
                         <p class="mb-0">- Dữ liệu mới sẽ được thêm vào, dữ liệu trùng lặp sẽ được cập nhật lại.</p>
+                        @if(in_array(request()->type, ['User', 'Device']))
+                        <p class="mb-0">- File có nhiều sheet: hệ thống đọc <strong>tất cả sheet</strong> (cùng cấu trúc: dòng 1 là tiêu đề, các dòng dưới là dữ liệu). File chỉ 1 sheet vẫn nhập bình thường.</p>
+                        @endif
                         <p class="mb-0">- Nhấn vào <a target="_blank" href="{{ asset('system/import/'.$templateFile) }}?t={{ time() }}">đây</a> để tải tệp nhập liệu mẫu </p>
                         <p class="mb-0">- Tải file dữ liệu đã được cập nhật lên và nhấn <strong>Tiến Hành</strong></p>
                     </div>

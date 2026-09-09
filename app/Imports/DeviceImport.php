@@ -42,18 +42,49 @@ class DeviceImport implements ToCollection
     
     public function collection(Collection $rows)
     {
+        $this->importRows($rows);
+    }
+
+    public function importFromPath(string $path): void
+    {
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
+
+        try {
+            foreach ($spreadsheet->getAllSheets() as $worksheet) {
+                $rows = collect($worksheet->toArray(null, true, true, false));
+                $this->importRows($rows);
+            }
+        } finally {
+            $spreadsheet->disconnectWorksheets();
+            unset($spreadsheet);
+        }
+    }
+
+    protected function importRows(Collection $rows): void
+    {
+        if ($rows->isEmpty()) {
+            return;
+        }
+
+        $rows = $rows->values();
         $rows->shift();
-        foreach( $rows as $key => $row ){
+
+        foreach ($rows as $key => $row) {
             if (empty($row[1])) {
                 unset($rows[$key]);
             }
         }
+
+        $rows = $rows->values();
+        if ($rows->isEmpty()) {
+            return;
+        }
+
         Validator::make($rows->toArray(), [
             '*.1' => 'required',
-            // '*.4' => 'required|numeric',
             '*.8' => 'required',
             '*.9' => 'required',
-        ],[
+        ], [
             '*.1.required' => 'Tên thiết bị hàng :attribute là bắt buộc.',
             '*.4.required' => 'Số lượng hàng :attribute là bắt buộc.',
             '*.4.numeric' => 'Số lượng hàng :attribute phải là một số.',
@@ -62,19 +93,19 @@ class DeviceImport implements ToCollection
         ])->validate();
 
         foreach ($rows as $row) {
-            foreach( $row as $k => $v ){
-                $row[$k] = trim($v);
+            foreach ($row as $k => $v) {
+                $row[$k] = is_scalar($v) ? trim((string) $v) : $v;
             }
             $data = [
                 'name' => $row[1],
-                'country_name'=>$row[2],
-                'year'=>$row[3],
-                'quantity'=>$row[4],
-                'unit'=>$row[5],
-                'price'=>$row[6],
-                'note'=>$row[7],
-                'device_type_id'=>$this->getDeviceType($row[8]),
-                'department_id'=>$this->getDepartmant($row[9]),
+                'country_name' => $row[2] ?? null,
+                'year' => $row[3] ?? null,
+                'quantity' => $row[4] ?? null,
+                'unit' => $row[5] ?? null,
+                'price' => $row[6] ?? null,
+                'note' => $row[7] ?? null,
+                'device_type_id' => $this->getDeviceType($row[8]),
+                'department_id' => $this->getDepartmant($row[9]),
                 'deleted_at' => null,
             ];
             $item = Device::where('name', $data['name'])->first();

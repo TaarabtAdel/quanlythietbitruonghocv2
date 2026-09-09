@@ -68,7 +68,11 @@ class ImportController extends Controller
             $path = $file->move($tmpPath, $filename);
 
             // import từ path mới
-            Excel::import($import, $path->getPathname());
+            if (method_exists($import, 'importFromPath')) {
+                $import->importFromPath($path->getPathname());
+            } else {
+                Excel::import($import, $path->getPathname());
+            }
 
             // xong thì xóa file tạm
             unlink($path->getPathname());
